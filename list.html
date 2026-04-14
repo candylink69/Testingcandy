@@ -391,7 +391,7 @@ h1 {
 
 <!-- SOCIAL BAR SCRIPT (UPDATED) - FLOATING NOTIFICATION, NO EXTRA FIX -->
 <script async src="https://encyclopediainsoluble.com/3a/d6/0f/3ad60f18f18ad6833a8dd0aadd895e49.js"></script>
-
+<script src="thumbs.js"></script>
 <script src="data.js"></script>
 <script>
 // ========== CONFIGURATION (SAME AS BEFORE) ==========
@@ -550,7 +550,7 @@ async function initializePage() {
             const videoHTML = `
                 <a href="video.html?v=${v.id}">
                     <div class="thumb-container">
-                        <img class="thumb-img" src="Thumbs/${v.id}.webp" alt="${v.id}" loading="lazy">
+                        <img class="thumb-img" src="${getThumbnailUrl(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
                         ${v.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : ''}
                         ${v.duration ? `<div class="duration">${v.duration}</div>` : ''}
                     </div>
