@@ -488,6 +488,7 @@ body {
 <div id="sticky"></div>
 
 <!-- data.js (videos list) -->
+<script src="thumbs.js"></script>
 <script src="data.js"></script>
 
 <script>
@@ -517,7 +518,7 @@ function generateVideoCard(video) {
     return `
     <div class="latest-card" data-video-id="${video.id}">
         <div class="thumb-container">
-            <img class="thumb-img" src="Thumbs/${video.id}.webp" alt="${video.id}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+            <img class="thumb-img" src="${getThumbnailUrl(video.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
             ${video.preview ? `
             <video class="preview-video" muted loop playsinline preload="none" data-src="${video.preview}"></video>
             ` : ''}
@@ -743,7 +744,7 @@ function loadTrendingVideos() {
     // Then add real trending videos
     trendingVideos.forEach(video => {
         container.innerHTML += `<div class="trending-item" onclick="goToVideo('${video.id}')">
-            <img src="Thumbs/${video.id}.webp" class="trending-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
+            <img src="${getThumbnailUrl(video.id)}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
             <div class="trending-title">${video.id}</div>
         </div>`;
     });
