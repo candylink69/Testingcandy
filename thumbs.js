@@ -6,7 +6,8 @@ const thumbnails = {
     "D": "https://i.postimg.cc/QtGGK6r4/D.webp",
     "D001":  "https://i.postimg.cc/MT22fs8s/D001.webp",
     "FF001": "https://i.postimg.cc/KzSS39yw/FF001.webp",
-    "FF002": "https://i.postimg.cc/QtGGK6rn/FF002.webp"
+    "FF002": "https://i.postimg.cc/QtGGK6rn/FF002.webp",
+    "FF003": "https://i.postimg.cc/V6qyqjYh/FF003.webp",
 };
 
 function getThumbnailUrl(videoId) {
