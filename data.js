@@ -3,7 +3,7 @@ const videos = [
     id: "V001",
     title: "",
     duration: "43:53",
-    categories: ["V000"],
+    categories: ["V000", "BS"],
     preview: "https://candylink69.embed4me.vip/s_gEKNH3mF1jgnB_JmHmyw/x68/r8czn6n1/hduqgl/preview.webp"
   },
   {
@@ -101,7 +101,7 @@ const videos = [
     id: "SW001",
     title: "",
     duration: "55:48",
-    categories: ["swapping"],
+    categories: ["swapping", "mom", "sister"],
     preview: "https://candylink69.embed4me.vip/aADK6alye1wXIz7NqLv-Uw/xq/ghsr6zxu/561dqj/preview.webp"
    },
   {
@@ -115,7 +115,7 @@ const videos = [
     id: "Movie001",
     title: "",
     duration: "01:44:57",
-    categories: ["Full-Movies"],
+    categories: ["Full-Movies", "mom"],
     preview: "https://candylink69.embed4me.vip/OgX7MY9REy7iMoJYI1eG3A/bgm/yg6kbbwm/ejjxu5/preview.webp"
   },
   {
@@ -157,7 +157,7 @@ const videos = [
     id: "FF003",
     title: "Bad Latina Pranks These Are Not Two Enormous Pumpkins These Are Juicy Holes",
     duration: "39:46",
-    categories: ["fantasy-flesh"],
+    categories: ["fantasy-flesh", "O"],
     preview: "https://candylink69.embed4me.vip/bYxuuXlfkFlswoiJWX1Iyw/ty/r8c1njny/pcy9fe/preview.webp"
   },
   {
