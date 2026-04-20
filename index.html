@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 <style>
-/* ========== BASE ========== */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -27,10 +26,10 @@ body {
 .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 8px 12px;
+    padding: 6px 12px 20px;
 }
 
-/* ========== 4K SHARPNESS (CRITICAL) ========== */
+/* 4K SHARPNESS */
 img, .thumb-img, .category-thumb, .trending-thumb {
     image-rendering: crisp-edges;
     image-rendering: -webkit-optimize-contrast;
@@ -42,7 +41,6 @@ img, .thumb-img, .category-thumb, .trending-thumb {
     filter: contrast(1.08) saturate(1.15) brightness(1.02);
 }
 
-/* Smooth text */
 body, .category-name, .video-title, .latest-id, .trending-title,
 .stat-number, .stat-label, .search-video-id, .search-video-title,
 .tab-btn, .page-info, .join-text-small {
@@ -51,18 +49,17 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     text-rendering: optimizeLegibility;
 }
 
-/* ========== BLINKING TITLE (SAME) ========== */
+/* BLINKING TITLE */
 .title {
-    font-size: 22px;
+    font-size: 20px;
     font-weight: bold;
-    margin: 0 0 10px 0;
-    padding: 12px;
+    margin: 0 0 6px 0;
+    padding: 8px;
     border-radius: 12px;
     background: rgba(0,0,0,0.7);
     border: 3px solid;
     text-shadow: 0 0 10px currentColor;
     animation: blinkColors 2s infinite alternate, pulseLight 1.5s infinite alternate;
-    letter-spacing: 1px;
 }
 
 @keyframes blinkColors {
@@ -80,84 +77,74 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     100% {opacity:1;}
 }
 
-/* ========== SOCIAL ICONS (CHHOTE 36x36) ========== */
+/* SOCIAL ICONS - CHHOTE */
 .social-text {
-    font-size: 11px;
+    font-size: 10px;
     color: #ffcc88;
-    margin: 8px 0 4px 0;
-    letter-spacing: 0.3px;
+    margin: 4px 0 2px 0;
 }
 
 .social-row {
     display: flex;
     justify-content: center;
-    gap: 20px;
-    margin: 5px 0 12px 0;
+    gap: 16px;
+    margin: 2px 0 8px 0;
 }
 
 .social-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background: #222;
     color: white;
-    font-size: 20px;
+    font-size: 18px;
     text-decoration: none;
     transition: all 0.2s ease;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-.social-icon:active {
-    transform: translateY(2px);
-}
-
+.social-icon:active { transform: translateY(2px); }
 .social-icon.instagram { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
 .social-icon.telegram { background: #0088cc; }
 .social-icon.facebook { background: #1877f2; }
+.social-icon:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
-.social-icon:hover {
-    transform: translateY(-2px);
-    filter: brightness(1.05);
-}
-
-/* ========== STICKY SEARCH BAR ========== */
+/* STICKY SEARCH BAR */
 .sticky-search {
     position: sticky;
     top: 0;
     z-index: 100;
     background: #0b0b0b;
-    padding: 8px 0 10px 0;
+    padding: 4px 0 6px 0;
     margin: 0 -12px;
     padding-left: 12px;
     padding-right: 12px;
 }
 
 .search-container {
-    max-width: 700px;
+    max-width: 600px;
     margin: 0 auto;
     position: relative;
 }
 
 .search-box {
     width: 100%;
-    padding: 12px 20px 12px 45px;
-    font-size: 14px;
+    padding: 8px 15px 8px 40px;
+    font-size: 13px;
     border-radius: 30px;
     border: 2px solid #ff3300;
     background: rgba(255,255,255,0.1);
     color: white;
     outline: none;
-    box-sizing: border-box;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="%23ff9900" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="%23ff9900" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>');
     background-repeat: no-repeat;
-    background-position: 18px center;
+    background-position: 15px center;
 }
 
-.search-box::placeholder { color: #aaa; font-size: 13px; }
-.search-box:focus { box-shadow: 0 0 15px rgba(255,51,0,0.7); background: rgba(255,255,255,0.15);}
+.search-box:focus { box-shadow: 0 0 12px rgba(255,51,0,0.6); background: rgba(255,255,255,0.15);}
 
 #searchResults {
     position: absolute;
@@ -166,116 +153,99 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     right: 0;
     background: #111;
     border-radius: 12px;
-    margin-top: 5px;
-    max-height: 350px;
+    margin-top: 4px;
+    max-height: 300px;
     overflow-y: auto;
     z-index: 1000;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     display: none;
 }
 
-.search-result-item {
-    padding: 12px 15px;
-    border-bottom: 1px solid #333;
-    cursor: pointer;
-    text-align: left;
+.search-result-item { padding: 10px 12px; border-bottom: 1px solid #333; cursor: pointer; text-align: left; }
+.search-result-item:hover { background: rgba(255,51,0,0.15); }
+.search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
+
+/* TABS - EK LINE MEIN + UNDERLINE */
+.tabs-wrapper {
+    margin: 10px 0 5px 0;
 }
 
-.search-result-item:hover { background: rgba(255,51,0,0.15); }
-.search-video-id { color: #ff9900; font-weight: bold; font-size: 13px; }
-.search-video-title { color: #ccc; font-size: 11px; margin-top: 3px; }
-
-/* ========== TABS SYSTEM ========== */
 .tabs-container {
     display: flex;
     justify-content: center;
-    gap: 12px;
-    margin: 15px 0 10px 0;
-    flex-wrap: wrap;
+    gap: 8px;
+    flex-wrap: nowrap;
 }
 
 .tab-btn {
     background: transparent;
-    border: 2px solid #444;
+    border: none;
     color: #aaa;
-    padding: 10px 24px;
-    font-size: 16px;
+    padding: 8px 20px;
+    font-size: 14px;
     font-weight: bold;
-    border-radius: 40px;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.2s ease;
     font-family: inherit;
+    position: relative;
 }
 
 .tab-btn.active {
-    border-color: #ff3300;
     color: #ffcc00;
-    background: rgba(255,51,0,0.15);
-    box-shadow: 0 0 12px rgba(255,51,0,0.4);
-    transform: scale(1.02);
 }
 
-.tab-btn:hover:not(.active) {
-    border-color: #ff6600;
-    color: #ffaa66;
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 10%;
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, #ff3300, #ff9900);
+    border-radius: 2px;
 }
 
-/* ========== STATS BAR (DYNAMIC + CHHOTA) ========== */
+.tab-btn:hover:not(.active) { color: #ffaa66; }
+
+/* Underline line jo tino ko jodti hai */
+.tabs-underline {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #ff6600, #ff3300, #ff6600, transparent);
+    margin-top: 2px;
+    width: 100%;
+}
+
+/* STATS BAR - CHHOTA AUR TIGHT */
 .stats-bar {
     background: rgba(255,51,0,0.08);
-    border-radius: 40px;
-    padding: 8px 16px;
-    margin: 12px 0 20px 0;
+    border-radius: 30px;
+    padding: 5px 12px;
+    margin: 8px 0 12px 0;
     display: inline-flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
 }
 
-.stat-item {
-    text-align: center;
-    padding: 4px 12px;
-}
+.stat-item { text-align: center; padding: 2px 8px; }
+.stat-number { font-size: 16px; font-weight: bold; color: #ff9900; }
+.stat-label { font-size: 10px; color: #aaa; margin-top: 1px; }
 
-.stat-number {
-    font-size: 18px;
-    font-weight: bold;
-    color: #ff9900;
-}
+/* PANELS */
+.panel { display: none; animation: fadeIn 0.2s ease; }
+.panel.active-panel { display: block; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.stat-label {
-    font-size: 11px;
-    color: #aaa;
-    margin-top: 2px;
-    letter-spacing: 0.3px;
-}
-
-/* ========== CONTENT PANELS ========== */
-.panel {
-    display: none;
-    animation: fadeIn 0.25s ease;
-}
-
-.panel.active-panel {
-    display: block;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Categories Grid - 2 cols 16:9 */
+/* Categories Grid */
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 18px;
-    margin: 20px 0;
+    gap: 14px;
+    margin: 15px 0;
 }
 
 .category-card {
     background: rgba(255,255,255,0.05);
-    border-radius: 16px;
+    border-radius: 14px;
     overflow: hidden;
     border: 2px solid #333;
     transition: all 0.3s ease;
@@ -283,258 +253,85 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     position: relative;
 }
 
-.category-card:hover {
-    border-color: #ff3300;
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px -10px rgba(255,51,0,0.4);
-}
-
-.category-thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-}
-
-.category-name {
-    padding: 12px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #ffcc00;
-    background: rgba(0,0,0,0.8);
-}
-
-.video-count {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    background: rgba(255,51,0,0.9);
-    color: white;
-    padding: 3px 8px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: bold;
-}
+.category-card:hover { border-color: #ff3300; transform: translateY(-3px); box-shadow: 0 10px 25px -8px rgba(255,51,0,0.4); }
+.category-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.category-name { padding: 10px; font-size: 15px; font-weight: bold; color: #ffcc00; background: rgba(0,0,0,0.8); }
+.video-count { position: absolute; top: 6px; right: 6px; background: rgba(255,51,0,0.9); color: white; padding: 2px 7px; border-radius: 15px; font-size: 10px; font-weight: bold; }
 
 /* Trending Grid */
 .trending-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 14px;
-    margin: 20px 0;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px;
+    margin: 15px 0;
 }
 
-.trending-item {
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #444;
-    cursor: pointer;
-    transition: 0.2s;
-}
+.trending-item { background: rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; border: 1px solid #444; cursor: pointer; transition: 0.2s; }
+.trending-item:hover { border-color: #ff6600; transform: translateY(-3px); }
+.trending-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.trending-title { padding: 7px; font-size: 12px; }
 
-.trending-item:hover {
-    border-color: #ff6600;
-    transform: translateY(-3px);
-}
+.native-trending-card { background: rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; border: 1px solid #444; }
+.native-thumb { width: 100%; aspect-ratio: 16 / 9; background: #1a1a1a; }
+.native-title { padding: 7px; font-size: 11px; color: #ffaa44; text-align: center; background: rgba(0,0,0,0.6); }
 
-.trending-thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-    display: block;
-}
+/* Latest Videos */
+.latest-grid { margin: 15px 0; }
+.latest-video-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+.latest-card { background: rgba(20,20,20,0.9); border-radius: 12px; overflow: hidden; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
+.latest-card:hover { border-color: #ff6600; transform: scale(1.02); box-shadow: 0 8px 18px rgba(255,68,0,0.3); }
+.thumb-container { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #111; }
+.thumb-img { width: 100%; height: 100%; object-fit: cover; }
+.preview-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; pointer-events: none; }
+.duration { position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 3px; font-size: 9px; font-weight: bold; }
+.latest-info { padding: 8px; text-align: left; }
+.latest-id { font-weight: bold; color: #ffaa44; font-size: 12px; }
+.latest-title { font-size: 10px; color: #ccc; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.trending-title {
-    padding: 8px;
-    font-size: 13px;
-    color: #fff;
-    text-align: center;
-}
+.ad-inline { background: #000000cc; border-radius: 10px; min-height: 55px; display: flex; align-items: center; justify-content: center; margin: 5px 0; }
 
-/* Native Ad Card */
-.native-trending-card {
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #444;
-}
-
-.native-thumb {
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    background: #1a1a1a;
-}
-
-.native-title {
-    padding: 8px;
-    font-size: 12px;
-    color: #ffaa44;
-    text-align: center;
-    background: rgba(0,0,0,0.6);
-}
-
-/* Latest Videos Grid */
-.latest-grid {
-    margin: 20px 0;
-}
-
-.latest-video-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 16px;
-}
-
-.latest-card {
-    background: rgba(20,20,20,0.9);
-    border-radius: 14px;
-    overflow: hidden;
-    border: 1px solid #333;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.latest-card:hover {
-    border-color: #ff6600;
-    transform: scale(1.02);
-    box-shadow: 0 8px 20px rgba(255,68,0,0.3);
-}
-
-.thumb-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    background: #111;
-}
-
-.thumb-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: opacity 0.2s;
-}
-
-.preview-video {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-    pointer-events: none;
-}
-
-.duration {
-    position: absolute;
-    bottom: 6px;
-    right: 6px;
-    background: rgba(0,0,0,0.75);
-    padding: 2px 5px;
-    border-radius: 4px;
-    font-size: 10px;
-    font-weight: bold;
-}
-
-.latest-info {
-    padding: 10px;
-    text-align: left;
-}
-
-.latest-id {
-    font-weight: bold;
-    color: #ffaa44;
-    font-size: 13px;
-}
-
-.latest-title {
-    font-size: 11px;
-    color: #ccc;
-    margin-top: 3px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.ad-inline {
-    background: #000000cc;
-    border-radius: 12px;
-    min-height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 6px 0;
-}
-
-/* Pagination */
+/* PAGINATION - EK UPAR EK NICHE */
 .pagination-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
-    margin: 25px 0 15px;
-    flex-wrap: wrap;
+    gap: 15px;
+    margin: 12px 0 8px;
 }
 
 .pagination-btn {
     background: #ff3300;
     border: none;
     color: white;
-    padding: 8px 22px;
-    font-size: 14px;
+    padding: 6px 18px;
+    font-size: 13px;
     font-weight: bold;
-    border-radius: 40px;
+    border-radius: 30px;
     cursor: pointer;
     transition: 0.2s;
 }
 
-.pagination-btn:disabled {
-    background: #555;
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-.pagination-btn:hover:not(:disabled) {
-    background: #ff6600;
-    transform: scale(1.02);
-}
-
-.page-info {
-    background: #222;
-    padding: 6px 18px;
-    border-radius: 40px;
-    font-size: 14px;
-    color: #ffaa66;
-}
+.pagination-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.5; }
+.pagination-btn:hover:not(:disabled) { background: #ff6600; transform: scale(1.02); }
+.page-info { background: #222; padding: 5px 15px; border-radius: 30px; font-size: 13px; color: #ffaa66; }
 
 /* Sticky Ad */
-#sticky {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #000;
-    z-index: 9999;
-    min-height: 52px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+#sticky { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; z-index: 9999; min-height: 50px; display: flex; justify-content: center; align-items: center; }
 
 /* Responsive */
 @media (max-width: 640px) {
-    .categories-grid { gap: 12px; }
-    .tab-btn { padding: 7px 16px; font-size: 14px; }
-    .stat-number { font-size: 16px; }
-    .title { font-size: 18px; }
+    .categories-grid { gap: 10px; }
+    .tab-btn { padding: 6px 14px; font-size: 12px; }
+    .stat-number { font-size: 14px; }
+    .title { font-size: 18px; padding: 6px; }
+    .social-icon { width: 28px; height: 28px; font-size: 16px; }
+    .social-text { font-size: 9px; }
 }
 </style>
 
 <!-- Social Bar Script (NEW) -->
 <script src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
 
-<!-- Redirect for in-app browsers -->
 <script>
 (function() {
     const ua = navigator.userAgent;
@@ -562,7 +359,7 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     <!-- Blinking Title -->
     <div class="title">🔥 CandyLink69 🔥</div>
 
-    <!-- Social Section (Top) -->
+    <!-- Social Section (Top) - TIGHT -->
     <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
     <div class="social-row">
         <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
@@ -578,22 +375,23 @@ body, .category-name, .video-title, .latest-id, .trending-title,
         </div>
     </div>
 
-    <!-- Tabs -->
-    <div class="tabs-container">
-        <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
-        <button class="tab-btn" data-tab="categories">🎯 CATEGORIES</button>
-        <button class="tab-btn" data-tab="trending">⚡ TRENDING</button>
+    <!-- TABS WITH UNDERLINE -->
+    <div class="tabs-wrapper">
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
+            <button class="tab-btn" data-tab="categories">🎯 CATEGORIES</button>
+            <button class="tab-btn" data-tab="trending">⚡ TRENDING</button>
+        </div>
+        <div class="tabs-underline"></div>
     </div>
 
     <!-- Dynamic Stats Bar -->
-    <div id="statsBar" class="stats-bar">
-        <!-- Filled by JS -->
-    </div>
+    <div id="statsBar" class="stats-bar"></div>
 
     <!-- Panel 1: Latest Videos -->
     <div id="latestPanel" class="panel active-panel">
-        <div id="latestDynamicGrid" class="latest-grid"></div>
         <div class="pagination-wrapper" id="latestPaginationTop"></div>
+        <div id="latestDynamicGrid" class="latest-grid"></div>
         <div class="pagination-wrapper" id="latestPaginationBottom"></div>
     </div>
 
@@ -620,29 +418,27 @@ body, .category-name, .video-title, .latest-id, .trending-title,
 <!-- Sticky Ad -->
 <div id="sticky"></div>
 
-<!-- Scripts -->
 <script src="thumbs.js"></script>
 <script src="data.js"></script>
 <script src="bubble-system/bubble-sounds.js"></script>
 <script src="bubble-system/bubble-core.js"></script>
 
 <script>
-// ========== GLOBAL VARIABLES ==========
+// ========== GLOBAL ==========
 let allCategories = [];
 let reversedVideos = [];
 let latestCurrentPage = 0;
 const LATEST_PER_PAGE = 10;
 const AD_AFTER_EVERY = 5;
+const SWIPE_THRESHOLD = 80;  // ✅ Increased from 50 to 80 - chote swipe se change nahi hoga
 
 // Ad Keys (NEW)
 const KEY_320x50 = '56b3e3a26900c426b81430f9f85a31d6';
 const KEY_300x250 = '8e09ed2a29423c808ccb93e333fa00c5';
 const KEY_728x90 = '57e196c0c8406efacc614d4b4d21d13d';
 
-// Current active tab
 let currentTab = 'latest';
 
-// ========== HELPER FUNCTIONS ==========
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/[&<>]/g, function(m) {
@@ -667,7 +463,6 @@ function loadAdIntoElement(elementId, key, width, height) {
     containerDiv.appendChild(s2);
 }
 
-// ========== VIDEO CARD GENERATION ==========
 function generateVideoCard(video) {
     return `
     <div class="latest-card" data-video-id="${video.id}">
@@ -683,7 +478,6 @@ function generateVideoCard(video) {
     </div>`;
 }
 
-// Preview handlers
 let currentActivePreview = null;
 
 function stopPreview() {
@@ -728,19 +522,8 @@ function setupPreviewHandlers() {
         const card = e.target.closest('.latest-card');
         if (card && currentActivePreview === card) stopPreview();
     });
-    container.addEventListener('touchstart', (e) => {
-        const card = e.target.closest('.latest-card');
-        if (card) startPreview(card);
-    }, { passive: true });
-    container.addEventListener('touchend', (e) => {
-        const card = e.target.closest('.latest-card');
-        if (card && currentActivePreview === card) {
-            setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 100);
-        }
-    });
 }
 
-// ========== LATEST VIDEOS RENDERING ==========
 function renderLatestPage(page, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
@@ -750,7 +533,7 @@ function renderLatestPage(page, scrollToTop = true) {
         document.getElementById('latestPaginationBottom').innerHTML = '';
         return;
     }
-     const totalPages = Math.ceil(reversedVideos.length / LATEST_PER_PAGE);
+    const totalPages = Math.ceil(reversedVideos.length / LATEST_PER_PAGE);
     if (page < 0) page = 0;
     if (page >= totalPages) page = totalPages - 1;
     latestCurrentPage = page;
@@ -788,7 +571,7 @@ function renderLatestPage(page, scrollToTop = true) {
     updatePaginationControls(totalPages, page);
     setupPreviewHandlers();
     
-    if (scrollToTop) {
+   if (scrollToTop) {
         window.scrollTo({ top: 0, behavior: 'instant' });
     }
 }
@@ -805,7 +588,7 @@ function updatePaginationControls(totalPages, currentPage) {
     
     const html = `
         <button class="pagination-btn" id="prevLatestBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
-        <span class="page-info">Page ${currentPage+1} / ${totalPages}</span>
+        <span class="page-info">${currentPage+1} / ${totalPages}</span>
         <button class="pagination-btn" id="nextLatestBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>
     `;
     paginationTop.innerHTML = html;
@@ -819,7 +602,6 @@ function updatePaginationControls(totalPages, currentPage) {
     });
 }
 
-// ========== CATEGORIES ==========
 async function loadCategories() {
     try {
         const response = await fetch('categories.json');
@@ -873,7 +655,6 @@ function displayCategories(categories) {
     });
 }
 
-// ========== TRENDING ==========
 function loadTrendingVideos() {
     const container = document.getElementById('trendingContainer');
     if (!container) return;
@@ -882,7 +663,6 @@ function loadTrendingVideos() {
     if (!videos) return;
     const trendingVideos = videos.filter(v => TRENDING_IDS.includes(v.id));
     
-    // Native ad card
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     nativeCard.innerHTML = `
@@ -907,11 +687,9 @@ function loadTrendingVideos() {
     });
 }
 
-// ========== STATS BAR (DYNAMIC) ==========
 function updateStatsBar() {
     const statsBar = document.getElementById('statsBar');
     if (!statsBar) return;
-    
     const totalVideos = videos?.length || 0;
     const totalCategories = allCategories?.length || 0;
     const trendingCount = Math.min(4, videos?.length || 0);
@@ -923,21 +701,14 @@ function updateStatsBar() {
             <div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending</div></div>
         `;
     } else if (currentTab === 'categories') {
-        statsBar.innerHTML = `
-            <div class="stat-item"><div class="stat-number">${totalCategories}</div><div class="stat-label">Total Categories</div></div>
-        `;
+        statsBar.innerHTML = `<div class="stat-item"><div class="stat-number">${totalCategories}</div><div class="stat-label">Total Categories</div></div>`;
     } else if (currentTab === 'trending') {
-        statsBar.innerHTML = `
-            <div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending Videos</div></div>
-        `;
+        statsBar.innerHTML = `<div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending Videos</div></div>`;
     }
 }
 
-// ========== TAB SWITCHING ==========
 function switchTab(tabId) {
     currentTab = tabId;
-    
-    // Update buttons
     document.querySelectorAll('.tab-btn').forEach(btn => {
         if (btn.getAttribute('data-tab') === tabId) {
             btn.classList.add('active');
@@ -945,16 +716,10 @@ function switchTab(tabId) {
             btn.classList.remove('active');
         }
     });
-    
-    // Update panels
     document.getElementById('latestPanel').classList.toggle('active-panel', tabId === 'latest');
     document.getElementById('categoriesPanel').classList.toggle('active-panel', tabId === 'categories');
     document.getElementById('trendingPanel').classList.toggle('active-panel', tabId === 'trending');
-    
-    // Update stats bar
     updateStatsBar();
-    
-    // Refresh content if needed
     if (tabId === 'latest' && reversedVideos.length && !document.getElementById('latestDynamicGrid').innerHTML) {
         renderLatestPage(0, false);
     }
@@ -966,7 +731,6 @@ function switchTab(tabId) {
     }
 }
 
-// ========== SEARCH ==========
 function setupSearch() {
     const input = document.getElementById('searchInput');
     const resultsDiv = document.getElementById('searchResults');
@@ -1000,7 +764,7 @@ function setupSearch() {
     });
 }
 
-// ========== SWIPE SUPPORT ==========
+// SWIPE WITH HIGHER THRESHOLD
 let touchStartX = 0;
 let touchEndX = 0;
 
@@ -1014,7 +778,8 @@ function handleTouchEnd(e) {
     const tabs = ['latest', 'categories', 'trending'];
     const currentIndex = tabs.indexOf(currentTab);
     
-    if (Math.abs(swipeDistance) > 50) {
+    // ✅ Only trigger if swipe distance > SWIPE_THRESHOLD (80px)
+    if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
         if (swipeDistance > 0 && currentIndex > 0) {
             switchTab(tabs[currentIndex - 1]);
         } else if (swipeDistance < 0 && currentIndex < tabs.length - 1) {
@@ -1023,7 +788,7 @@ function handleTouchEnd(e) {
     }
 }
 
-// ========== ADS SYSTEM ==========
+// ADS SYSTEM
 let refreshCount = 0;
 const MAX_REFRESHES = 2;
 let lastActivity = Date.now();
@@ -1056,29 +821,23 @@ function loadAllAds() {
     }
 }
 
-function getRandomDelay() {
-    return Math.floor(Math.random() * (240000 - 120000 + 1) + 120000);
-}
-
+function getRandomDelay() { return Math.floor(Math.random() * (240000 - 120000 + 1) + 120000); }
 function scheduleRefresh() {
     if(refreshTimer) clearTimeout(refreshTimer);
     if(refreshCount >= MAX_REFRESHES) return;
-    const delay = getRandomDelay();
     refreshTimer = setTimeout(() => {
         if(refreshCount < MAX_REFRESHES && isUserActive && !document.hidden) {
             loadAllAds();
             refreshCount++;
             if(refreshCount < MAX_REFRESHES) scheduleRefresh();
         }
-    }, delay);
+    }, getRandomDelay());
 }
-
 function resetAndStart() {
     if(refreshCount >= MAX_REFRESHES) return;
     if(refreshTimer) clearTimeout(refreshTimer);
     scheduleRefresh();
 }
-
 let inactivityTimer = null;
 function resetInactivityTimer() {
     isUserActive = true;
@@ -1086,30 +845,15 @@ function resetInactivityTimer() {
     if(inactivityTimer) clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(() => { isUserActive = false; }, 300000);
 }
-
 const activityEvents = ['mousedown', 'mousemove', 'scroll', 'touchstart', 'click', 'keydown'];
 activityEvents.forEach(event => {
-    document.addEventListener(event, () => {
-        resetInactivityTimer();
-        resetAndStart();
-    }, { passive: true });
+    document.addEventListener(event, () => { resetInactivityTimer(); resetAndStart(); }, { passive: true });
 });
+document.addEventListener('visibilitychange', () => { if(!document.hidden && isUserActive) resetAndStart(); });
 
-document.addEventListener('visibilitychange', () => {
-    if(!document.hidden && isUserActive) resetAndStart();
-});
+function goToVideo(videoId) { window.location.href = `video.html?v=${videoId}`; }
+function selectCategory(categoryId) { localStorage.setItem('selectedCategory', categoryId); window.location.href = `list.html?category=${categoryId}`; }
 
-// ========== NAVIGATION ==========
-function goToVideo(videoId) { 
-    window.location.href = `video.html?v=${videoId}`; 
-}
-
-function selectCategory(categoryId) {
-    localStorage.setItem('selectedCategory', categoryId);
-    window.location.href = `list.html?category=${categoryId}`;
-}
-
-// ========== INITIALIZATION ==========
 document.addEventListener('DOMContentLoaded', function() {
     function checkVideosAndInit() {
         if (typeof videos !== 'undefined' && videos && videos.length) {
@@ -1119,13 +863,9 @@ document.addEventListener('DOMContentLoaded', function() {
             setupSearch();
             renderLatestPage(0, false);
             updateStatsBar();
-            
-            // Tab click handlers
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
             });
-            
-            // Swipe handlers
             document.addEventListener('touchstart', handleTouchStart, { passive: true });
             document.addEventListener('touchend', handleTouchEnd, { passive: true });
         } else {
@@ -1140,7 +880,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 window.selectCategory = selectCategory;
 window.goToVideo = goToVideo;
-window.renderLatestPage = renderLatestPage;
 </script>
 </body>
 </html>
+  
