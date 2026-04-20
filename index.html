@@ -4,17 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>CandyLink69 – Premium HD</title>
-
-<!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 <style>
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
+/* ========== RESET & BASE ========== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     background: #0b0b0b;
     color: #fff;
@@ -22,114 +15,95 @@ body {
     text-align: center;
     padding-bottom: 70px;
 }
+.container { max-width: 1200px; margin: 0 auto; padding: 8px 12px 20px; }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 6px 12px 20px;
-}
-
-/* 4K SHARPNESS */
+/* ========== 4K SHARPNESS (RETAINED) ========== */
 img, .thumb-img, .category-thumb, .trending-thumb {
     image-rendering: crisp-edges;
     image-rendering: -webkit-optimize-contrast;
     transform: translateZ(0);
-    backface-visibility: hidden;
 }
-
-.thumb-img, .category-thumb {
-    filter: contrast(1.08) saturate(1.15) brightness(1.02);
-}
-
-body, .category-name, .video-title, .latest-id, .trending-title,
-.stat-number, .stat-label, .search-video-id, .search-video-title,
-.tab-btn, .page-info, .join-text-small {
+.thumb-img, .category-thumb { filter: contrast(1.08) saturate(1.15) brightness(1.02); }
+body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .stat-label, .tab-btn, .page-info, .social-text {
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
 }
 
-/* BLINKING TITLE */
+/* ========== BLINKING TITLE (ORIGINAL SIZE) ========== */
 .title {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
-    margin: 0 0 6px 0;
-    padding: 8px;
+    margin: 0 0 8px 0;
+    padding: 10px;
     border-radius: 12px;
     background: rgba(0,0,0,0.7);
     border: 3px solid;
     text-shadow: 0 0 10px currentColor;
     animation: blinkColors 2s infinite alternate, pulseLight 1.5s infinite alternate;
 }
-
 @keyframes blinkColors {
-    0%   {color:#ff2d55; border-color:#ff2d55; box-shadow:0 0 20px #ff2d55;}
-    14%  {color:#ff5500; border-color:#ff5500; box-shadow:0 0 20px #ff5500;}
-    28%  {color:#ffaa00; border-color:#ffaa00; box-shadow:0 0 20px #ffaa00;}
-    42%  {color:#ffff00; border-color:#ffff00; box-shadow:0 0 20px #ffff00;}
-    57%  {color:#00ff88; border-color:#00ff88; box-shadow:0 0 20px #00ff88;}
-    71%  {color:#0088ff; border-color:#0088ff; box-shadow:0 0 20px #0088ff;}
-    85%  {color:#aa55ff; border-color:#aa55ff; box-shadow:0 0 20px #aa55ff;}
-    100% {color:#ff2d55; border-color:#ff2d55; box-shadow:0 0 20px #ff2d55;}
+    0% {color:#ff2d55; border-color:#ff2d55;}
+    14% {color:#ff5500;}
+    28% {color:#ffaa00;}
+    42% {color:#ffff00;}
+    57% {color:#00ff88;}
+    71% {color:#0088ff;}
+    85% {color:#aa55ff;}
+    100% {color:#ff2d55;}
 }
 @keyframes pulseLight {
-    0%   {opacity:0.7;}
-    100% {opacity:1;}
+    0% { opacity: 0.7; }
+    100% { opacity: 1; }
 }
 
-/* SOCIAL ICONS - CHHOTE */
+/* ========== SOCIAL ICONS (CHHOTE, TEXT ABOVE) ========== */
 .social-text {
     font-size: 10px;
     color: #ffcc88;
-    margin: 4px 0 2px 0;
+    margin: 5px 0 2px;
 }
-
 .social-row {
     display: flex;
     justify-content: center;
     gap: 16px;
-    margin: 2px 0 8px 0;
+    margin: 2px 0 10px;
 }
-
 .social-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     width: 32px;
     height: 32px;
     border-radius: 50%;
     background: #222;
     color: white;
     font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     text-decoration: none;
-    transition: all 0.2s ease;
     box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: 0.2s;
 }
-
 .social-icon:active { transform: translateY(2px); }
 .social-icon.instagram { background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fd5949 45%, #d6249f 60%, #285AEB 90%); }
 .social-icon.telegram { background: #0088cc; }
 .social-icon.facebook { background: #1877f2; }
 .social-icon:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
-/* STICKY SEARCH BAR */
+/* ========== STICKY SEARCH ========== */
 .sticky-search {
     position: sticky;
     top: 0;
     z-index: 100;
     background: #0b0b0b;
-    padding: 4px 0 6px 0;
+    padding: 5px 0 8px;
     margin: 0 -12px;
     padding-left: 12px;
     padding-right: 12px;
 }
-
 .search-container {
     max-width: 600px;
     margin: 0 auto;
     position: relative;
 }
-
 .search-box {
     width: 100%;
     padding: 8px 15px 8px 40px;
@@ -143,9 +117,7 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     background-repeat: no-repeat;
     background-position: 15px center;
 }
-
-.search-box:focus { box-shadow: 0 0 12px rgba(255,51,0,0.6); background: rgba(255,255,255,0.15);}
-
+.search-box:focus { box-shadow: 0 0 12px rgba(255,51,0,0.6); background: rgba(255,255,255,0.15); }
 #searchResults {
     position: absolute;
     top: 100%;
@@ -159,40 +131,25 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     z-index: 1000;
     display: none;
 }
-
 .search-result-item { padding: 10px 12px; border-bottom: 1px solid #333; cursor: pointer; text-align: left; }
 .search-result-item:hover { background: rgba(255,51,0,0.15); }
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
-/* TABS - EK LINE MEIN + UNDERLINE */
-.tabs-wrapper {
-    margin: 10px 0 5px 0;
-}
-
-.tabs-container {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: nowrap;
-}
-
+/* ========== TABS + UNDERLINE ========== */
+.tabs-wrapper { margin: 10px 0 5px; }
+.tabs-container { display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; }
 .tab-btn {
     background: transparent;
     border: none;
     color: #aaa;
     padding: 8px 20px;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: bold;
     cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
     position: relative;
+    transition: 0.2s;
 }
-
-.tab-btn.active {
-    color: #ffcc00;
-}
-
+.tab-btn.active { color: #ffcc00; }
 .tab-btn.active::after {
     content: '';
     position: absolute;
@@ -203,10 +160,6 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     background: linear-gradient(90deg, #ff3300, #ff9900);
     border-radius: 2px;
 }
-
-.tab-btn:hover:not(.active) { color: #ffaa66; }
-
-/* Underline line jo tino ko jodti hai */
 .tabs-underline {
     height: 1px;
     background: linear-gradient(90deg, transparent, #ff6600, #ff3300, #ff6600, transparent);
@@ -214,91 +167,158 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     width: 100%;
 }
 
-/* STATS BAR - CHHOTA AUR TIGHT */
+/* ========== STATS BAR (TIGHT) ========== */
 .stats-bar {
     background: rgba(255,51,0,0.08);
     border-radius: 30px;
     padding: 5px 12px;
-    margin: 8px 0 12px 0;
+    margin: 6px 0 12px;
     display: inline-flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
+    gap: 18px;
 }
-
 .stat-item { text-align: center; padding: 2px 8px; }
 .stat-number { font-size: 16px; font-weight: bold; color: #ff9900; }
 .stat-label { font-size: 10px; color: #aaa; margin-top: 1px; }
 
-/* PANELS */
-.panel { display: none; animation: fadeIn 0.2s ease; }
+/* ========== PANELS ========== */
+.panel { display: none; animation: fadeIn 0.2s; }
 .panel.active-panel { display: block; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* Categories Grid */
+/* ========== CATEGORIES GRID (UNCHANGED - 2 COLUMNS) ========== */
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
-    margin: 15px 0;
+    margin: 10px 0;
 }
-
 .category-card {
     background: rgba(255,255,255,0.05);
     border-radius: 14px;
     overflow: hidden;
     border: 2px solid #333;
-    transition: all 0.3s ease;
     cursor: pointer;
     position: relative;
+    transition: 0.3s;
 }
-
 .category-card:hover { border-color: #ff3300; transform: translateY(-3px); box-shadow: 0 10px 25px -8px rgba(255,51,0,0.4); }
-.category-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+.category-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
 .category-name { padding: 10px; font-size: 15px; font-weight: bold; color: #ffcc00; background: rgba(0,0,0,0.8); }
 .video-count { position: absolute; top: 6px; right: 6px; background: rgba(255,51,0,0.9); color: white; padding: 2px 7px; border-radius: 15px; font-size: 10px; font-weight: bold; }
 
-/* Trending Grid */
+/* ========== TRENDING GRID ========== */
 .trending-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
     gap: 12px;
-    margin: 15px 0;
+    margin: 10px 0;
 }
-
-.trending-item { background: rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; border: 1px solid #444; cursor: pointer; transition: 0.2s; }
+.trending-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #444;
+    cursor: pointer;
+    transition: 0.2s;
+}
 .trending-item:hover { border-color: #ff6600; transform: translateY(-3px); }
-.trending-thumb { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
-.trending-title { padding: 7px; font-size: 12px; }
-
-.native-trending-card { background: rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; border: 1px solid #444; }
-.native-thumb { width: 100%; aspect-ratio: 16 / 9; background: #1a1a1a; }
+.trending-thumb { width: 100%; aspect-ratio: 16/9; object-fit: cover; }
+.trending-title { padding: 7px; font-size: 12px; color: #fff; }
+.native-trending-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #444;
+}
+.native-thumb { width: 100%; aspect-ratio: 16/9; background: #1a1a1a; }
 .native-title { padding: 7px; font-size: 11px; color: #ffaa44; text-align: center; background: rgba(0,0,0,0.6); }
 
-/* Latest Videos */
-.latest-grid { margin: 15px 0; }
-.latest-video-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
-.latest-card { background: rgba(20,20,20,0.9); border-radius: 12px; overflow: hidden; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
+/* ========== LATEST VIDEOS GRID ========== */
+.latest-grid { margin: 10px 0; }
+.latest-video-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+}
+/* Desktop: 2 columns */
+@media (min-width: 768px) {
+    .latest-video-row { grid-template-columns: repeat(2, 1fr); }
+}
+.latest-card {
+    background: rgba(20,20,20,0.9);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #333;
+    cursor: pointer;
+    transition: 0.2s;
+    display: flex;
+    flex-direction: column;
+}
 .latest-card:hover { border-color: #ff6600; transform: scale(1.02); box-shadow: 0 8px 18px rgba(255,68,0,0.3); }
-.thumb-container { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #111; }
-.thumb-img { width: 100%; height: 100%; object-fit: cover; }
-.preview-video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; display: none; pointer-events: none; }
-.duration { position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 3px; font-size: 9px; font-weight: bold; }
-.latest-info { padding: 8px; text-align: left; }
-.latest-id { font-weight: bold; color: #ffaa44; font-size: 12px; }
-.latest-title { font-size: 10px; color: #ccc; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.thumb-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    overflow: hidden;
+    background: #111;
+}
+.thumb-img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.2s; }
+.preview-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: none;
+    pointer-events: none;
+}
+.duration {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: rgba(0,0,0,0.7);
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: bold;
+}
+.latest-info {
+    padding: 10px;
+    text-align: left;
+    flex: 1;
+}
+.latest-id {
+    font-weight: bold;
+    color: #ffaa44;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+.latest-title {
+    font-size: 12px;
+    color: #ddd;
+    line-height: 1.4;
+    word-break: break-word;
+    /* Allow multiline, no cutting */
+}
+.ad-inline {
+    background: #000000cc;
+    border-radius: 10px;
+    min-height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px 0;
+}
 
-.ad-inline { background: #000000cc; border-radius: 10px; min-height: 55px; display: flex; align-items: center; justify-content: center; margin: 5px 0; }
-
-/* PAGINATION - EK UPAR EK NICHE */
+/* ========== PAGINATION ========== */
 .pagination-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin: 12px 0 8px;
+    margin: 15px 0 10px;
 }
-
 .pagination-btn {
     background: #ff3300;
     border: none;
@@ -310,28 +330,39 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     cursor: pointer;
     transition: 0.2s;
 }
-
 .pagination-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.5; }
 .pagination-btn:hover:not(:disabled) { background: #ff6600; transform: scale(1.02); }
 .page-info { background: #222; padding: 5px 15px; border-radius: 30px; font-size: 13px; color: #ffaa66; }
 
-/* Sticky Ad */
-#sticky { position: fixed; bottom: 0; left: 0; width: 100%; background: #000; z-index: 9999; min-height: 50px; display: flex; justify-content: center; align-items: center; }
+/* ========== AD CONTAINERS ========== */
+.ad-spot { margin: 8px 0; text-align: center; min-height: 50px; }
+#sticky {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #000;
+    z-index: 9999;
+    min-height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
-/* Responsive */
+/* ========== RESPONSIVE ========== */
 @media (max-width: 640px) {
-    .categories-grid { gap: 10px; }
-    .tab-btn { padding: 6px 14px; font-size: 12px; }
+    .tab-btn { padding: 6px 14px; font-size: 13px; }
     .stat-number { font-size: 14px; }
-    .title { font-size: 18px; padding: 6px; }
+    .title { font-size: 20px; }
     .social-icon { width: 28px; height: 28px; font-size: 16px; }
-    .social-text { font-size: 9px; }
+    .latest-title { font-size: 11px; }
 }
 </style>
 
 <!-- Social Bar Script (NEW) -->
 <script src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
 
+<!-- Redirect for in-app browsers -->
 <script>
 (function() {
     const ua = navigator.userAgent;
@@ -340,11 +371,8 @@ body, .category-name, .video-title, .latest-id, .trending-title,
     const currentUrl = window.location.href;
     const cleanUrl = currentUrl.replace(/^https?:\/\//, '');
     if (isTelegram || isInApp) {
-        if (/Android/i.test(ua)) {
-            window.location.href = 'intent://' + cleanUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
-        } else if (/iPhone|iPad|iPod/i.test(ua)) {
-            window.location.href = 'x-safari-https://' + cleanUrl;
-        }
+        if (/Android/i.test(ua)) window.location.href = 'intent://' + cleanUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
+        else if (/iPhone|iPad|iPod/i.test(ua)) window.location.href = 'x-safari-https://' + cleanUrl;
     }
 })();
 </script>
@@ -356,16 +384,19 @@ body, .category-name, .video-title, .latest-id, .trending-title,
 
 <div class="container">
 
-    <!-- Blinking Title -->
+    <!-- Blinking Title (original size) -->
     <div class="title">🔥 CandyLink69 🔥</div>
 
-    <!-- Social Section (Top) - TIGHT -->
+    <!-- Top Social -->
     <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
     <div class="social-row">
         <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
         <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram"><i class="fab fa-telegram-plane"></i></a>
         <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
     </div>
+
+    <!-- Top Ad Container -->
+    <div id="ad-top" class="ad-spot"></div>
 
     <!-- Sticky Search Bar -->
     <div class="sticky-search">
@@ -375,7 +406,7 @@ body, .category-name, .video-title, .latest-id, .trending-title,
         </div>
     </div>
 
-    <!-- TABS WITH UNDERLINE -->
+    <!-- Tabs with underline -->
     <div class="tabs-wrapper">
         <div class="tabs-container">
             <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
@@ -405,7 +436,10 @@ body, .category-name, .video-title, .latest-id, .trending-title,
         <div class="trending-grid" id="trendingContainer"></div>
     </div>
 
-    <!-- Bottom Social Section -->
+    <!-- Bottom Ad Container -->
+    <div id="ad-bottom" class="ad-spot"></div>
+
+    <!-- Bottom Social -->
     <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
     <div class="social-row">
         <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
@@ -415,7 +449,7 @@ body, .category-name, .video-title, .latest-id, .trending-title,
 
 </div>
 
-<!-- Sticky Ad -->
+<!-- Sticky Footer Ad -->
 <div id="sticky"></div>
 
 <script src="thumbs.js"></script>
@@ -424,13 +458,13 @@ body, .category-name, .video-title, .latest-id, .trending-title,
 <script src="bubble-system/bubble-core.js"></script>
 
 <script>
-// ========== GLOBAL ==========
+// ========== GLOBALS ==========
 let allCategories = [];
 let reversedVideos = [];
 let latestCurrentPage = 0;
-const LATEST_PER_PAGE = 10;
+const LATEST_PER_PAGE = 20;          // ✅ Changed from 10 to 20
 const AD_AFTER_EVERY = 5;
-const SWIPE_THRESHOLD = 80;  // ✅ Increased from 50 to 80 - chote swipe se change nahi hoga
+const SWIPE_THRESHOLD = 60;           // ✅ Balanced threshold
 
 // Ad Keys (NEW)
 const KEY_320x50 = '56b3e3a26900c426b81430f9f85a31d6';
@@ -439,30 +473,56 @@ const KEY_728x90 = '57e196c0c8406efacc614d4b4d21d13d';
 
 let currentTab = 'latest';
 
+// Helper functions
 function escapeHtml(str) {
     if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    }).substring(0, 60);
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
-function loadAdIntoElement(elementId, key, width, height) {
-    const containerDiv = document.getElementById(elementId);
-    if (!containerDiv) return;
-    containerDiv.innerHTML = '<div style="min-height:50px; text-align:center;"></div>';
+// Load standard ads (top, bottom, sticky)
+function loadAd(containerId, key, width, height) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
     delete window.atOptions;
     const s1 = document.createElement('script');
     s1.innerHTML = `var atOptions = {'key': '${key}','format': 'iframe','height': ${height},'width': ${width},'params': {}};`;
     const s2 = document.createElement('script');
     s2.src = 'https://encyclopediainsoluble.com/' + key + '/invoke.js?x=' + Math.random();
     s2.async = true;
-    containerDiv.appendChild(s1);
-    containerDiv.appendChild(s2);
+    container.appendChild(s1);
+    container.appendChild(s2);
 }
 
+function loadAllAds() {
+    const isMobile = window.innerWidth < 768;
+    if (isMobile) {
+        loadAd('ad-top', KEY_320x50, 320, 50);
+        loadAd('ad-bottom', KEY_300x250, 300, 250);
+        loadAd('sticky', KEY_320x50, 320, 50);
+    } else {
+        loadAd('ad-top', KEY_728x90, 728, 90);
+        loadAd('ad-bottom', KEY_728x90, 728, 90);
+        loadAd('sticky', KEY_320x50, 320, 50);
+    }
+}
+
+// Inline ad loader (for latest grid)
+function loadInlineAd(elementId) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+    el.innerHTML = '<div style="min-height:50px;"></div>';
+    delete window.atOptions;
+    const s1 = document.createElement('script');
+    s1.innerHTML = `var atOptions = {'key': '${KEY_320x50}','format': 'iframe','height': 50,'width': 320,'params': {}};`;
+    const s2 = document.createElement('script');
+    s2.src = 'https://encyclopediainsoluble.com/' + KEY_320x50 + '/invoke.js?x=' + Math.random();
+    s2.async = true;
+    el.appendChild(s1);
+    el.appendChild(s2);
+}
+
+// Generate video card (with preview support)
 function generateVideoCard(video) {
     return `
     <div class="latest-card" data-video-id="${video.id}">
@@ -478,22 +538,18 @@ function generateVideoCard(video) {
     </div>`;
 }
 
+// Preview handlers (fixed)
 let currentActivePreview = null;
-
 function stopPreview() {
     if (currentActivePreview) {
         const container = currentActivePreview.querySelector('.thumb-container');
         const previewVideo = container?.querySelector('.preview-video');
         const thumbImg = container?.querySelector('.thumb-img');
-        if (previewVideo) {
-            previewVideo.pause();
-            previewVideo.style.display = 'none';
-        }
+        if (previewVideo) { previewVideo.pause(); previewVideo.style.display = 'none'; }
         if (thumbImg) thumbImg.style.opacity = '1';
         currentActivePreview = null;
     }
 }
-
 function startPreview(card) {
     stopPreview();
     const container = card.querySelector('.thumb-container');
@@ -510,20 +566,37 @@ function startPreview(card) {
     if (thumbImg) thumbImg.style.opacity = '0.3';
     currentActivePreview = card;
 }
-
 function setupPreviewHandlers() {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
-    container.addEventListener('mouseover', (e) => {
+    // Remove old listeners to avoid duplicates (simple approach: replace)
+    const newContainer = container.cloneNode(true);
+    container.parentNode.replaceChild(newContainer, container);
+    // Re-attach to new container
+    const finalContainer = document.getElementById('latestDynamicGrid');
+    if (!finalContainer) return;
+    finalContainer.addEventListener('mouseover', (e) => {
         const card = e.target.closest('.latest-card');
         if (card) startPreview(card);
     });
-    container.addEventListener('mouseout', (e) => {
+    finalContainer.addEventListener('mouseout', (e) => {
         const card = e.target.closest('.latest-card');
         if (card && currentActivePreview === card) stopPreview();
     });
+    // For touch devices
+    finalContainer.addEventListener('touchstart', (e) => {
+        const card = e.target.closest('.latest-card');
+        if (card) startPreview(card);
+    }, { passive: true });
+    finalContainer.addEventListener('touchend', (e) => {
+        const card = e.target.closest('.latest-card');
+        if (card && currentActivePreview === card) {
+            setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 200);
+                    }
+    });
 }
 
+// Render latest page (20 per page)
 function renderLatestPage(page, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
@@ -542,21 +615,18 @@ function renderLatestPage(page, scrollToTop = true) {
     
     const itemsHtml = [];
     const adSlots = [];
-    
     for (let idx = 0; idx < pageVideos.length; idx++) {
-        const video = pageVideos[idx];
-        itemsHtml.push(generateVideoCard(video));
+        itemsHtml.push(generateVideoCard(pageVideos[idx]));
         if ((idx + 1) % AD_AFTER_EVERY === 0 && idx + 1 < pageVideos.length) {
-            const adId = `inline_ad_${Date.now()}_${idx}`;
+            const adId = `inline_ad_${Date.now()}_${idx}_${Math.random()}`;
             adSlots.push(adId);
             itemsHtml.push(`<div class="ad-inline" id="${adId}"><div style="width:100%; max-width:320px; margin:0 auto;"></div></div>`);
         }
     }
-    const finalHtml = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
-    container.innerHTML = finalHtml;
+    container.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
+    adSlots.forEach(adId => loadInlineAd(adId));
     
-    adSlots.forEach(adId => loadAdIntoElement(adId, KEY_320x50, 320, 50));
-    
+    // Attach click handlers
     document.querySelectorAll('.latest-card').forEach(card => {
         const videoId = card.getAttribute('data-video-id');
         if (videoId) {
@@ -567,154 +637,129 @@ function renderLatestPage(page, scrollToTop = true) {
             });
         }
     });
-    
     updatePaginationControls(totalPages, page);
-    setupPreviewHandlers();
-    
-   if (scrollToTop) {
-        window.scrollTo({ top: 0, behavior: 'instant' });
-    }
+    setupPreviewHandlers(); // re-attach preview after DOM update
+    if (scrollToTop) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
 function updatePaginationControls(totalPages, currentPage) {
-    const paginationTop = document.getElementById('latestPaginationTop');
-    const paginationBottom = document.getElementById('latestPaginationBottom');
-    
+    const topDiv = document.getElementById('latestPaginationTop');
+    const bottomDiv = document.getElementById('latestPaginationBottom');
     if (totalPages <= 1) {
-        paginationTop.innerHTML = '';
-        paginationBottom.innerHTML = '';
+        if (topDiv) topDiv.innerHTML = '';
+        if (bottomDiv) bottomDiv.innerHTML = '';
         return;
     }
+    const html = `<button class="pagination-btn" id="prevLatestBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
+                  <span class="page-info">${currentPage+1} / ${totalPages}</span>
+                  <button class="pagination-btn" id="nextLatestBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>`;
+    if (topDiv) topDiv.innerHTML = html;
+    if (bottomDiv) bottomDiv.innerHTML = html;
     
-    const html = `
-        <button class="pagination-btn" id="prevLatestBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
-        <span class="page-info">${currentPage+1} / ${totalPages}</span>
-        <button class="pagination-btn" id="nextLatestBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>
-    `;
-    paginationTop.innerHTML = html;
-    paginationBottom.innerHTML = html;
-    
-    document.getElementById('prevLatestBtn')?.addEventListener('click', () => {
-        if (latestCurrentPage > 0) renderLatestPage(latestCurrentPage - 1, true);
-    });
-    document.getElementById('nextLatestBtn')?.addEventListener('click', () => {
-        if (latestCurrentPage < totalPages-1) renderLatestPage(latestCurrentPage + 1, true);
-    });
+    // Attach events (clean previous by removing old and adding new)
+    const prevBtn = document.getElementById('prevLatestBtn');
+    const nextBtn = document.getElementById('nextLatestBtn');
+    if (prevBtn) {
+        prevBtn.replaceWith(prevBtn.cloneNode(true));
+        document.getElementById('prevLatestBtn')?.addEventListener('click', () => {
+            if (latestCurrentPage > 0) renderLatestPage(latestCurrentPage - 1, true);
+        });
+    }
+    if (nextBtn) {
+        nextBtn.replaceWith(nextBtn.cloneNode(true));
+        document.getElementById('nextLatestBtn')?.addEventListener('click', () => {
+            if (latestCurrentPage < totalPages-1) renderLatestPage(latestCurrentPage + 1, true);
+        });
+    }
 }
 
+// Categories (unchanged logic)
 async function loadCategories() {
     try {
-        const response = await fetch('categories.json');
-        allCategories = await response.json();
-        if (videos && videos.length) {
-            allCategories.forEach(cat => {
-                cat.videoCount = videos.filter(v => v.categories && v.categories.includes(cat.id)).length;
-            });
-        }
+        const res = await fetch('categories.json');
+        allCategories = await res.json();
+        if (videos) allCategories.forEach(cat => cat.videoCount = videos.filter(v => v.categories?.includes(cat.id)).length);
         displayCategories(allCategories);
-    } catch (error) {
+    } catch(e) {
         allCategories = createDefaultCategories();
         displayCategories(allCategories);
     }
     updateStatsBar();
 }
-
 function createDefaultCategories() {
-    const catMap = {};
-    if (videos && videos.length) {
-        videos.forEach(video => {
-            if (video.categories && Array.isArray(video.categories)) {
-                video.categories.forEach(catId => {
-                    if (!catMap[catId]) {
-                        catMap[catId] = { id: catId, name: catId.charAt(0).toUpperCase() + catId.slice(1), thumbnail: `Thumbs/${video.id}.webp`, videoCount: 0 };
-                    }
-                });
-            }
+    const map = {};
+    if (videos) videos.forEach(v => {
+        if (Array.isArray(v.categories)) v.categories.forEach(c => {
+            if (!map[c]) map[c] = { id: c, name: c[0].toUpperCase()+c.slice(1), thumbnail: `Thumbs/${v.id}.webp`, videoCount: 0 };
         });
-        Object.keys(catMap).forEach(catId => {
-            catMap[catId].videoCount = videos.filter(v => v.categories && v.categories.includes(catId)).length;
-        });
-        if (Object.keys(catMap).length) return Object.values(catMap);
-    }
-    return [
-        { id: 'indian', name: '🇮🇳 Indian', thumbnail: 'Thumbs/HM001.webp', videoCount: videos?.length || 0 },
-        { id: 'foreign', name: '🌍 Foreign', thumbnail: 'Thumbs/Movie001.webp', videoCount: 0 }
-    ];
+    });
+    Object.keys(map).forEach(c => map[c].videoCount = videos.filter(v => v.categories?.includes(c)).length);
+    if (Object.keys(map).length) return Object.values(map);
+    return [{ id: 'indian', name: '🇮🇳 Indian', thumbnail: 'Thumbs/HM001.webp', videoCount: videos?.length || 0 }];
 }
-
-function displayCategories(categories) {
-    const container = document.getElementById('categoriesContainer');
-    container.innerHTML = '';
-    categories.forEach(cat => {
-        const cnt = videos ? videos.filter(v => v.categories && v.categories.includes(cat.id)).length : 0;
-        container.innerHTML += `<div class="category-card" onclick="selectCategory('${cat.id}')">
-            <img src="${cat.thumbnail}" alt="${cat.name}" class="category-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Image'">
+function displayCategories(cats) {
+    const cont = document.getElementById('categoriesContainer');
+    if (!cont) return;
+    cont.innerHTML = '';
+    cats.forEach(cat => {
+        const cnt = videos?.filter(v => v.categories?.includes(cat.id)).length || 0;
+        cont.innerHTML += `<div class="category-card" onclick="selectCategory('${cat.id}')">
+            <img src="${cat.thumbnail}" class="category-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Image'">
             <div class="video-count">${cnt} videos</div>
             <div class="category-name">${cat.name}</div>
         </div>`;
     });
 }
 
+// Trending (with native ad)
 function loadTrendingVideos() {
-    const container = document.getElementById('trendingContainer');
-    if (!container) return;
-    container.innerHTML = '';
-    const TRENDING_IDS = ["Movie006", "Movie005", "HM002", "D001"];
-    if (!videos) return;
-    const trendingVideos = videos.filter(v => TRENDING_IDS.includes(v.id));
-    
+    const cont = document.getElementById('trendingContainer');
+    if (!cont) return;
+    cont.innerHTML = '';
+    const trendingIds = ["Movie006","Movie005","HM002","D001"];
+    const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
+    // Native ad card
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
-    nativeCard.innerHTML = `
-        <div class="native-thumb">
-            <div id="container-4b10501c070917e2ceca3f13f9e60117" style="width:100%;height:100%;"></div>
-        </div>
-        <div class="native-title">Sponsored</div>
-    `;
-    container.appendChild(nativeCard);
-    
+    nativeCard.innerHTML = `<div class="native-thumb"><div id="container-4b10501c070917e2ceca3f13f9e60117" style="width:100%;height:100%;"></div></div><div class="native-title">Sponsored</div>`;
+    cont.appendChild(nativeCard);
     const script = document.createElement('script');
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
     script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
     document.body.appendChild(script);
-    
-    trendingVideos.forEach(video => {
-        container.innerHTML += `<div class="trending-item" onclick="goToVideo('${video.id}')">
-            <img src="${getThumbnailUrl(video.id)}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
-            <div class="trending-title">${video.id}</div>
+    trendingVideos.forEach(v => {
+        cont.innerHTML += `<div class="trending-item" onclick="goToVideo('${v.id}')">
+            <img src="${getThumbnailUrl(v.id)}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
+            <div class="trending-title">${v.id}</div>
         </div>`;
     });
 }
 
+// Stats Bar dynamic
 function updateStatsBar() {
-    const statsBar = document.getElementById('statsBar');
-    if (!statsBar) return;
+    const sb = document.getElementById('statsBar');
+    if (!sb) return;
     const totalVideos = videos?.length || 0;
     const totalCategories = allCategories?.length || 0;
     const trendingCount = Math.min(4, videos?.length || 0);
-    
     if (currentTab === 'latest') {
-        statsBar.innerHTML = `
-            <div class="stat-item"><div class="stat-number">${totalVideos}</div><div class="stat-label">Total Videos</div></div>
-            <div class="stat-item"><div class="stat-number">${totalCategories}</div><div class="stat-label">Categories</div></div>
-            <div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending</div></div>
-        `;
+        sb.innerHTML = `<div class="stat-item"><div class="stat-number">${totalVideos}</div><div class="stat-label">Total Videos</div></div>
+                        <div class="stat-item"><div class="stat-number">${totalCategories}</div><div class="stat-label">Categories</div></div>
+                        <div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending</div></div>`;
     } else if (currentTab === 'categories') {
-        statsBar.innerHTML = `<div class="stat-item"><div class="stat-number">${totalCategories}</div><div class="stat-label">Total Categories</div></div>`;
-    } else if (currentTab === 'trending') {
-        statsBar.innerHTML = `<div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending Videos</div></div>`;
+        sb.innerHTML = `<div class="stat-item"><div class="stat-number">${totalCategories}</div><div class="stat-label">Total Categories</div></div>`;
+    } else {
+        sb.innerHTML = `<div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending Videos</div></div>`;
     }
 }
 
+// Tab switching
 function switchTab(tabId) {
     currentTab = tabId;
     document.querySelectorAll('.tab-btn').forEach(btn => {
-        if (btn.getAttribute('data-tab') === tabId) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+        if (btn.getAttribute('data-tab') === tabId) btn.classList.add('active');
+        else btn.classList.remove('active');
     });
     document.getElementById('latestPanel').classList.toggle('active-panel', tabId === 'latest');
     document.getElementById('categoriesPanel').classList.toggle('active-panel', tabId === 'categories');
@@ -731,6 +776,7 @@ function switchTab(tabId) {
     }
 }
 
+// Search
 function setupSearch() {
     const input = document.getElementById('searchInput');
     const resultsDiv = document.getElementById('searchResults');
@@ -738,125 +784,65 @@ function setupSearch() {
         const q = this.value.toLowerCase().trim();
         if (q.length < 2) { resultsDiv.style.display = 'none'; return; }
         if (!videos) return;
-        const filtered = videos.filter(v => {
-            if (v.id.toLowerCase().includes(q)) return true;
-            if (v.title && v.title.toLowerCase().includes(q)) return true;
-            if (v.categories && v.categories.some(c => c.toLowerCase().includes(q))) return true;
-            return false;
-        });
+        const filtered = videos.filter(v => v.id.toLowerCase().includes(q) || (v.title && v.title.toLowerCase().includes(q)) || (v.categories && v.categories.some(c => c.toLowerCase().includes(q))));
         if (filtered.length === 0) {
-            resultsDiv.innerHTML = `<div class="search-no-results" style="padding:15px;">No videos for "${q}"</div>`;
+            resultsDiv.innerHTML = '<div style="padding:15px;">No videos found</div>';
             resultsDiv.style.display = 'block';
             return;
         }
         let html = '';
         filtered.forEach(v => {
             html += `<div class="search-result-item" onclick="goToVideo('${v.id}')">
-                <div class="search-video-id">${v.id}</div>
-                ${v.title ? `<div class="search-video-title">${escapeHtml(v.title)}</div>` : ''}
-            </div>`;
+                        <div class="search-video-id">${v.id}</div>
+                        ${v.title ? `<div class="search-video-title">${escapeHtml(v.title)}</div>` : ''}
+                    </div>`;
         });
         resultsDiv.innerHTML = html;
         resultsDiv.style.display = 'block';
     });
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', (e) => {
         if (!input.contains(e.target) && !resultsDiv.contains(e.target)) resultsDiv.style.display = 'none';
     });
 }
 
-// SWIPE WITH HIGHER THRESHOLD
+// Swipe (threshold 60px)
 let touchStartX = 0;
-let touchEndX = 0;
-
-function handleTouchStart(e) {
-    touchStartX = e.changedTouches[0].screenX;
-}
-
+function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
 function handleTouchEnd(e) {
-    touchEndX = e.changedTouches[0].screenX;
-    const swipeDistance = touchEndX - touchStartX;
+    const diff = e.changedTouches[0].screenX - touchStartX;
     const tabs = ['latest', 'categories', 'trending'];
-    const currentIndex = tabs.indexOf(currentTab);
-    
-    // ✅ Only trigger if swipe distance > SWIPE_THRESHOLD (80px)
-    if (Math.abs(swipeDistance) > SWIPE_THRESHOLD) {
-        if (swipeDistance > 0 && currentIndex > 0) {
-            switchTab(tabs[currentIndex - 1]);
-        } else if (swipeDistance < 0 && currentIndex < tabs.length - 1) {
-            switchTab(tabs[currentIndex + 1]);
-        }
+    const idx = tabs.indexOf(currentTab);
+    if (Math.abs(diff) > SWIPE_THRESHOLD) {
+        if (diff > 0 && idx > 0) switchTab(tabs[idx-1]);
+        else if (diff < 0 && idx < tabs.length-1) switchTab(tabs[idx+1]);
     }
 }
 
-// ADS SYSTEM
-let refreshCount = 0;
-const MAX_REFRESHES = 2;
-let lastActivity = Date.now();
-let isUserActive = true;
-let refreshTimer = null;
-
-function loadAd(id, key, w, h) {
-    let d = document.getElementById(id);
-    if(!d) return;
-    d.innerHTML = '';
-    delete window.atOptions;
-    let s1 = document.createElement('script');
-    s1.innerHTML = `var atOptions = {'key': '${key}','format': 'iframe','height': ${h},'width': ${w},'params': {}};`;
-    let s2 = document.createElement('script');
-    s2.src = 'https://encyclopediainsoluble.com/' + key + '/invoke.js?x=' + Math.random();
-    s2.async = true;
-    d.appendChild(s1);
-    d.appendChild(s2);
-}
-
-function loadAllAds() {
-    if(window.innerWidth < 768) {
-        loadAd('ad-top', KEY_320x50, 320, 50);
-        loadAd('ad-bottom', KEY_300x250, 300, 250);
-        loadAd('sticky', KEY_320x50, 320, 50);
-    } else {
-        loadAd('ad-top', KEY_728x90, 728, 90);
-        loadAd('ad-bottom', KEY_728x90, 728, 90);
-        loadAd('sticky', KEY_320x50, 320, 50);
-    }
-}
-
-function getRandomDelay() { return Math.floor(Math.random() * (240000 - 120000 + 1) + 120000); }
+// Ad refresh system
+let refreshCount = 0, refreshTimer = null, isUserActive = true;
 function scheduleRefresh() {
-    if(refreshTimer) clearTimeout(refreshTimer);
-    if(refreshCount >= MAX_REFRESHES) return;
+    if (refreshTimer) clearTimeout(refreshTimer);
+    if (refreshCount >= 2) return;
     refreshTimer = setTimeout(() => {
-        if(refreshCount < MAX_REFRESHES && isUserActive && !document.hidden) {
+        if (isUserActive && !document.hidden) {
             loadAllAds();
             refreshCount++;
-            if(refreshCount < MAX_REFRESHES) scheduleRefresh();
+            if (refreshCount < 2) scheduleRefresh();
         }
-    }, getRandomDelay());
+    }, 120000 + Math.random() * 120000);
 }
-function resetAndStart() {
-    if(refreshCount >= MAX_REFRESHES) return;
-    if(refreshTimer) clearTimeout(refreshTimer);
-    scheduleRefresh();
-}
-let inactivityTimer = null;
-function resetInactivityTimer() {
-    isUserActive = true;
-    lastActivity = Date.now();
-    if(inactivityTimer) clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => { isUserActive = false; }, 300000);
-}
-const activityEvents = ['mousedown', 'mousemove', 'scroll', 'touchstart', 'click', 'keydown'];
-activityEvents.forEach(event => {
-    document.addEventListener(event, () => { resetInactivityTimer(); resetAndStart(); }, { passive: true });
-});
-document.addEventListener('visibilitychange', () => { if(!document.hidden && isUserActive) resetAndStart(); });
+function resetActivity() { isUserActive = true; }
+setInterval(() => { isUserActive = false; }, 300000);
+['mousedown','mousemove','scroll','touchstart','click','keydown'].forEach(ev => document.addEventListener(ev, resetActivity));
+document.addEventListener('visibilitychange', () => { if (!document.hidden) scheduleRefresh(); });
 
-function goToVideo(videoId) { window.location.href = `video.html?v=${videoId}`; }
-function selectCategory(categoryId) { localStorage.setItem('selectedCategory', categoryId); window.location.href = `list.html?category=${categoryId}`; }
+function goToVideo(id) { window.location.href = `video.html?v=${id}`; }
+function selectCategory(id) { localStorage.setItem('selectedCategory', id); window.location.href = `list.html?category=${id}`; }
 
-document.addEventListener('DOMContentLoaded', function() {
-    function checkVideosAndInit() {
-        if (typeof videos !== 'undefined' && videos && videos.length) {
+// Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    function check() {
+        if (typeof videos !== 'undefined' && videos?.length) {
             reversedVideos = [...videos].reverse();
             loadCategories();
             loadTrendingVideos();
@@ -868,19 +854,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             document.addEventListener('touchstart', handleTouchStart, { passive: true });
             document.addEventListener('touchend', handleTouchEnd, { passive: true });
-        } else {
-            setTimeout(checkVideosAndInit, 100);
-        }
+        } else setTimeout(check, 100);
     }
-    checkVideosAndInit();
+    check();
     loadAllAds();
-    resetInactivityTimer();
     scheduleRefresh();
 });
-
-window.selectCategory = selectCategory;
-window.goToVideo = goToVideo;
 </script>
 </body>
 </html>
-  
