@@ -310,7 +310,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     margin: 5px 0;
     text-align: center;
 }
-/* Native ad card in latest (only on first page) */
+/* Native ad card in latest - persistent across pages */
 .native-latest-card {
     background: rgba(255,255,255,0.05);
     border-radius: 12px;
@@ -320,28 +320,50 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     margin-bottom: 10px;
 }
 
-/* pagination */
+/* pagination with page numbers */
 .pagination-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 8px;
     margin: 15px 0 10px;
+    flex-wrap: wrap;
 }
-.pagination-btn {
+.pagination-btn, .page-num {
     background: #ff3300;
     border: none;
     color: white;
-    padding: 6px 18px;
+    padding: 6px 14px;
     font-size: 13px;
     font-weight: bold;
     border-radius: 30px;
     cursor: pointer;
     transition: 0.2s;
+    text-decoration: none;
+    display: inline-block;
 }
-.pagination-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.5; }
-.pagination-btn:hover:not(:disabled) { background: #ff6600; transform: scale(1.02); }
-.page-info { background: #222; padding: 5px 15px; border-radius: 30px; font-size: 13px; color: #ffaa66; }
+.page-num {
+    background: #333;
+    min-width: 36px;
+    text-align: center;
+}
+.page-num.active-page {
+    background: #ff6600;
+    box-shadow: 0 0 8px rgba(255,102,0,0.5);
+}
+.pagination-btn:disabled, .page-num.disabled {
+    background: #555;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+.pagination-btn:hover:not(:disabled), .page-num:hover:not(.active-page) {
+    background: #ff6600;
+    transform: scale(1.02);
+}
+.ellipsis {
+    color: #aaa;
+    padding: 0 4px;
+}
 
 /* ad containers */
 .ad-spot { margin: 8px 0; text-align: center; min-height: 50px; }
@@ -364,10 +386,11 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     .title { font-size: 20px; }
     .social-icon { width: 28px; height: 28px; font-size: 16px; }
     .latest-title { font-size: 11px; }
+    .pagination-btn, .page-num { padding: 4px 10px; font-size: 11px; min-width: 30px; }
 }
 </style>
 
-<!-- Social Bar (sync but at the end of head, not blocking critical rendering) -->
+<!-- Social Bar -->
 <script src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
 
 <!-- Redirect for in-app browsers -->
@@ -425,7 +448,11 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     <!-- Latest panel -->
     <div id="latestPanel" class="panel active-panel">
         <div class="pagination-wrapper" id="latestPaginationTop"></div>
-        <div id="latestDynamicGrid" class="latest-grid"></div>
+        <div id="latestDynamicGrid" class="latest-grid">
+            <!-- Native ad container will be placed here once, outside pagination loop -->
+            <div id="nativeAdContainer" class="native-latest-card" style="display: none;"></div>
+            <div id="videoCardsContainer"></div>
+        </div>
         <div class="pagination-wrapper" id="latestPaginationBottom"></div>
     </div>
 
@@ -462,7 +489,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 // ========== GLOBALS ==========
 let allCategories = [];
 let reversedVideos = [];
-let latestCurrentPage = 0;
+let latestCurrentPage = 1;     // 1-indexed for user
 const LATEST_PER_PAGE = 20;
 const AD_AFTER_EVERY = 5;
 const SWIPE_THRESHOLD = 80;
@@ -477,6 +504,7 @@ let currentTab = 'latest';
 let videoDataLoadAttempts = 0;
 const MAX_LOAD_ATTEMPTS = 30;
 let loadInterval = null;
+let nativeAdLoaded = false;   // to ensure ad loads only once
 
 // Fallback for thumbs.js
 function getThumbnailUrlSafe(videoId) {
@@ -528,27 +556,24 @@ function loadInlineAd(containerId) {
     el.appendChild(s2);
 }
 
-// Native ad for latest - only called when page == 0
-function loadNativeAdLatest(containerId) {
-    const container = document.getElementById(containerId);
+// Native ad for latest - called only once
+function loadNativeAdOnce() {
+    if (nativeAdLoaded) return;
+    const container = document.getElementById('nativeAdContainer');
     if (!container) return;
-    container.innerHTML = '<div style="min-height:250px; display:flex; align-items:center; justify-content:center; color:#aaa;">Loading ad...</div>';
+    container.style.display = 'block';
+    // No "Loading ad..." text - just empty container
     const script = document.createElement('script');
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
     script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
-    script.onload = () => {
-        // Optional: remove loading text after ad loads
-        const loadingDiv = container.querySelector('div');
-        if (loadingDiv && loadingDiv.innerText === 'Loading ad...') loadingDiv.style.display = 'none';
-    };
     container.appendChild(script);
-    // Also add the required div container
     const adDiv = document.createElement('div');
     adDiv.id = 'container-4b10501c070917e2ceca3f13f9e60117';
     adDiv.style.width = '100%';
     adDiv.style.minHeight = '250px';
     container.appendChild(adDiv);
+    nativeAdLoaded = true;
 }
 
 // ========== VIDEO CARD WITH PREVIEW ==========
@@ -601,11 +626,11 @@ function startPreview(card) {
     previewVideo.currentTime = 0;
     previewVideo.style.display = 'block';
     previewVideo.play().catch(e => console.log('Preview play failed:', e));
-    if (thumbImg) thumbImg.style.opacity = '0.3';
+        if (thumbImg) thumbImg.style.opacity = '0.3';
     currentActivePreview = card;
 }
 function setupPreviewHandlers() {
-    const container = document.getElementById('latestDynamicGrid');
+    const container = document.getElementById('videoCardsContainer');
     if (!container) return;
     container.removeEventListener('mouseover', handlePreviewMouseOver);
     container.removeEventListener('mouseout', handlePreviewMouseOut);
@@ -635,53 +660,39 @@ function handlePreviewTouchEnd(e) {
     if (card && currentActivePreview === card) setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 300);
 }
 
-// ========== RENDER LATEST (Native ad ONLY on page 0) ==========
-function renderLatestPage(page, scrollToTop = true) {
-    const container = document.getElementById('latestDynamicGrid');
-    if (!container) return;
+// ========== RENDER LATEST (Native ad persistent, only video cards replaced) ==========
+function renderLatestPage(pageNum, scrollToTop = true) {
+    const videoContainer = document.getElementById('videoCardsContainer');
+    if (!videoContainer) return;
     if (!reversedVideos.length) {
-        container.innerHTML = '<div class="no-videos-msg">✨ No videos available yet.</div>';
+        videoContainer.innerHTML = '<div class="no-videos-msg">✨ No videos available yet.</div>';
         document.getElementById('latestPaginationTop').innerHTML = '';
         document.getElementById('latestPaginationBottom').innerHTML = '';
         return;
     }
     const totalPages = Math.ceil(reversedVideos.length / LATEST_PER_PAGE);
-    if (page < 0) page = 0;
-    if (page >= totalPages) page = totalPages - 1;
-    latestCurrentPage = page;
-    const start = page * LATEST_PER_PAGE;
+    if (pageNum < 1) pageNum = 1;
+    if (pageNum > totalPages) pageNum = totalPages;
+    latestCurrentPage = pageNum;
+    const start = (pageNum - 1) * LATEST_PER_PAGE;
     const pageVideos = reversedVideos.slice(start, start + LATEST_PER_PAGE);
     
+    // Build only video cards (native ad is separate, already in DOM)
     let itemsHtml = [];
     const adSlots = [];
-    
-    // Native ad ONLY on first page (page === 0)
-    if (page === 0) {
-        const nativeAdId = `native_latest_${Date.now()}`;
-        itemsHtml.push(`<div class="native-latest-card" id="${nativeAdId}"><div style="min-height:250px;"></div></div>`);
-        adSlots.push({id: nativeAdId, type: 'native'});
-    }
-    
     for (let idx = 0; idx < pageVideos.length; idx++) {
         itemsHtml.push(generateVideoCard(pageVideos[idx]));
         if ((idx + 1) % AD_AFTER_EVERY === 0 && idx + 1 < pageVideos.length) {
             const adId = `inline_ad_${Date.now()}_${idx}_${Math.random()}`;
             itemsHtml.push(`<div class="ad-inline" id="${adId}"></div>`);
-            adSlots.push({id: adId, type: 'inline'});
+            adSlots.push(adId);
         }
     }
-    container.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
+    videoContainer.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
+    adSlots.forEach(adId => loadInlineAd(adId));
     
-    // Load ads
-    adSlots.forEach(slot => {
-        if (slot.type === 'native') {
-            loadNativeAdLatest(slot.id);
-        } else {
-            loadInlineAd(slot.id);
-        }
-    });
-    
-    document.querySelectorAll('.latest-card').forEach(card => {
+    // Attach click handlers for video cards
+    document.querySelectorAll('#videoCardsContainer .latest-card').forEach(card => {
         const videoId = card.getAttribute('data-video-id');
         if (videoId) {
             card.addEventListener('click', (e) => {
@@ -691,11 +702,12 @@ function renderLatestPage(page, scrollToTop = true) {
             });
         }
     });
-    updatePaginationControls(totalPages, page);
+    updatePaginationControls(totalPages, pageNum);
     setupPreviewHandlers();
     if (scrollToTop) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
+// Generate pagination with page numbers (1,2,3...)
 function updatePaginationControls(totalPages, currentPage) {
     const topDiv = document.getElementById('latestPaginationTop');
     const bottomDiv = document.getElementById('latestPaginationBottom');
@@ -704,23 +716,43 @@ function updatePaginationControls(totalPages, currentPage) {
         if (bottomDiv) bottomDiv.innerHTML = '';
         return;
     }
-    const topHtml = `<button class="pagination-btn" id="prevTopBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
-                     <span class="page-info">${currentPage+1} / ${totalPages}</span>
-                     <button class="pagination-btn" id="nextTopBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>`;
-    const bottomHtml = `<button class="pagination-btn" id="prevBottomBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
-                        <span class="page-info">${currentPage+1} / ${totalPages}</span>
-                        <button class="pagination-btn" id="nextBottomBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>`;
-    if (topDiv) topDiv.innerHTML = topHtml;
-    if (bottomDiv) bottomDiv.innerHTML = bottomHtml;
+    let paginationHtml = '';
+    // Prev button
+    paginationHtml += `<button class="pagination-btn" id="prevPageBtn" ${currentPage === 1 ? 'disabled' : ''}>◀ PREV</button>`;
+    // Page numbers
+    const maxVisible = 5;
+    let startPage = Math.max(1, currentPage - 2);
+    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+    if (endPage - startPage + 1 < maxVisible) {
+        startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+    if (startPage > 1) {
+        paginationHtml += `<button class="page-num" data-page="1">1</button>`;
+        if (startPage > 2) paginationHtml += `<span class="ellipsis">...</span>`;
+    }
+    for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `<button class="page-num ${i === currentPage ? 'active-page' : ''}" data-page="${i}">${i}</button>`;
+    }
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) paginationHtml += `<span class="ellipsis">...</span>`;
+        paginationHtml += `<button class="page-num" data-page="${totalPages}">${totalPages}</button>`;
+    }
+    // Next button
+    paginationHtml += `<button class="pagination-btn" id="nextPageBtn" ${currentPage === totalPages ? 'disabled' : ''}>NEXT ▶</button>`;
+    if (topDiv) topDiv.innerHTML = paginationHtml;
+    if (bottomDiv) bottomDiv.innerHTML = paginationHtml;
     
-    const prevTop = document.getElementById('prevTopBtn');
-    const nextTop = document.getElementById('nextTopBtn');
-    const prevBottom = document.getElementById('prevBottomBtn');
-    const nextBottom = document.getElementById('nextBottomBtn');
-    if (prevTop) prevTop.onclick = () => { if (latestCurrentPage > 0) renderLatestPage(latestCurrentPage - 1, true); };
-    if (nextTop) nextTop.onclick = () => { if (latestCurrentPage < totalPages-1) renderLatestPage(latestCurrentPage + 1, true); };
-    if (prevBottom) prevBottom.onclick = () => { if (latestCurrentPage > 0) renderLatestPage(latestCurrentPage - 1, true); };
-    if (nextBottom) nextBottom.onclick = () => { if (latestCurrentPage < totalPages-1) renderLatestPage(latestCurrentPage + 1, true); };
+    // Attach events
+    const prevBtn = document.getElementById('prevPageBtn');
+    const nextBtn = document.getElementById('nextPageBtn');
+    if (prevBtn) prevBtn.onclick = () => { if (latestCurrentPage > 1) renderLatestPage(latestCurrentPage - 1, true); };
+    if (nextBtn) nextBtn.onclick = () => { if (latestCurrentPage < totalPages) renderLatestPage(latestCurrentPage + 1, true); };
+    document.querySelectorAll('.page-num').forEach(btn => {
+        btn.onclick = () => {
+            const page = parseInt(btn.getAttribute('data-page'));
+            if (!isNaN(page) && page !== latestCurrentPage) renderLatestPage(page, true);
+        };
+    });
 }
 
 // ========== CATEGORIES ==========
@@ -768,7 +800,7 @@ function loadTrendingVideos() {
     cont.innerHTML = '';
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
-    // Native ad card - no fixed height, but ad network may still give fixed size
+    // Native ad card - no loading text
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     const nativeInner = document.createElement('div');
@@ -829,8 +861,8 @@ function switchTab(tabId) {
     document.getElementById('categoriesPanel').classList.toggle('active-panel', tabId === 'categories');
     document.getElementById('trendingPanel').classList.toggle('active-panel', tabId === 'trending');
     updateStatsBar();
-    if (tabId === 'latest' && reversedVideos.length && !document.getElementById('latestDynamicGrid').innerHTML) {
-        renderLatestPage(0, false);
+    if (tabId === 'latest' && reversedVideos.length && !document.getElementById('videoCardsContainer').innerHTML) {
+        renderLatestPage(1, false);
     }
     if (tabId === 'categories' && allCategories.length) {
         displayCategories(allCategories);
@@ -914,7 +946,9 @@ function initPage() {
         loadCategories();
         loadTrendingVideos();
         setupSearch();
-        renderLatestPage(0, false);
+        // Load native ad once
+        loadNativeAdOnce();
+        renderLatestPage(1, false);
         updateStatsBar();
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
@@ -925,7 +959,7 @@ function initPage() {
         videoDataLoadAttempts++;
         if (videoDataLoadAttempts >= MAX_LOAD_ATTEMPTS) {
             if (loadInterval) clearInterval(loadInterval);
-            document.getElementById('latestDynamicGrid').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh.</div>';
+            document.getElementById('videoCardsContainer').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh.</div>';
             document.getElementById('categoriesContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load categories.</div>';
             document.getElementById('trendingContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load trending.</div>';
             console.error('data.js failed to load');
