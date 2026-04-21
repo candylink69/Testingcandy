@@ -6,7 +6,6 @@
 <title>CandyLink69 – Premium HD</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-/* ========== RESET & BASE ========== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     background: #0b0b0b;
@@ -17,7 +16,7 @@ body {
 }
 .container { max-width: 1200px; margin: 0 auto; padding: 8px 12px 20px; }
 
-/* ========== 4K SHARPNESS (RETAINED) ========== */
+/* 4K sharpness */
 img, .thumb-img, .category-thumb, .trending-thumb {
     image-rendering: crisp-edges;
     image-rendering: -webkit-optimize-contrast;
@@ -29,7 +28,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     text-rendering: optimizeLegibility;
 }
 
-/* ========== BLINKING TITLE (ORIGINAL SIZE) ========== */
+/* blinking title - original size */
 .title {
     font-size: 22px;
     font-weight: bold;
@@ -56,7 +55,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     100% { opacity: 1; }
 }
 
-/* ========== SOCIAL ICONS (CHHOTE, TEXT ABOVE) ========== */
+/* social icons (chhote, text above) */
 .social-text {
     font-size: 10px;
     color: #ffcc88;
@@ -88,7 +87,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .social-icon.facebook { background: #1877f2; }
 .social-icon:hover { transform: translateY(-2px); filter: brightness(1.05); }
 
-/* ========== STICKY SEARCH ========== */
+/* sticky search */
 .sticky-search {
     position: sticky;
     top: 0;
@@ -135,7 +134,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .search-result-item:hover { background: rgba(255,51,0,0.15); }
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
-/* ========== TABS + UNDERLINE ========== */
+/* tabs + underline */
 .tabs-wrapper { margin: 10px 0 5px; }
 .tabs-container { display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; }
 .tab-btn {
@@ -167,7 +166,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     width: 100%;
 }
 
-/* ========== STATS BAR (TIGHT) ========== */
+/* stats bar (tight) */
 .stats-bar {
     background: rgba(255,51,0,0.08);
     border-radius: 30px;
@@ -180,12 +179,12 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .stat-number { font-size: 16px; font-weight: bold; color: #ff9900; }
 .stat-label { font-size: 10px; color: #aaa; margin-top: 1px; }
 
-/* ========== PANELS ========== */
+/* panels */
 .panel { display: none; animation: fadeIn 0.2s; }
 .panel.active-panel { display: block; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* ========== CATEGORIES GRID (UNCHANGED - 2 COLUMNS) ========== */
+/* categories grid (2 columns, untouched) */
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -206,12 +205,17 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .category-name { padding: 10px; font-size: 15px; font-weight: bold; color: #ffcc00; background: rgba(0,0,0,0.8); }
 .video-count { position: absolute; top: 6px; right: 6px; background: rgba(255,51,0,0.9); color: white; padding: 2px 7px; border-radius: 15px; font-size: 10px; font-weight: bold; }
 
-/* ========== TRENDING GRID ========== */
+/* trending grid - fixed columns: mobile 1, desktop 2 */
 .trending-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    grid-template-columns: 1fr;
     gap: 12px;
     margin: 10px 0;
+}
+@media (min-width: 768px) {
+    .trending-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 .trending-item {
     background: rgba(255,255,255,0.05);
@@ -233,16 +237,17 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .native-thumb { width: 100%; aspect-ratio: 16/9; background: #1a1a1a; }
 .native-title { padding: 7px; font-size: 11px; color: #ffaa44; text-align: center; background: rgba(0,0,0,0.6); }
 
-/* ========== LATEST VIDEOS GRID ========== */
+/* latest videos grid - mobile 1, desktop 2 */
 .latest-grid { margin: 10px 0; }
 .latest-video-row {
     display: grid;
     grid-template-columns: 1fr;
     gap: 14px;
 }
-/* Desktop: 2 columns */
 @media (min-width: 768px) {
-    .latest-video-row { grid-template-columns: repeat(2, 1fr); }
+    .latest-video-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 .latest-card {
     background: rgba(20,20,20,0.9);
@@ -299,19 +304,15 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     color: #ddd;
     line-height: 1.4;
     word-break: break-word;
-    /* Allow multiline, no cutting */
 }
 .ad-inline {
-    background: #000000cc;
-    border-radius: 10px;
-    min-height: 55px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    background: transparent;
+    border-radius: 8px;
     margin: 5px 0;
+    text-align: center;
 }
 
-/* ========== PAGINATION ========== */
+/* pagination */
 .pagination-wrapper {
     display: flex;
     justify-content: center;
@@ -334,7 +335,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .pagination-btn:hover:not(:disabled) { background: #ff6600; transform: scale(1.02); }
 .page-info { background: #222; padding: 5px 15px; border-radius: 30px; font-size: 13px; color: #ffaa66; }
 
-/* ========== AD CONTAINERS ========== */
+/* ad containers */
 .ad-spot { margin: 8px 0; text-align: center; min-height: 50px; }
 #sticky {
     position: fixed;
@@ -349,7 +350,6 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     align-items: center;
 }
 
-/* ========== RESPONSIVE ========== */
 @media (max-width: 640px) {
     .tab-btn { padding: 6px 14px; font-size: 13px; }
     .stat-number { font-size: 14px; }
@@ -359,8 +359,8 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 }
 </style>
 
-<!-- Social Bar Script (NEW) -->
-<script src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
+<!-- Social Bar (async to avoid blocking) -->
+<script async src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
 
 <!-- Redirect for in-app browsers -->
 <script>
@@ -384,10 +384,8 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 
 <div class="container">
 
-    <!-- Blinking Title (original size) -->
     <div class="title">🔥 CandyLink69 🔥</div>
 
-    <!-- Top Social -->
     <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
     <div class="social-row">
         <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
@@ -395,10 +393,9 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
         <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
     </div>
 
-    <!-- Top Ad Container -->
+    <!-- Top ad container -->
     <div id="ad-top" class="ad-spot"></div>
 
-    <!-- Sticky Search Bar -->
     <div class="sticky-search">
         <div class="search-container">
             <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search videos by ID, title or category..." autocomplete="off">
@@ -406,7 +403,6 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
         </div>
     </div>
 
-    <!-- Tabs with underline -->
     <div class="tabs-wrapper">
         <div class="tabs-container">
             <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
@@ -416,30 +412,28 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
         <div class="tabs-underline"></div>
     </div>
 
-    <!-- Dynamic Stats Bar -->
     <div id="statsBar" class="stats-bar"></div>
 
-    <!-- Panel 1: Latest Videos -->
+    <!-- Latest panel -->
     <div id="latestPanel" class="panel active-panel">
         <div class="pagination-wrapper" id="latestPaginationTop"></div>
         <div id="latestDynamicGrid" class="latest-grid"></div>
         <div class="pagination-wrapper" id="latestPaginationBottom"></div>
     </div>
 
-    <!-- Panel 2: Categories -->
+    <!-- Categories panel -->
     <div id="categoriesPanel" class="panel">
         <div class="categories-grid" id="categoriesContainer"></div>
     </div>
 
-    <!-- Panel 3: Trending -->
+    <!-- Trending panel -->
     <div id="trendingPanel" class="panel">
         <div class="trending-grid" id="trendingContainer"></div>
     </div>
 
-    <!-- Bottom Ad Container -->
+    <!-- Bottom ad container -->
     <div id="ad-bottom" class="ad-spot"></div>
 
-    <!-- Bottom Social -->
     <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
     <div class="social-row">
         <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
@@ -449,7 +443,6 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 
 </div>
 
-<!-- Sticky Footer Ad -->
 <div id="sticky"></div>
 
 <script src="thumbs.js"></script>
@@ -462,33 +455,46 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 let allCategories = [];
 let reversedVideos = [];
 let latestCurrentPage = 0;
-const LATEST_PER_PAGE = 20;          // ✅ Changed from 10 to 20
+const LATEST_PER_PAGE = 20;
 const AD_AFTER_EVERY = 5;
-const SWIPE_THRESHOLD = 60;           // ✅ Balanced threshold
+const SWIPE_THRESHOLD = 60;
 
-// Ad Keys (NEW)
+// Ad keys (provided)
 const KEY_320x50 = '56b3e3a26900c426b81430f9f85a31d6';
 const KEY_300x250 = '8e09ed2a29423c808ccb93e333fa00c5';
 const KEY_728x90 = '57e196c0c8406efacc614d4b4d21d13d';
 
 let currentTab = 'latest';
+let videoDataLoadAttempts = 0;
+const MAX_LOAD_ATTEMPTS = 30; // 3 seconds (100ms each)
+let loadInterval = null;
 
-// Helper functions
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
+// ========== FALLBACK for thumbs.js ==========
+function getThumbnailUrlSafe(videoId) {
+    if (typeof getThumbnailUrl === 'function') {
+        return getThumbnailUrl(videoId);
+    }
+    // fallback if thumbs.js failed
+    return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// Load standard ads (top, bottom, sticky)
+// ========== AD LOADERS (using provided codes) ==========
 function loadAd(containerId, key, width, height) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
-    delete window.atOptions;
+    // Create atOptions object
+    const atOptions = {
+        key: key,
+        format: 'iframe',
+        height: height,
+        width: width,
+        params: {}
+    };
     const s1 = document.createElement('script');
-    s1.innerHTML = `var atOptions = {'key': '${key}','format': 'iframe','height': ${height},'width': ${width},'params': {}};`;
+    s1.innerHTML = `var atOptions = ${JSON.stringify(atOptions)};`;
     const s2 = document.createElement('script');
-    s2.src = 'https://encyclopediainsoluble.com/' + key + '/invoke.js?x=' + Math.random();
+    s2.src = `https://encyclopediainsoluble.com/${key}/invoke.js?x=${Math.random()}`;
     s2.async = true;
     container.appendChild(s1);
     container.appendChild(s2);
@@ -507,38 +513,49 @@ function loadAllAds() {
     }
 }
 
-// Inline ad loader (for latest grid)
-function loadInlineAd(elementId) {
-    const el = document.getElementById(elementId);
+function loadInlineAd(containerId) {
+    const el = document.getElementById(containerId);
     if (!el) return;
     el.innerHTML = '<div style="min-height:50px;"></div>';
-    delete window.atOptions;
+    const atOptions = {
+        key: KEY_320x50,
+        format: 'iframe',
+        height: 50,
+        width: 320,
+        params: {}
+    };
     const s1 = document.createElement('script');
-    s1.innerHTML = `var atOptions = {'key': '${KEY_320x50}','format': 'iframe','height': 50,'width': 320,'params': {}};`;
+    s1.innerHTML = `var atOptions = ${JSON.stringify(atOptions)};`;
     const s2 = document.createElement('script');
-    s2.src = 'https://encyclopediainsoluble.com/' + KEY_320x50 + '/invoke.js?x=' + Math.random();
+    s2.src = `https://encyclopediainsoluble.com/${KEY_320x50}/invoke.js?x=${Math.random()}`;
     s2.async = true;
     el.appendChild(s1);
     el.appendChild(s2);
 }
 
-// Generate video card (with preview support)
+// ========== VIDEO CARD ==========
 function generateVideoCard(video) {
+    const thumbUrl = getThumbnailUrlSafe(video.id);
     return `
     <div class="latest-card" data-video-id="${video.id}">
         <div class="thumb-container">
-            <img class="thumb-img" src="${getThumbnailUrl(video.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+            <img class="thumb-img" src="${thumbUrl}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
             ${video.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${video.preview}"></video>` : ''}
             ${video.duration ? `<div class="duration">${video.duration}</div>` : ''}
         </div>
         <div class="latest-info">
-            <div class="latest-id">${video.id}</div>
+            <div class="latest-id">${escapeHtml(video.id)}</div>
             ${video.title ? `<div class="latest-title">${escapeHtml(video.title)}</div>` : ''}
         </div>
     </div>`;
 }
 
-// Preview handlers (fixed)
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
+}
+
+// ========== PREVIEW HANDLERS ==========
 let currentActivePreview = null;
 function stopPreview() {
     if (currentActivePreview) {
@@ -569,34 +586,22 @@ function startPreview(card) {
 function setupPreviewHandlers() {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
-    // Remove old listeners to avoid duplicates (simple approach: replace)
-    const newContainer = container.cloneNode(true);
-    container.parentNode.replaceChild(newContainer, container);
-    // Re-attach to new container
-    const finalContainer = document.getElementById('latestDynamicGrid');
-    if (!finalContainer) return;
-    finalContainer.addEventListener('mouseover', (e) => {
-        const card = e.target.closest('.latest-card');
-        if (card) startPreview(card);
-    });
-    finalContainer.addEventListener('mouseout', (e) => {
-        const card = e.target.closest('.latest-card');
-        if (card && currentActivePreview === card) stopPreview();
-    });
-    // For touch devices
-    finalContainer.addEventListener('touchstart', (e) => {
-        const card = e.target.closest('.latest-card');
-        if (card) startPreview(card);
-    }, { passive: true });
-    finalContainer.addEventListener('touchend', (e) => {
-        const card = e.target.closest('.latest-card');
-        if (card && currentActivePreview === card) {
-            setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 200);
-                    }
-    });
+    // Use event delegation to avoid duplicate listeners
+    container.removeEventListener('mouseover', previewMouseOver);
+    container.removeEventListener('mouseout', previewMouseOut);
+    container.addEventListener('mouseover', previewMouseOver);
+    container.addEventListener('mouseout', previewMouseOut);
+}
+function previewMouseOver(e) {
+    const card = e.target.closest('.latest-card');
+    if (card) startPreview(card);
+}
+function previewMouseOut(e) {
+    const card = e.target.closest('.latest-card');
+    if (card && currentActivePreview === card) stopPreview();
 }
 
-// Render latest page (20 per page)
+// ========== RENDER LATEST ==========
 function renderLatestPage(page, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
@@ -609,7 +614,7 @@ function renderLatestPage(page, scrollToTop = true) {
     const totalPages = Math.ceil(reversedVideos.length / LATEST_PER_PAGE);
     if (page < 0) page = 0;
     if (page >= totalPages) page = totalPages - 1;
-    latestCurrentPage = page;
+     latestCurrentPage = page;
     const start = page * LATEST_PER_PAGE;
     const pageVideos = reversedVideos.slice(start, start + LATEST_PER_PAGE);
     
@@ -620,13 +625,12 @@ function renderLatestPage(page, scrollToTop = true) {
         if ((idx + 1) % AD_AFTER_EVERY === 0 && idx + 1 < pageVideos.length) {
             const adId = `inline_ad_${Date.now()}_${idx}_${Math.random()}`;
             adSlots.push(adId);
-            itemsHtml.push(`<div class="ad-inline" id="${adId}"><div style="width:100%; max-width:320px; margin:0 auto;"></div></div>`);
+            itemsHtml.push(`<div class="ad-inline" id="${adId}"></div>`);
         }
     }
     container.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
     adSlots.forEach(adId => loadInlineAd(adId));
     
-    // Attach click handlers
     document.querySelectorAll('.latest-card').forEach(card => {
         const videoId = card.getAttribute('data-video-id');
         if (videoId) {
@@ -638,7 +642,7 @@ function renderLatestPage(page, scrollToTop = true) {
         }
     });
     updatePaginationControls(totalPages, page);
-    setupPreviewHandlers(); // re-attach preview after DOM update
+    setupPreviewHandlers();
     if (scrollToTop) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
@@ -650,30 +654,28 @@ function updatePaginationControls(totalPages, currentPage) {
         if (bottomDiv) bottomDiv.innerHTML = '';
         return;
     }
-    const html = `<button class="pagination-btn" id="prevLatestBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
-                  <span class="page-info">${currentPage+1} / ${totalPages}</span>
-                  <button class="pagination-btn" id="nextLatestBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>`;
-    if (topDiv) topDiv.innerHTML = html;
-    if (bottomDiv) bottomDiv.innerHTML = html;
+    // Use unique IDs for top and bottom to avoid conflicts
+    const topHtml = `<button class="pagination-btn" id="prevTopBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
+                     <span class="page-info">${currentPage+1} / ${totalPages}</span>
+                     <button class="pagination-btn" id="nextTopBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>`;
+    const bottomHtml = `<button class="pagination-btn" id="prevBottomBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
+                        <span class="page-info">${currentPage+1} / ${totalPages}</span>
+                        <button class="pagination-btn" id="nextBottomBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>`;
+    if (topDiv) topDiv.innerHTML = topHtml;
+    if (bottomDiv) bottomDiv.innerHTML = bottomHtml;
     
-    // Attach events (clean previous by removing old and adding new)
-    const prevBtn = document.getElementById('prevLatestBtn');
-    const nextBtn = document.getElementById('nextLatestBtn');
-    if (prevBtn) {
-        prevBtn.replaceWith(prevBtn.cloneNode(true));
-        document.getElementById('prevLatestBtn')?.addEventListener('click', () => {
-            if (latestCurrentPage > 0) renderLatestPage(latestCurrentPage - 1, true);
-        });
-    }
-    if (nextBtn) {
-        nextBtn.replaceWith(nextBtn.cloneNode(true));
-        document.getElementById('nextLatestBtn')?.addEventListener('click', () => {
-            if (latestCurrentPage < totalPages-1) renderLatestPage(latestCurrentPage + 1, true);
-        });
-    }
+    // attach events
+    const prevTop = document.getElementById('prevTopBtn');
+    const nextTop = document.getElementById('nextTopBtn');
+    const prevBottom = document.getElementById('prevBottomBtn');
+    const nextBottom = document.getElementById('nextBottomBtn');
+    if (prevTop) prevTop.onclick = () => { if (latestCurrentPage > 0) renderLatestPage(latestCurrentPage - 1, true); };
+    if (nextTop) nextTop.onclick = () => { if (latestCurrentPage < totalPages-1) renderLatestPage(latestCurrentPage + 1, true); };
+    if (prevBottom) prevBottom.onclick = () => { if (latestCurrentPage > 0) renderLatestPage(latestCurrentPage - 1, true); };
+    if (nextBottom) nextBottom.onclick = () => { if (latestCurrentPage < totalPages-1) renderLatestPage(latestCurrentPage + 1, true); };
 }
 
-// Categories (unchanged logic)
+// ========== CATEGORIES ==========
 async function loadCategories() {
     try {
         const res = await fetch('categories.json');
@@ -711,7 +713,7 @@ function displayCategories(cats) {
     });
 }
 
-// Trending (with native ad)
+// ========== TRENDING ==========
 function loadTrendingVideos() {
     const cont = document.getElementById('trendingContainer');
     if (!cont) return;
@@ -729,14 +731,15 @@ function loadTrendingVideos() {
     script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
     document.body.appendChild(script);
     trendingVideos.forEach(v => {
+        const thumb = getThumbnailUrlSafe(v.id);
         cont.innerHTML += `<div class="trending-item" onclick="goToVideo('${v.id}')">
-            <img src="${getThumbnailUrl(v.id)}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
+            <img src="${thumb}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
             <div class="trending-title">${v.id}</div>
         </div>`;
     });
 }
 
-// Stats Bar dynamic
+// ========== STATS ==========
 function updateStatsBar() {
     const sb = document.getElementById('statsBar');
     if (!sb) return;
@@ -754,7 +757,7 @@ function updateStatsBar() {
     }
 }
 
-// Tab switching
+// ========== TAB SWITCHING ==========
 function switchTab(tabId) {
     currentTab = tabId;
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -776,7 +779,7 @@ function switchTab(tabId) {
     }
 }
 
-// Search
+// ========== SEARCH ==========
 function setupSearch() {
     const input = document.getElementById('searchInput');
     const resultsDiv = document.getElementById('searchResults');
@@ -805,7 +808,7 @@ function setupSearch() {
     });
 }
 
-// Swipe (threshold 60px)
+// ========== SWIPE ==========
 let touchStartX = 0;
 function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
 function handleTouchEnd(e) {
@@ -818,7 +821,7 @@ function handleTouchEnd(e) {
     }
 }
 
-// Ad refresh system
+// ========== AD REFRESH ==========
 let refreshCount = 0, refreshTimer = null, isUserActive = true;
 function scheduleRefresh() {
     if (refreshTimer) clearTimeout(refreshTimer);
@@ -836,29 +839,44 @@ setInterval(() => { isUserActive = false; }, 300000);
 ['mousedown','mousemove','scroll','touchstart','click','keydown'].forEach(ev => document.addEventListener(ev, resetActivity));
 document.addEventListener('visibilitychange', () => { if (!document.hidden) scheduleRefresh(); });
 
+// ========== NAVIGATION ==========
 function goToVideo(id) { window.location.href = `video.html?v=${id}`; }
 function selectCategory(id) { localStorage.setItem('selectedCategory', id); window.location.href = `list.html?category=${id}`; }
 
-// Initialization
-document.addEventListener('DOMContentLoaded', () => {
-    function check() {
-        if (typeof videos !== 'undefined' && videos?.length) {
-            reversedVideos = [...videos].reverse();
-            loadCategories();
-            loadTrendingVideos();
-            setupSearch();
-            renderLatestPage(0, false);
-            updateStatsBar();
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
-            });
-            document.addEventListener('touchstart', handleTouchStart, { passive: true });
-            document.addEventListener('touchend', handleTouchEnd, { passive: true });
-        } else setTimeout(check, 100);
+// ========== INIT WITH TIMEOUT & FALLBACK FOR data.js ==========
+function initPage() {
+    if (typeof videos !== 'undefined' && videos && videos.length) {
+        if (loadInterval) clearInterval(loadInterval);
+        reversedVideos = [...videos].reverse();
+        loadCategories();
+        loadTrendingVideos();
+        setupSearch();
+        renderLatestPage(0, false);
+        updateStatsBar();
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+        });
+        document.addEventListener('touchstart', handleTouchStart, { passive: true });
+        document.addEventListener('touchend', handleTouchEnd, { passive: true });
+    } else {
+        videoDataLoadAttempts++;
+        if (videoDataLoadAttempts >= MAX_LOAD_ATTEMPTS) {
+            if (loadInterval) clearInterval(loadInterval);
+            // Fallback: show error but keep page functional
+            document.getElementById('latestDynamicGrid').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh the page.</div>';
+            document.getElementById('categoriesContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load categories.</div>';
+            document.getElementById('trendingContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load trending.</div>';
+            console.error('data.js failed to load after 3 seconds');
+        }
     }
-    check();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
     loadAllAds();
     scheduleRefresh();
+    loadInterval = setInterval(initPage, 100);
+    // also try once after 100ms
+    setTimeout(() => { if (typeof videos === 'undefined') initPage(); }, 100);
 });
 </script>
 </body>
