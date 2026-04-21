@@ -232,10 +232,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     overflow: hidden;
     border: 1px solid #444;
 }
-.native-thumb {
-    width: 100%;
-    background: #1a1a1a;
-}
+.native-thumb { width: 100%; background: #1a1a1a; }
 .native-title { padding: 7px; font-size: 11px; color: #ffaa44; text-align: center; background: rgba(0,0,0,0.6); }
 
 /* latest videos grid */
@@ -309,15 +306,6 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     border-radius: 8px;
     margin: 5px 0;
     text-align: center;
-}
-/* Native ad card in latest - persistent across pages */
-.native-latest-card {
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid #444;
-    grid-column: 1 / -1;
-    margin-bottom: 10px;
 }
 
 /* pagination with page numbers */
@@ -445,14 +433,10 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 
     <div id="statsBar" class="stats-bar"></div>
 
-    <!-- Latest panel -->
+    <!-- Latest panel (no native banner) -->
     <div id="latestPanel" class="panel active-panel">
         <div class="pagination-wrapper" id="latestPaginationTop"></div>
-        <div id="latestDynamicGrid" class="latest-grid">
-            <!-- Native ad container will be placed here once, outside pagination loop -->
-            <div id="nativeAdContainer" class="native-latest-card" style="display: none;"></div>
-            <div id="videoCardsContainer"></div>
-        </div>
+        <div id="latestDynamicGrid" class="latest-grid"></div>
         <div class="pagination-wrapper" id="latestPaginationBottom"></div>
     </div>
 
@@ -461,7 +445,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
         <div class="categories-grid" id="categoriesContainer"></div>
     </div>
 
-    <!-- Trending panel -->
+    <!-- Trending panel (native banner remains) -->
     <div id="trendingPanel" class="panel">
         <div class="trending-grid" id="trendingContainer"></div>
     </div>
@@ -504,7 +488,6 @@ let currentTab = 'latest';
 let videoDataLoadAttempts = 0;
 const MAX_LOAD_ATTEMPTS = 30;
 let loadInterval = null;
-let nativeAdLoaded = false;   // to ensure ad loads only once
 
 // Fallback for thumbs.js
 function getThumbnailUrlSafe(videoId) {
@@ -554,26 +537,6 @@ function loadInlineAd(containerId) {
     s2.async = true;
     el.appendChild(s1);
     el.appendChild(s2);
-}
-
-// Native ad for latest - called only once
-function loadNativeAdOnce() {
-    if (nativeAdLoaded) return;
-    const container = document.getElementById('nativeAdContainer');
-    if (!container) return;
-    container.style.display = 'block';
-    // No "Loading ad..." text - just empty container
-    const script = document.createElement('script');
-    script.async = true;
-    script.setAttribute('data-cfasync', 'false');
-    script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
-    container.appendChild(script);
-    const adDiv = document.createElement('div');
-    adDiv.id = 'container-4b10501c070917e2ceca3f13f9e60117';
-    adDiv.style.width = '100%';
-    adDiv.style.minHeight = '250px';
-    container.appendChild(adDiv);
-    nativeAdLoaded = true;
 }
 
 // ========== VIDEO CARD WITH PREVIEW ==========
@@ -626,11 +589,11 @@ function startPreview(card) {
     previewVideo.currentTime = 0;
     previewVideo.style.display = 'block';
     previewVideo.play().catch(e => console.log('Preview play failed:', e));
-        if (thumbImg) thumbImg.style.opacity = '0.3';
+    if (thumbImg) thumbImg.style.opacity = '0.3';
     currentActivePreview = card;
 }
 function setupPreviewHandlers() {
-    const container = document.getElementById('videoCardsContainer');
+    const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
     container.removeEventListener('mouseover', handlePreviewMouseOver);
     container.removeEventListener('mouseout', handlePreviewMouseOut);
@@ -655,17 +618,17 @@ function handlePreviewTouchStart(e) {
     if (card) previewTouchTimer = setTimeout(() => startPreview(card), 100);
 }
 function handlePreviewTouchEnd(e) {
-    if (previewTouchTimer) { clearTimeout(previewTouchTimer); previewTouchTimer = null; }
+        if (previewTouchTimer) { clearTimeout(previewTouchTimer); previewTouchTimer = null; }
     const card = e.target.closest('.latest-card');
     if (card && currentActivePreview === card) setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 300);
 }
 
-// ========== RENDER LATEST (Native ad persistent, only video cards replaced) ==========
+// ========== RENDER LATEST (NO NATIVE BANNER) ==========
 function renderLatestPage(pageNum, scrollToTop = true) {
-    const videoContainer = document.getElementById('videoCardsContainer');
-    if (!videoContainer) return;
+    const container = document.getElementById('latestDynamicGrid');
+    if (!container) return;
     if (!reversedVideos.length) {
-        videoContainer.innerHTML = '<div class="no-videos-msg">✨ No videos available yet.</div>';
+        container.innerHTML = '<div class="no-videos-msg">✨ No videos available yet.</div>';
         document.getElementById('latestPaginationTop').innerHTML = '';
         document.getElementById('latestPaginationBottom').innerHTML = '';
         return;
@@ -677,7 +640,6 @@ function renderLatestPage(pageNum, scrollToTop = true) {
     const start = (pageNum - 1) * LATEST_PER_PAGE;
     const pageVideos = reversedVideos.slice(start, start + LATEST_PER_PAGE);
     
-    // Build only video cards (native ad is separate, already in DOM)
     let itemsHtml = [];
     const adSlots = [];
     for (let idx = 0; idx < pageVideos.length; idx++) {
@@ -688,11 +650,11 @@ function renderLatestPage(pageNum, scrollToTop = true) {
             adSlots.push(adId);
         }
     }
-    videoContainer.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
+    container.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
     adSlots.forEach(adId => loadInlineAd(adId));
     
     // Attach click handlers for video cards
-    document.querySelectorAll('#videoCardsContainer .latest-card').forEach(card => {
+    document.querySelectorAll('#latestDynamicGrid .latest-card').forEach(card => {
         const videoId = card.getAttribute('data-video-id');
         if (videoId) {
             card.addEventListener('click', (e) => {
@@ -707,7 +669,7 @@ function renderLatestPage(pageNum, scrollToTop = true) {
     if (scrollToTop) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
-// Generate pagination with page numbers (1,2,3...)
+// Generate pagination with page numbers (top and bottom both working)
 function updatePaginationControls(totalPages, currentPage) {
     const topDiv = document.getElementById('latestPaginationTop');
     const bottomDiv = document.getElementById('latestPaginationBottom');
@@ -739,20 +701,28 @@ function updatePaginationControls(totalPages, currentPage) {
     }
     // Next button
     paginationHtml += `<button class="pagination-btn" id="nextPageBtn" ${currentPage === totalPages ? 'disabled' : ''}>NEXT ▶</button>`;
+    
+    // Set HTML for top and bottom
     if (topDiv) topDiv.innerHTML = paginationHtml;
     if (bottomDiv) bottomDiv.innerHTML = paginationHtml;
     
-    // Attach events
-    const prevBtn = document.getElementById('prevPageBtn');
-    const nextBtn = document.getElementById('nextPageBtn');
-    if (prevBtn) prevBtn.onclick = () => { if (latestCurrentPage > 1) renderLatestPage(latestCurrentPage - 1, true); };
-    if (nextBtn) nextBtn.onclick = () => { if (latestCurrentPage < totalPages) renderLatestPage(latestCurrentPage + 1, true); };
-    document.querySelectorAll('.page-num').forEach(btn => {
-        btn.onclick = () => {
-            const page = parseInt(btn.getAttribute('data-page'));
-            if (!isNaN(page) && page !== latestCurrentPage) renderLatestPage(page, true);
-        };
-    });
+    // Attach events for top and bottom separately (using IDs that exist in both)
+    // We need to get elements from each wrapper because IDs will be duplicated.
+    // Better: attach events after setting HTML using querySelectorAll on each wrapper.
+    const attachEvents = (wrapper) => {
+        const prevBtn = wrapper.querySelector('#prevPageBtn');
+        const nextBtn = wrapper.querySelector('#nextPageBtn');
+        if (prevBtn) prevBtn.onclick = () => { if (latestCurrentPage > 1) renderLatestPage(latestCurrentPage - 1, true); };
+        if (nextBtn) nextBtn.onclick = () => { if (latestCurrentPage < totalPages) renderLatestPage(latestCurrentPage + 1, true); };
+        wrapper.querySelectorAll('.page-num').forEach(btn => {
+            btn.onclick = () => {
+                const page = parseInt(btn.getAttribute('data-page'));
+                if (!isNaN(page) && page !== latestCurrentPage) renderLatestPage(page, true);
+            };
+        });
+    };
+    if (topDiv) attachEvents(topDiv);
+    if (bottomDiv) attachEvents(bottomDiv);
 }
 
 // ========== CATEGORIES ==========
@@ -793,14 +763,14 @@ function displayCategories(cats) {
     });
 }
 
-// ========== TRENDING (native ad always) ==========
+// ========== TRENDING (Native banner remains) ==========
 function loadTrendingVideos() {
     const cont = document.getElementById('trendingContainer');
     if (!cont) return;
     cont.innerHTML = '';
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
-    // Native ad card - no loading text
+    // Native ad card (only in trending)
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     const nativeInner = document.createElement('div');
@@ -861,7 +831,7 @@ function switchTab(tabId) {
     document.getElementById('categoriesPanel').classList.toggle('active-panel', tabId === 'categories');
     document.getElementById('trendingPanel').classList.toggle('active-panel', tabId === 'trending');
     updateStatsBar();
-    if (tabId === 'latest' && reversedVideos.length && !document.getElementById('videoCardsContainer').innerHTML) {
+    if (tabId === 'latest' && reversedVideos.length && !document.getElementById('latestDynamicGrid').innerHTML) {
         renderLatestPage(1, false);
     }
     if (tabId === 'categories' && allCategories.length) {
@@ -946,8 +916,6 @@ function initPage() {
         loadCategories();
         loadTrendingVideos();
         setupSearch();
-        // Load native ad once
-        loadNativeAdOnce();
         renderLatestPage(1, false);
         updateStatsBar();
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -959,7 +927,7 @@ function initPage() {
         videoDataLoadAttempts++;
         if (videoDataLoadAttempts >= MAX_LOAD_ATTEMPTS) {
             if (loadInterval) clearInterval(loadInterval);
-            document.getElementById('videoCardsContainer').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh.</div>';
+            document.getElementById('latestDynamicGrid').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh.</div>';
             document.getElementById('categoriesContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load categories.</div>';
             document.getElementById('trendingContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load trending.</div>';
             console.error('data.js failed to load');
