@@ -6,6 +6,7 @@
 <title>CandyLink69 – Premium HD</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+/* ========== RESET & BASE ========== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     background: #0b0b0b;
@@ -28,7 +29,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     text-rendering: optimizeLegibility;
 }
 
-/* blinking title - original size */
+/* blinking title */
 .title {
     font-size: 22px;
     font-weight: bold;
@@ -55,7 +56,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     100% { opacity: 1; }
 }
 
-/* social icons (chhote, text above) */
+/* social icons */
 .social-text {
     font-size: 10px;
     color: #ffcc88;
@@ -134,7 +135,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .search-result-item:hover { background: rgba(255,51,0,0.15); }
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
-/* tabs + underline */
+/* tabs */
 .tabs-wrapper { margin: 10px 0 5px; }
 .tabs-container { display: flex; justify-content: center; gap: 8px; flex-wrap: nowrap; }
 .tab-btn {
@@ -166,7 +167,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     width: 100%;
 }
 
-/* stats bar (tight) */
+/* stats bar */
 .stats-bar {
     background: rgba(255,51,0,0.08);
     border-radius: 30px;
@@ -184,7 +185,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .panel.active-panel { display: block; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-/* categories grid (2 columns, untouched) */
+/* categories grid */
 .categories-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -205,7 +206,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .category-name { padding: 10px; font-size: 15px; font-weight: bold; color: #ffcc00; background: rgba(0,0,0,0.8); }
 .video-count { position: absolute; top: 6px; right: 6px; background: rgba(255,51,0,0.9); color: white; padding: 2px 7px; border-radius: 15px; font-size: 10px; font-weight: bold; }
 
-/* trending grid - fixed columns: mobile 1, desktop 2 */
+/* trending grid */
 .trending-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -213,9 +214,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     margin: 10px 0;
 }
 @media (min-width: 768px) {
-    .trending-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .trending-grid { grid-template-columns: repeat(2, 1fr); }
 }
 .trending-item {
     background: rgba(255,255,255,0.05);
@@ -234,10 +233,14 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     overflow: hidden;
     border: 1px solid #444;
 }
-.native-thumb { width: 100%; aspect-ratio: 16/9; background: #1a1a1a; }
+.native-thumb {
+    width: 100%;
+    background: #1a1a1a;
+    /* No fixed aspect-ratio, let ad network decide */
+}
 .native-title { padding: 7px; font-size: 11px; color: #ffaa44; text-align: center; background: rgba(0,0,0,0.6); }
 
-/* latest videos grid - mobile 1, desktop 2 */
+/* latest videos grid */
 .latest-grid { margin: 10px 0; }
 .latest-video-row {
     display: grid;
@@ -245,9 +248,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     gap: 14px;
 }
 @media (min-width: 768px) {
-    .latest-video-row {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .latest-video-row { grid-template-columns: repeat(2, 1fr); }
 }
 .latest-card {
     background: rgba(20,20,20,0.9);
@@ -311,6 +312,15 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     margin: 5px 0;
     text-align: center;
 }
+/* Native ad card in latest (full width) */
+.native-latest-card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #444;
+    grid-column: 1 / -1;
+    margin-bottom: 10px;
+}
 
 /* pagination */
 .pagination-wrapper {
@@ -359,8 +369,8 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 }
 </style>
 
-<!-- Social Bar (async to avoid blocking) -->
-<script async src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
+<!-- Social Bar (sync but at the end of head, not blocking critical rendering) -->
+<script src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
 
 <!-- Redirect for in-app browsers -->
 <script>
@@ -457,40 +467,34 @@ let reversedVideos = [];
 let latestCurrentPage = 0;
 const LATEST_PER_PAGE = 20;
 const AD_AFTER_EVERY = 5;
-const SWIPE_THRESHOLD = 60;
+const SWIPE_THRESHOLD = 80;  // higher to avoid accidental swipe while scrolling
+let touchStartX = 0;
+let touchStartY = 0;
 
-// Ad keys (provided)
+// Ad keys
 const KEY_320x50 = '56b3e3a26900c426b81430f9f85a31d6';
 const KEY_300x250 = '8e09ed2a29423c808ccb93e333fa00c5';
 const KEY_728x90 = '57e196c0c8406efacc614d4b4d21d13d';
 
 let currentTab = 'latest';
 let videoDataLoadAttempts = 0;
-const MAX_LOAD_ATTEMPTS = 30; // 3 seconds (100ms each)
+const MAX_LOAD_ATTEMPTS = 30;
 let loadInterval = null;
 
-// ========== FALLBACK for thumbs.js ==========
+// Fallback for thumbs.js
 function getThumbnailUrlSafe(videoId) {
     if (typeof getThumbnailUrl === 'function') {
         return getThumbnailUrl(videoId);
     }
-    // fallback if thumbs.js failed
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== AD LOADERS (using provided codes) ==========
+// ========== AD LOADERS ==========
 function loadAd(containerId, key, width, height) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
-    // Create atOptions object
-    const atOptions = {
-        key: key,
-        format: 'iframe',
-        height: height,
-        width: width,
-        params: {}
-    };
+    const atOptions = { key: key, format: 'iframe', height: height, width: width, params: {} };
     const s1 = document.createElement('script');
     s1.innerHTML = `var atOptions = ${JSON.stringify(atOptions)};`;
     const s2 = document.createElement('script');
@@ -517,13 +521,7 @@ function loadInlineAd(containerId) {
     const el = document.getElementById(containerId);
     if (!el) return;
     el.innerHTML = '<div style="min-height:50px;"></div>';
-    const atOptions = {
-        key: KEY_320x50,
-        format: 'iframe',
-        height: 50,
-        width: 320,
-        params: {}
-    };
+    const atOptions = { key: KEY_320x50, format: 'iframe', height: 50, width: 320, params: {} };
     const s1 = document.createElement('script');
     s1.innerHTML = `var atOptions = ${JSON.stringify(atOptions)};`;
     const s2 = document.createElement('script');
@@ -533,7 +531,25 @@ function loadInlineAd(containerId) {
     el.appendChild(s2);
 }
 
-// ========== VIDEO CARD ==========
+// Native ad for latest (first position)
+function loadNativeAdLatest(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = '';
+    const script = document.createElement('script');
+    script.async = true;
+    script.setAttribute('data-cfasync', 'false');
+    script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
+    container.appendChild(script);
+    // Also add the div container that the script expects
+    const adDiv = document.createElement('div');
+    adDiv.id = 'container-4b10501c070917e2ceca3f13f9e60117';
+    adDiv.style.width = '100%';
+    adDiv.style.minHeight = '250px';
+    container.appendChild(adDiv);
+}
+
+// ========== VIDEO CARD WITH PREVIEW ==========
 function generateVideoCard(video) {
     const thumbUrl = getThumbnailUrlSafe(video.id);
     return `
@@ -555,14 +571,17 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
-// ========== PREVIEW HANDLERS ==========
+// ========== PREVIEW HANDLERS (FIXED) ==========
 let currentActivePreview = null;
 function stopPreview() {
     if (currentActivePreview) {
         const container = currentActivePreview.querySelector('.thumb-container');
         const previewVideo = container?.querySelector('.preview-video');
         const thumbImg = container?.querySelector('.thumb-img');
-        if (previewVideo) { previewVideo.pause(); previewVideo.style.display = 'none'; }
+        if (previewVideo) {
+            previewVideo.pause();
+            previewVideo.style.display = 'none';
+        }
         if (thumbImg) thumbImg.style.opacity = '1';
         currentActivePreview = null;
     }
@@ -579,29 +598,53 @@ function startPreview(card) {
     }
     previewVideo.currentTime = 0;
     previewVideo.style.display = 'block';
-    previewVideo.play().catch(e => console.log('Preview error:', e));
+    previewVideo.play().catch(e => console.log('Preview play failed:', e));
     if (thumbImg) thumbImg.style.opacity = '0.3';
     currentActivePreview = card;
 }
+
 function setupPreviewHandlers() {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
-    // Use event delegation to avoid duplicate listeners
-    container.removeEventListener('mouseover', previewMouseOver);
-    container.removeEventListener('mouseout', previewMouseOut);
-    container.addEventListener('mouseover', previewMouseOver);
-    container.addEventListener('mouseout', previewMouseOut);
+    // Remove existing listeners to avoid duplicates
+    container.removeEventListener('mouseover', handlePreviewMouseOver);
+    container.removeEventListener('mouseout', handlePreviewMouseOut);
+    container.addEventListener('mouseover', handlePreviewMouseOver);
+    container.addEventListener('mouseout', handlePreviewMouseOut);
+    // Touch events for mobile
+        container.removeEventListener('touchstart', handlePreviewTouchStart);
+    container.removeEventListener('touchend', handlePreviewTouchEnd);
+    container.addEventListener('touchstart', handlePreviewTouchStart, { passive: true });
+    container.addEventListener('touchend', handlePreviewTouchEnd);
 }
-function previewMouseOver(e) {
+
+function handlePreviewMouseOver(e) {
     const card = e.target.closest('.latest-card');
     if (card) startPreview(card);
 }
-function previewMouseOut(e) {
+function handlePreviewMouseOut(e) {
     const card = e.target.closest('.latest-card');
     if (card && currentActivePreview === card) stopPreview();
 }
+let previewTouchTimer = null;
+function handlePreviewTouchStart(e) {
+    const card = e.target.closest('.latest-card');
+    if (card) {
+        previewTouchTimer = setTimeout(() => startPreview(card), 100);
+    }
+}
+function handlePreviewTouchEnd(e) {
+    if (previewTouchTimer) {
+        clearTimeout(previewTouchTimer);
+        previewTouchTimer = null;
+    }
+    const card = e.target.closest('.latest-card');
+    if (card && currentActivePreview === card) {
+        setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 300);
+    }
+}
 
-// ========== RENDER LATEST ==========
+// ========== RENDER LATEST (WITH NATIVE AD FIRST) ==========
 function renderLatestPage(page, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
@@ -614,23 +657,39 @@ function renderLatestPage(page, scrollToTop = true) {
     const totalPages = Math.ceil(reversedVideos.length / LATEST_PER_PAGE);
     if (page < 0) page = 0;
     if (page >= totalPages) page = totalPages - 1;
-     latestCurrentPage = page;
+    latestCurrentPage = page;
     const start = page * LATEST_PER_PAGE;
     const pageVideos = reversedVideos.slice(start, start + LATEST_PER_PAGE);
     
-    const itemsHtml = [];
+    // Build items: first item is native ad card, then videos with inline ads
+    let itemsHtml = [];
     const adSlots = [];
+    
+    // Add native ad card at the very beginning
+    const nativeAdId = `native_latest_${Date.now()}`;
+    itemsHtml.push(`<div class="native-latest-card" id="${nativeAdId}"><div style="min-height:250px;"></div></div>`);
+    adSlots.push({id: nativeAdId, type: 'native'});
+    
     for (let idx = 0; idx < pageVideos.length; idx++) {
         itemsHtml.push(generateVideoCard(pageVideos[idx]));
         if ((idx + 1) % AD_AFTER_EVERY === 0 && idx + 1 < pageVideos.length) {
             const adId = `inline_ad_${Date.now()}_${idx}_${Math.random()}`;
-            adSlots.push(adId);
             itemsHtml.push(`<div class="ad-inline" id="${adId}"></div>`);
+            adSlots.push({id: adId, type: 'inline'});
         }
     }
     container.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
-    adSlots.forEach(adId => loadInlineAd(adId));
     
+    // Load ads
+    adSlots.forEach(slot => {
+        if (slot.type === 'native') {
+            loadNativeAdLatest(slot.id);
+        } else {
+            loadInlineAd(slot.id);
+        }
+    });
+    
+    // Attach click handlers for videos
     document.querySelectorAll('.latest-card').forEach(card => {
         const videoId = card.getAttribute('data-video-id');
         if (videoId) {
@@ -642,7 +701,7 @@ function renderLatestPage(page, scrollToTop = true) {
         }
     });
     updatePaginationControls(totalPages, page);
-    setupPreviewHandlers();
+    setupPreviewHandlers(); // re-attach preview after DOM update
     if (scrollToTop) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
@@ -654,7 +713,6 @@ function updatePaginationControls(totalPages, currentPage) {
         if (bottomDiv) bottomDiv.innerHTML = '';
         return;
     }
-    // Use unique IDs for top and bottom to avoid conflicts
     const topHtml = `<button class="pagination-btn" id="prevTopBtn" ${currentPage === 0 ? 'disabled' : ''}>◀ PREV</button>
                      <span class="page-info">${currentPage+1} / ${totalPages}</span>
                      <button class="pagination-btn" id="nextTopBtn" ${currentPage === totalPages-1 ? 'disabled' : ''}>NEXT ▶</button>`;
@@ -664,7 +722,6 @@ function updatePaginationControls(totalPages, currentPage) {
     if (topDiv) topDiv.innerHTML = topHtml;
     if (bottomDiv) bottomDiv.innerHTML = bottomHtml;
     
-    // attach events
     const prevTop = document.getElementById('prevTopBtn');
     const nextTop = document.getElementById('nextTopBtn');
     const prevBottom = document.getElementById('prevBottomBtn');
@@ -713,23 +770,38 @@ function displayCategories(cats) {
     });
 }
 
-// ========== TRENDING ==========
+// ========== TRENDING (flexible native ad) ==========
 function loadTrendingVideos() {
     const cont = document.getElementById('trendingContainer');
     if (!cont) return;
     cont.innerHTML = '';
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
-    // Native ad card
+    // Native ad card - no fixed height
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
-    nativeCard.innerHTML = `<div class="native-thumb"><div id="container-4b10501c070917e2ceca3f13f9e60117" style="width:100%;height:100%;"></div></div><div class="native-title">Sponsored</div>`;
+    const nativeInner = document.createElement('div');
+    nativeInner.className = 'native-thumb';
+    nativeInner.id = `native_trending_${Date.now()}`;
+    nativeCard.appendChild(nativeInner);
+    const titleDiv = document.createElement('div');
+    titleDiv.className = 'native-title';
+    titleDiv.textContent = 'Sponsored';
+    nativeCard.appendChild(titleDiv);
     cont.appendChild(nativeCard);
+    // Load native ad script inside that container
     const script = document.createElement('script');
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
     script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
-    document.body.appendChild(script);
+    nativeInner.appendChild(script);
+    // Also add the required div
+    const adDiv = document.createElement('div');
+    adDiv.id = 'container-4b10501c070917e2ceca3f13f9e60117';
+    adDiv.style.width = '100%';
+    adDiv.style.minHeight = '200px';
+    nativeInner.appendChild(adDiv);
+    
     trendingVideos.forEach(v => {
         const thumb = getThumbnailUrlSafe(v.id);
         cont.innerHTML += `<div class="trending-item" onclick="goToVideo('${v.id}')">
@@ -808,17 +880,21 @@ function setupSearch() {
     });
 }
 
-// ========== SWIPE ==========
-let touchStartX = 0;
-function handleTouchStart(e) { touchStartX = e.changedTouches[0].screenX; }
+// ========== SWIPE (IGNORE VERTICAL SCROLL) ==========
+function handleTouchStart(e) {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+}
 function handleTouchEnd(e) {
-    const diff = e.changedTouches[0].screenX - touchStartX;
+    const diffX = e.changedTouches[0].screenX - touchStartX;
+    const diffY = e.changedTouches[0].screenY - touchStartY;
+    // If vertical scroll (|diffY| > |diffX|) or swipe too short, ignore
+    if (Math.abs(diffY) > Math.abs(diffX)) return;
+    if (Math.abs(diffX) < SWIPE_THRESHOLD) return;
     const tabs = ['latest', 'categories', 'trending'];
     const idx = tabs.indexOf(currentTab);
-    if (Math.abs(diff) > SWIPE_THRESHOLD) {
-        if (diff > 0 && idx > 0) switchTab(tabs[idx-1]);
-        else if (diff < 0 && idx < tabs.length-1) switchTab(tabs[idx+1]);
-    }
+    if (diffX > 0 && idx > 0) switchTab(tabs[idx-1]);
+    else if (diffX < 0 && idx < tabs.length-1) switchTab(tabs[idx+1]);
 }
 
 // ========== AD REFRESH ==========
@@ -839,11 +915,10 @@ setInterval(() => { isUserActive = false; }, 300000);
 ['mousedown','mousemove','scroll','touchstart','click','keydown'].forEach(ev => document.addEventListener(ev, resetActivity));
 document.addEventListener('visibilitychange', () => { if (!document.hidden) scheduleRefresh(); });
 
-// ========== NAVIGATION ==========
 function goToVideo(id) { window.location.href = `video.html?v=${id}`; }
 function selectCategory(id) { localStorage.setItem('selectedCategory', id); window.location.href = `list.html?category=${id}`; }
 
-// ========== INIT WITH TIMEOUT & FALLBACK FOR data.js ==========
+// ========== INIT ==========
 function initPage() {
     if (typeof videos !== 'undefined' && videos && videos.length) {
         if (loadInterval) clearInterval(loadInterval);
@@ -862,11 +937,10 @@ function initPage() {
         videoDataLoadAttempts++;
         if (videoDataLoadAttempts >= MAX_LOAD_ATTEMPTS) {
             if (loadInterval) clearInterval(loadInterval);
-            // Fallback: show error but keep page functional
-            document.getElementById('latestDynamicGrid').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh the page.</div>';
+            document.getElementById('latestDynamicGrid').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh.</div>';
             document.getElementById('categoriesContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load categories.</div>';
             document.getElementById('trendingContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load trending.</div>';
-            console.error('data.js failed to load after 3 seconds');
+            console.error('data.js failed to load');
         }
     }
 }
@@ -875,7 +949,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadAllAds();
     scheduleRefresh();
     loadInterval = setInterval(initPage, 100);
-    // also try once after 100ms
     setTimeout(() => { if (typeof videos === 'undefined') initPage(); }, 100);
 });
 </script>
