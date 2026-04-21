@@ -6,7 +6,6 @@
 <title>CandyLink69 – Premium HD</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-/* ========== RESET & BASE ========== */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
     background: #0b0b0b;
@@ -236,7 +235,6 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .native-thumb {
     width: 100%;
     background: #1a1a1a;
-    /* No fixed aspect-ratio, let ad network decide */
 }
 .native-title { padding: 7px; font-size: 11px; color: #ffaa44; text-align: center; background: rgba(0,0,0,0.6); }
 
@@ -312,7 +310,7 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
     margin: 5px 0;
     text-align: center;
 }
-/* Native ad card in latest (full width) */
+/* Native ad card in latest (only on first page) */
 .native-latest-card {
     background: rgba(255,255,255,0.05);
     border-radius: 12px;
@@ -467,9 +465,8 @@ let reversedVideos = [];
 let latestCurrentPage = 0;
 const LATEST_PER_PAGE = 20;
 const AD_AFTER_EVERY = 5;
-const SWIPE_THRESHOLD = 80;  // higher to avoid accidental swipe while scrolling
-let touchStartX = 0;
-let touchStartY = 0;
+const SWIPE_THRESHOLD = 80;
+let touchStartX = 0, touchStartY = 0;
 
 // Ad keys
 const KEY_320x50 = '56b3e3a26900c426b81430f9f85a31d6';
@@ -531,17 +528,22 @@ function loadInlineAd(containerId) {
     el.appendChild(s2);
 }
 
-// Native ad for latest (first position)
+// Native ad for latest - only called when page == 0
 function loadNativeAdLatest(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
-    container.innerHTML = '';
+    container.innerHTML = '<div style="min-height:250px; display:flex; align-items:center; justify-content:center; color:#aaa;">Loading ad...</div>';
     const script = document.createElement('script');
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
     script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
+    script.onload = () => {
+        // Optional: remove loading text after ad loads
+        const loadingDiv = container.querySelector('div');
+        if (loadingDiv && loadingDiv.innerText === 'Loading ad...') loadingDiv.style.display = 'none';
+    };
     container.appendChild(script);
-    // Also add the div container that the script expects
+    // Also add the required div container
     const adDiv = document.createElement('div');
     adDiv.id = 'container-4b10501c070917e2ceca3f13f9e60117';
     adDiv.style.width = '100%';
@@ -571,7 +573,7 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
-// ========== PREVIEW HANDLERS (FIXED) ==========
+// ========== PREVIEW HANDLERS ==========
 let currentActivePreview = null;
 function stopPreview() {
     if (currentActivePreview) {
@@ -602,22 +604,18 @@ function startPreview(card) {
     if (thumbImg) thumbImg.style.opacity = '0.3';
     currentActivePreview = card;
 }
-
 function setupPreviewHandlers() {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
-    // Remove existing listeners to avoid duplicates
     container.removeEventListener('mouseover', handlePreviewMouseOver);
     container.removeEventListener('mouseout', handlePreviewMouseOut);
     container.addEventListener('mouseover', handlePreviewMouseOver);
     container.addEventListener('mouseout', handlePreviewMouseOut);
-    // Touch events for mobile
-        container.removeEventListener('touchstart', handlePreviewTouchStart);
+    container.removeEventListener('touchstart', handlePreviewTouchStart);
     container.removeEventListener('touchend', handlePreviewTouchEnd);
     container.addEventListener('touchstart', handlePreviewTouchStart, { passive: true });
     container.addEventListener('touchend', handlePreviewTouchEnd);
 }
-
 function handlePreviewMouseOver(e) {
     const card = e.target.closest('.latest-card');
     if (card) startPreview(card);
@@ -629,22 +627,15 @@ function handlePreviewMouseOut(e) {
 let previewTouchTimer = null;
 function handlePreviewTouchStart(e) {
     const card = e.target.closest('.latest-card');
-    if (card) {
-        previewTouchTimer = setTimeout(() => startPreview(card), 100);
-    }
+    if (card) previewTouchTimer = setTimeout(() => startPreview(card), 100);
 }
 function handlePreviewTouchEnd(e) {
-    if (previewTouchTimer) {
-        clearTimeout(previewTouchTimer);
-        previewTouchTimer = null;
-    }
+    if (previewTouchTimer) { clearTimeout(previewTouchTimer); previewTouchTimer = null; }
     const card = e.target.closest('.latest-card');
-    if (card && currentActivePreview === card) {
-        setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 300);
-    }
+    if (card && currentActivePreview === card) setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 300);
 }
 
-// ========== RENDER LATEST (WITH NATIVE AD FIRST) ==========
+// ========== RENDER LATEST (Native ad ONLY on page 0) ==========
 function renderLatestPage(page, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
@@ -661,14 +652,15 @@ function renderLatestPage(page, scrollToTop = true) {
     const start = page * LATEST_PER_PAGE;
     const pageVideos = reversedVideos.slice(start, start + LATEST_PER_PAGE);
     
-    // Build items: first item is native ad card, then videos with inline ads
     let itemsHtml = [];
     const adSlots = [];
     
-    // Add native ad card at the very beginning
-    const nativeAdId = `native_latest_${Date.now()}`;
-    itemsHtml.push(`<div class="native-latest-card" id="${nativeAdId}"><div style="min-height:250px;"></div></div>`);
-    adSlots.push({id: nativeAdId, type: 'native'});
+    // Native ad ONLY on first page (page === 0)
+    if (page === 0) {
+        const nativeAdId = `native_latest_${Date.now()}`;
+        itemsHtml.push(`<div class="native-latest-card" id="${nativeAdId}"><div style="min-height:250px;"></div></div>`);
+        adSlots.push({id: nativeAdId, type: 'native'});
+    }
     
     for (let idx = 0; idx < pageVideos.length; idx++) {
         itemsHtml.push(generateVideoCard(pageVideos[idx]));
@@ -689,7 +681,6 @@ function renderLatestPage(page, scrollToTop = true) {
         }
     });
     
-    // Attach click handlers for videos
     document.querySelectorAll('.latest-card').forEach(card => {
         const videoId = card.getAttribute('data-video-id');
         if (videoId) {
@@ -701,7 +692,7 @@ function renderLatestPage(page, scrollToTop = true) {
         }
     });
     updatePaginationControls(totalPages, page);
-    setupPreviewHandlers(); // re-attach preview after DOM update
+    setupPreviewHandlers();
     if (scrollToTop) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
@@ -770,14 +761,14 @@ function displayCategories(cats) {
     });
 }
 
-// ========== TRENDING (flexible native ad) ==========
+// ========== TRENDING (native ad always) ==========
 function loadTrendingVideos() {
     const cont = document.getElementById('trendingContainer');
     if (!cont) return;
     cont.innerHTML = '';
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
-    // Native ad card - no fixed height
+    // Native ad card - no fixed height, but ad network may still give fixed size
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     const nativeInner = document.createElement('div');
@@ -789,13 +780,11 @@ function loadTrendingVideos() {
     titleDiv.textContent = 'Sponsored';
     nativeCard.appendChild(titleDiv);
     cont.appendChild(nativeCard);
-    // Load native ad script inside that container
     const script = document.createElement('script');
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
     script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
     nativeInner.appendChild(script);
-    // Also add the required div
     const adDiv = document.createElement('div');
     adDiv.id = 'container-4b10501c070917e2ceca3f13f9e60117';
     adDiv.style.width = '100%';
@@ -880,7 +869,7 @@ function setupSearch() {
     });
 }
 
-// ========== SWIPE (IGNORE VERTICAL SCROLL) ==========
+// ========== SWIPE (IGNORE VERTICAL) ==========
 function handleTouchStart(e) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
@@ -888,7 +877,6 @@ function handleTouchStart(e) {
 function handleTouchEnd(e) {
     const diffX = e.changedTouches[0].screenX - touchStartX;
     const diffY = e.changedTouches[0].screenY - touchStartY;
-    // If vertical scroll (|diffY| > |diffX|) or swipe too short, ignore
     if (Math.abs(diffY) > Math.abs(diffX)) return;
     if (Math.abs(diffX) < SWIPE_THRESHOLD) return;
     const tabs = ['latest', 'categories', 'trending'];
