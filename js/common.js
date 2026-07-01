@@ -99,7 +99,7 @@ function loadSideMenu() {
     }
 
     // --- Categories load karo (categories.json se) ---
-    fetch('categories.json')
+    fetch('data/categories.json')
         .then(response => response.json())
         .then(categories => {
             const list = document.getElementById('menuCategoryList');
