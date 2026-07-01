@@ -1,5 +1,5 @@
 // ============================================================
-// 1. IN-APP BROWSER REDIRECT (Instagram, Telegram,js Facebook)
+// 1. IN-APP BROWSER REDIRECT (Instagram, Telegram, Facebook)
 // ============================================================
 (function() {
     const ua = navigator.userAgent;
@@ -19,55 +19,49 @@
 
 
 // ============================================================
-// 2. GLOBAL FUNCTION: goToVideo (Video page pe le jaaye)
+// 2. GLOBAL FUNCTIONS
 // ============================================================
 function goToVideo(videoId) {
     window.location.href = 'video.html?v=' + videoId;
 }
 
-
-// ============================================================
-// 3. GLOBAL FUNCTION: goToCategory (Category list pe le jaaye)
-// ============================================================
 function goToCategory(categoryId) {
     window.location.href = 'list.html?category=' + categoryId;
 }
 
-
-// ============================================================
-// 4. GLOBAL FUNCTION: goToPage (Internal navigation)
-// ============================================================
 function goToPage(url) {
     window.location.href = url;
 }
 
 
 // ============================================================
-// 5. SIDE MENU FUNCTIONS
+// 3. SIDE MENU FUNCTIONS
 // ============================================================
 function openMenu() {
-    document.getElementById('menuOverlay').style.display = 'block';
-    document.getElementById('menuDrawer').classList.add('open');
-    document.body.style.overflow = 'hidden'; // scroll band
+    const overlay = document.getElementById('menuOverlay');
+    const drawer = document.getElementById('menuDrawer');
+    if (overlay) overlay.style.display = 'block';
+    if (drawer) drawer.classList.add('open');
+    document.body.style.overflow = 'hidden';
 }
 
 function closeMenu() {
-    document.getElementById('menuOverlay').style.display = 'none';
-    document.getElementById('menuDrawer').classList.remove('open');
+    const overlay = document.getElementById('menuOverlay');
+    const drawer = document.getElementById('menuDrawer');
+    if (overlay) overlay.style.display = 'none';
+    if (drawer) drawer.classList.remove('open');
     document.body.style.overflow = '';
 }
 
-// Escape key se menu band
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeMenu();
 });
 
 
 // ============================================================
-// 6. LOAD SIDE MENU HTML + CATEGORIES
+// 4. LOAD SIDE MENU
 // ============================================================
 function loadSideMenu() {
-    // --- Menu HTML Structure ---
     const menuHTML = `
         <div id="menuOverlay" onclick="closeMenu()"></div>
         <div id="menuDrawer">
@@ -76,10 +70,10 @@ function loadSideMenu() {
                 <span class="menu-close" onclick="closeMenu()">✕</span>
             </div>
             <ul id="menuNav">
-                <li><a href="index.html" class="menu-link active-link" data-page="index">🏠 Home</a></li>
-                <li><a href="javascript:void(0)" onclick="switchTab('latest')" class="menu-link" data-page="latest">🔥 Latest</a></li>
-                <li><a href="javascript:void(0)" onclick="switchTab('categories')" class="menu-link" data-page="categories">📂 Categories</a></li>
-                <li><a href="javascript:void(0)" onclick="switchTab('trending')" class="menu-link" data-page="trending">⚡ Trending</a></li>
+                <li><a href="index.html" class="menu-link" data-page="index">🏠 Home</a></li>
+                <li><a href="index.html" class="menu-link" data-page="latest">🔥 Latest</a></li>
+                <li><a href="index.html" class="menu-link" data-page="categories">📂 Categories</a></li>
+                <li><a href="index.html" class="menu-link" data-page="trending">⚡ Trending</a></li>
                 <li><a href="list.html" class="menu-link" data-page="list">📋 All Videos</a></li>
             </ul>
             <div id="menuCategoryHeading">📁 ALL CATEGORIES</div>
@@ -92,13 +86,12 @@ function loadSideMenu() {
         </div>
     `;
 
-    // Menu ko DOM mein daalo
     const menuContainer = document.getElementById('sideMenu');
     if (menuContainer) {
         menuContainer.innerHTML = menuHTML;
     }
 
-    // --- Categories load karo (categories.json se) ---
+    // Categories load
     fetch('data/categories.json')
         .then(response => response.json())
         .then(categories => {
@@ -119,11 +112,9 @@ function loadSideMenu() {
             }
         });
 
-    // --- Active link highlight (current page ke hisaab se) ---
     highlightActiveMenu();
 }
 
-// Menu mein active link highlight
 function highlightActiveMenu() {
     const currentPath = window.location.pathname;
     const currentPage = currentPath.split('/').pop() || 'index.html';
@@ -139,27 +130,19 @@ function highlightActiveMenu() {
 
 
 // ============================================================
-// 7. LOAD HEADER (Title + Social Icons)
+// 5. LOAD HEADER (Title + Social Icons)
 // ============================================================
 function loadHeader() {
     const container = document.getElementById('headerContainer');
     if (!container) return;
 
-    const isVideoPage = window.location.pathname.includes('video.html');
-    const isListPage = window.location.pathname.includes('list.html');
+    // Agar video.html hai toh sirf title (no social)
+    if (window.location.pathname.includes('video.html')) {
+        container.innerHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
+        return;
+    }
 
-    // Agar video.html hai toh title alag hai (but common.js sirf structure dega, baaki video.js sambhalega)
-    // Isliye sirf social aur base title rakhte hain, full title page specific JS se load hoga
-    // Lekin user ne kaha purana structure bilkul waise hi rakhna hai.
-    // Index wala title "🔥 CandyLink69 🔥", List wala "🔥 CandyLink69 Exclusive Videos 🔥", Video wala "🔥 CandyLink69 🔥"
-    // Isliye common.js sirf social icons + common elements dega, title index.html mein already defined hai.
-    // Actually index.html mein .title div pehle se hai, social-text aur social-row bhi.
-    // Toh main yeh sab replace nahi karunga, sirf menu + search load karunga.
-    // Let's just keep it simple: Header container mein sirf social icons + text daalo.
-    // Title already HTML mein static hai, isliye usko touch nahi karte.
-    
-    // Wait, index.html mein maine <div id="headerContainer"></div> rakha hai.
-    // Isme title + social + text aayega.
+    // Index / List pages ke liye full header (title + social)
     const headerHTML = `
         <div class="title">🔥 CandyLink69 🔥</div>
         <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
@@ -174,7 +157,7 @@ function loadHeader() {
 
 
 // ============================================================
-// 8. LOAD FOOTER SOCIAL (Bottom Social)
+// 6. LOAD FOOTER SOCIAL
 // ============================================================
 function loadFooter() {
     const container = document.getElementById('footerContainer');
@@ -193,7 +176,7 @@ function loadFooter() {
 
 
 // ============================================================
-// 9. LOAD SEARCH BAR
+// 7. LOAD SEARCH BAR
 // ============================================================
 function loadSearchBar() {
     const container = document.getElementById('searchContainer');
@@ -208,34 +191,28 @@ function loadSearchBar() {
         </div>
     `;
     container.innerHTML = searchHTML;
-
-    // Search functionality attach karo (after DOM render)
     setupSearchLogic();
 }
 
 
 // ============================================================
-// 10. SEARCH LOGIC (Bilkul purana wala)
+// 8. SEARCH LOGIC
 // ============================================================
 function setupSearchLogic() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
-
     if (!searchInput) return;
 
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        const resultsDiv = searchResults;
-
         if (query.length < 2) {
-            resultsDiv.style.display = 'none';
+            searchResults.style.display = 'none';
             return;
         }
 
-        // Check if videos array exists (data.js se aayega)
         if (typeof videos === 'undefined' || !videos.length) {
-            resultsDiv.innerHTML = '<div style="padding:15px;color:#888;">Loading videos...</div>';
-            resultsDiv.style.display = 'block';
+            searchResults.innerHTML = '<div style="padding:15px;color:#888;">Loading videos...</div>';
+            searchResults.style.display = 'block';
             return;
         }
 
@@ -250,8 +227,8 @@ function setupSearchLogic() {
         });
 
         if (filtered.length === 0) {
-            resultsDiv.innerHTML = '<div style="padding:15px;color:#888;">No videos found</div>';
-            resultsDiv.style.display = 'block';
+            searchResults.innerHTML = '<div style="padding:15px;color:#888;">No videos found</div>';
+            searchResults.style.display = 'block';
             return;
         }
 
@@ -264,11 +241,10 @@ function setupSearchLogic() {
                 </div>
             `;
         });
-        resultsDiv.innerHTML = html;
-        resultsDiv.style.display = 'block';
+        searchResults.innerHTML = html;
+        searchResults.style.display = 'block';
     });
 
-    // Click outside search results to close
     document.addEventListener('click', function(e) {
         const container = document.querySelector('.search-container');
         if (container && !container.contains(e.target)) {
@@ -279,21 +255,11 @@ function setupSearchLogic() {
 
 
 // ============================================================
-// 11. EXTRA: Menu button inject karna (Hamburger icon)
-//    Note: Ye main container mein menu icon add karega.
-//    Index.html mein maine <div id="sideMenu"></div> rakha hai, jisme menu drawer aayega.
-//    But menu open karne ke liye ek button chahiye.
-//    Isliye main header ke andar ek hamburger icon inject karunga.
+// 9. MENU BUTTON INJECT (Hamburger Icon)
 // ============================================================
 function injectMenuButton() {
-    // Check agar pehle se hai toh mat daalo
     if (document.getElementById('menuToggleBtn')) return;
 
-    const header = document.getElementById('headerContainer');
-    if (!header) return;
-
-    // Pehle se .title div hai, uske ANDAR ya USKE PEHLE menu button daalo.
-    // Better: header ke top pe daalo.
     const btn = document.createElement('div');
     btn.id = 'menuToggleBtn';
     btn.innerHTML = '☰';
@@ -301,12 +267,12 @@ function injectMenuButton() {
         position: fixed;
         top: 12px;
         left: 12px;
-        z-index: 1001;
-        font-size: 28px;
+        z-index: 10000;
+        font-size: 30px;
         color: #ff9900;
         cursor: pointer;
         background: rgba(0,0,0,0.7);
-        padding: 4px 12px;
+        padding: 2px 14px;
         border-radius: 8px;
         border: 1px solid #ff6600;
         user-select: none;
@@ -316,43 +282,26 @@ function injectMenuButton() {
         e.stopPropagation();
         openMenu();
     };
-
-    // Agar body ke top mein daalo
     document.body.prepend(btn);
-
-    // Ensure ki menu icon sticky rahe (position fixed already)
 }
 
 
 // ============================================================
-// 12. INITIALIZE ALL COMMON COMPONENTS
+// 10. INITIALIZE
 // ============================================================
 function initCommon() {
-    // Pehle check karo ki DOM ready hai
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initCommon);
         return;
     }
 
-    // 1. Header load karo
     loadHeader();
-
-    // 2. Footer load karo
     loadFooter();
-
-    // 3. Search bar load karo
     loadSearchBar();
-
-    // 4. Side menu load karo (categories ke saath)
     loadSideMenu();
+    injectMenuButton();  // ✅ Menu button har page pe inject hoga
 
-    // 5. Menu toggle button inject karo
-    injectMenuButton();
-
-    // 6. Agar index.html hai toh switchTab function globally available hai (index.js se)
-    // Agar list.html ya video.html hai toh wahan specific JS handle karega.
     console.log('✅ Common.js loaded successfully!');
 }
 
-// Ab init call karo
 initCommon();
