@@ -17,7 +17,7 @@
     <!-- ✅ CANONICAL (Dynamic JS se set hoga) -->
     <link rel="canonical" id="dynamicCanonical" href="https://candylink69.com/video.html" />
 
-    <!-- ✅ Icons (Updated Path) -->
+    <!-- ✅ Icons -->
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
@@ -25,86 +25,89 @@
 </head>
 <body>
 
-    <!-- SIDE MENU -->
+    <!-- ===== SIDE MENU ===== -->
     <div id="sideMenu"></div>
 
-    <!-- MAIN CONTAINER -->
+    <!-- ===== MAIN CONTAINER ===== -->
     <div class="container">
 
-        <!-- HEADER -->
-        <div id="headerContainer"></div>
+        <!-- ===== TITLE (Sirf Title, Social nahi) ===== -->
+        <div class="title">🔥 CandyLink69 🔥</div>
 
-        <!-- TOP AD -->
+        <!-- ===== TOP AD ===== -->
         <div id="ad-top" class="ad-spot"></div>
 
-        <!-- WARNING BOX (Sirf English) -->
-        <div class="warning-box">
-            <div class="warning-message">
-                <span class="warning-emoji">⚠️</span> <strong>When you press Play, a new ad page will open 2 times.</strong> Each time, go back immediately.<br>
-                On the 3rd click, the video will play here.<br>
-                👉 <i>So please stay on this page.</i>
+        <!-- ===== WARNING BOX (Compact, 1 line) ===== -->
+        <div class="warning-box" style="padding:4px 10px; margin:2px 0;">
+            <div class="warning-message" style="font-size:13px; line-height:1.3;">
+                <span class="warning-emoji">⚠️</span> <strong>Press Play:</strong> 2 ads open. Go back twice. 3rd click plays video.
             </div>
         </div>
 
-        <!-- DOUBLE TAP INDICATOR -->
-        <div class="double-tap-indicator">
+        <!-- ===== DOUBLE TAP INDICATOR (Compact, naya design) ===== -->
+        <div class="double-tap-indicator" style="padding:2px 10px; margin:2px 0; font-size:14px;">
             <span class="tap-icon">⏪</span>
             <span class="tap-label">10s</span>
             <span class="tap-divider">|</span>
-            <span class="tap-icon">👆👆</span>
+            <span class="tap-icon">👈🏻</span>
+            <span style="font-size:12px; color:#ddd;">double tap</span>
+            <span class="tap-icon">👉🏻</span>
             <span class="tap-divider">|</span>
             <span class="tap-label">10s</span>
             <span class="tap-icon">⏩</span>
         </div>
 
-        <!-- VIDEO PLAYER -->
-        <div class="video-box">
+        <!-- ===== VIDEO PLAYER (Middle mein) ===== -->
+        <div class="video-box" style="margin:4px auto;">
             <iframe id="videoPlayer" src="" allowfullscreen></iframe>
         </div>
 
-        <!-- VIDEO INFO -->
-        <div class="video-info">
+        <!-- ===== VIDEO INFO ===== -->
+        <div class="video-info" style="margin:4px 0; padding:4px 10px;">
             <div>🎬 Video ID: <span class="video-id" id="currentVideoId">V001</span></div>
-            <div id="videoDescription" style="margin-top:6px;"></div>
+            <div id="videoDescription" style="margin-top:4px; font-size:13px;"></div>
         </div>
 
-        <!-- NAVIGATION -->
-        <div class="nav-buttons">
+        <!-- ===== NAVIGATION ===== -->
+        <div class="nav-buttons" style="margin:4px 0;">
             <a class="nav-btn" href="index.html">📁 Back to Gallery</a>
             <a class="nav-btn" id="prevBtn" href="#" style="display:none">◀ Previous</a>
             <a class="nav-btn" id="nextBtn" href="#" style="display:none">Next ▶</a>
         </div>
 
-        <!-- SMARTLINK -->
-        <div class="danger-box">
+        <!-- ===== SMARTLINK ===== -->
+        <div class="danger-box" style="margin:4px auto;">
             <div class="danger-text">🥵 YOU WANT SOMETHING SPICY? 🥵</div>
             <a class="danger-btn" href="https://encyclopediainsoluble.com/yk3xgpyy9?key=a0e75c4e5e62d340d6dc8b7a8ae38946" target="_blank" rel="noopener noreferrer">
                 CLICK HERE
             </a>
         </div>
 
-        <!-- NATIVE BANNER -->
-        <div class="native-ad-container">
+        <!-- ===== BOTTOM AD (Smartlink ke neeche) ===== -->
+        <div id="ad-bottom" class="ad-spot" style="margin:4px 0;"></div>
+
+        <!-- ===== RELATED VIDEOS (Bottom ad ke neeche) ===== -->
+        <div id="relatedVideos" style="margin:6px 0;"></div>
+
+        <!-- ===== NATIVE BANNER (Related videos ke neeche) ===== -->
+        <div class="native-ad-container" style="margin:6px 0;">
             <script async data-cfasync="false" src="https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js"></script>
             <div id="container-4b10501c070917e2ceca3f13f9e60117"></div>
         </div>
 
-        <!-- BOTTOM AD -->
-        <div id="ad-bottom" class="ad-spot"></div>
+        <!-- ===== FOOTER SOCIAL (Sirf bottom mein, sticky ad ke upar) ===== -->
+        <div id="footerContainer" style="margin:10px 0 60px 0;"></div>
 
-        <!-- FOOTER SOCIAL -->
-        <div id="footerContainer"></div>
+    </div> <!-- end container -->
 
-    </div>
-
-    <!-- STICKY AD -->
+    <!-- ===== STICKY AD ===== -->
     <div id="sticky" class="sticky-ad"></div>
 
     <!-- ========================================= -->
-    <!-- SCRIPTS (Updated Paths) -->
+    <!-- SCRIPTS -->
     <!-- ========================================= -->
 
-    <!-- Data Files (Ab data/ folder mein) -->
+    <!-- Data Files -->
     <script src="data/data.js"></script>
     <script src="data/thumbs.js"></script>
 
@@ -134,7 +137,7 @@
         })();
     </script>
 
-    <!-- Social Bar Script -->
+    <!-- Social Bar Script (Third-party) -->
     <script async src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
 
 </body>
