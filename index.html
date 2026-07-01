@@ -1,112 +1,117 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>CandyLink69 – Exclusive Videos Hub</title>
-    <meta name="description" content="Watch the latest exclusive videos in HD. New categories and trending videos updated daily. All videos and movies are available with subtitles.">
-    
-    <!-- ✅ CANONICAL FIX -->
-    <link rel="canonical" href="https://candylink69.com/" />
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- ✅ CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    
-    <!-- Bubble System CSS -->
-    <link rel="stylesheet" href="bubble-system/bubble-styles.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Categories + Latest + Full Movies and Full Videos</title>
+<meta name="description" content="Watch the latest exclusive videos in HD. New categories and trending videos updated daily. All videos and movies are available with subtitles.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="bubble-system/bubble-styles.css">
 
-    <!-- ✅ Icons (Updated Path) -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
-    <link rel="manifest" href="/icons/site.webmanifest">
+<!-- Icons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+<link rel="manifest" href="/icons/site.webmanifest">
+
+<!-- Social Bar -->
+<script src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
+
+<!-- Redirect for in-app browsers -->
+<script>
+(function() {
+    const ua = navigator.userAgent;
+    const isTelegram = /Telegram/i.test(ua);
+    const isInApp = /FBAN|FBAV|Instagram|Twitter|Snapchat|LinkedIn|Messenger|FBIOS|FB_IAB/i.test(ua);
+    const currentUrl = window.location.href;
+    const cleanUrl = currentUrl.replace(/^https?:\/\//, '');
+    if (isTelegram || isInApp) {
+        if (/Android/i.test(ua)) window.location.href = 'intent://' + cleanUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
+        else if (/iPhone|iPad|iPod/i.test(ua)) window.location.href = 'x-safari-https://' + cleanUrl;
+    }
+})();
+</script>
+
+<script src="age-gate.js" async></script>
 </head>
 <body>
 
-    <!-- SIDE MENU -->
-    <div id="sideMenu"></div>
+<!-- ===== SIDE MENU (Menu Bar) ===== -->
+<div id="sideMenu"></div>
 
-    <!-- MAIN WRAPPER -->
-    <div class="container" id="appContainer">
+<div class="container">
 
-        <!-- HEADER -->
-        <div id="headerContainer"></div>
+    <div class="title">🔥 CandyLink69 🔥</div>
 
-        <!-- TOP AD -->
-        <div id="ad-top" class="ad-spot"></div>
-
-        <!-- SEARCH BAR -->
-        <div id="searchContainer"></div>
-
-        <!-- TABS -->
-        <div id="tabsWrapper"></div>
-
-        <!-- STATS BAR -->
-        <div id="statsBar"></div>
-
-        <!-- PANELS -->
-        <div id="latestPanel" class="panel active-panel">
-            <div class="pagination-wrapper" id="latestPaginationTop"></div>
-            <div id="latestDynamicGrid" class="latest-grid"></div>
-            <div class="pagination-wrapper" id="latestPaginationBottom"></div>
-        </div>
-
-        <div id="categoriesPanel" class="panel">
-            <div class="categories-grid" id="categoriesContainer"></div>
-        </div>
-
-        <div id="trendingPanel" class="panel">
-            <div class="trending-grid" id="trendingContainer"></div>
-        </div>
-
-        <!-- BOTTOM AD -->
-        <div id="ad-bottom" class="ad-spot"></div>
-
-        <!-- FOOTER SOCIAL -->
-        <div id="footerContainer"></div>
-
+    <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
+    <div class="social-row">
+        <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram"><i class="fab fa-telegram-plane"></i></a>
+        <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
     </div>
 
-    <!-- STICKY AD -->
-    <div id="sticky" class="sticky-ad"></div>
+    <!-- Top ad container -->
+    <div id="ad-top" class="ad-spot"></div>
 
-    <!-- ========================================= -->
-    <!-- SCRIPTS (Updated Paths) -->
-    <!-- ========================================= -->
-    
-    <!-- Data Files (Ab data/ folder mein) -->
-    <script src="data/data.js"></script>
-    <script src="data/thumbs.js"></script>
-    
-    <!-- Age Gate -->
-    <script src="age-gate.js" async></script>
+    <div class="sticky-search">
+        <div class="search-container">
+            <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search videos by ID, title or category..." autocomplete="off">
+            <div id="searchResults"></div>
+        </div>
+    </div>
 
-    <!-- JS Modules -->
-    <script src="js/common.js"></script>
-    <script src="js/ads.js"></script>
-    <script src="js/index.js"></script>
+    <div class="tabs-wrapper">
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
+            <button class="tab-btn" data-tab="categories">🎯 CATEGORIES</button>
+            <button class="tab-btn" data-tab="trending">⚡ TRENDING</button>
+        </div>
+        <div class="tabs-underline"></div>
+    </div>
 
-    <!-- Bubble System -->
-    <script src="bubble-system/bubble-sounds.js"></script>
-    <script src="bubble-system/bubble-core.js"></script>
+    <div id="statsBar" class="stats-bar"></div>
 
-    <!-- In-App Redirect (Safety) -->
-    <script>
-        (function() {
-            const ua = navigator.userAgent;
-            const isTelegram = /Telegram/i.test(ua);
-            const isInApp = /FBAN|FBAV|Instagram|Twitter|Snapchat|LinkedIn|Messenger|FBIOS|FB_IAB/i.test(ua);
-            const currentUrl = window.location.href;
-            const cleanUrl = currentUrl.replace(/^https?:\/\//, '');
-            if (isTelegram || isInApp) {
-                if (/Android/i.test(ua)) window.location.href = 'intent://' + cleanUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
-                else if (/iPhone|iPad|iPod/i.test(ua)) window.location.href = 'x-safari-https://' + cleanUrl;
-            }
-        })();
-    </script>
+    <!-- Latest panel -->
+    <div id="latestPanel" class="panel active-panel">
+        <div class="pagination-wrapper" id="latestPaginationTop"></div>
+        <div id="latestDynamicGrid" class="latest-grid"></div>
+        <div class="pagination-wrapper" id="latestPaginationBottom"></div>
+    </div>
+
+    <!-- Categories panel -->
+    <div id="categoriesPanel" class="panel">
+        <div class="categories-grid" id="categoriesContainer"></div>
+    </div>
+
+    <!-- Trending panel -->
+    <div id="trendingPanel" class="panel">
+        <div class="trending-grid" id="trendingContainer"></div>
+    </div>
+
+    <!-- Bottom ad container -->
+    <div id="ad-bottom" class="ad-spot"></div>
+
+    <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
+    <div class="social-row">
+        <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
+        <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram"><i class="fab fa-telegram-plane"></i></a>
+        <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+    </div>
+
+</div>
+
+<div id="sticky"></div>
+
+<script src="data/data.js"></script>
+<script src="data/thumbs.js"></script>
+<script src="bubble-system/bubble-sounds.js"></script>
+<script src="bubble-system/bubble-core.js"></script>
+
+<!-- JS Modules -->
+<script src="js/common.js"></script>
+<script src="js/ads.js"></script>
+<script src="js/index.js"></script>
 
 </body>
-</html>
+                </html>
