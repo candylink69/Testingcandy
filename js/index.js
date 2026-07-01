@@ -14,7 +14,7 @@ let videoDataLoadAttempts = 0;
 const MAX_LOAD_ATTEMPTS = 30;
 let loadInterval = null;
 
-// ========== AD KEYS (Copy-Paste from original) ==========
+// ========== AD KEYS ==========
 const KEY_320x50 = '56b3e3a26900c426b81430f9f85a31d6';
 const KEY_300x250 = '8e09ed2a29423c808ccb93e333fa00c5';
 const KEY_728x90 = '57e196c0c8406efacc614d4b4d21d13d';
@@ -33,7 +33,33 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
-// ========== VIDEO CARD WITH PREVIEW ==========
+// ========== GENERATE TABS + PANELS ==========
+function generateTabsAndPanels() {
+    const tabsWrapper = document.getElementById('tabsWrapper');
+    if (!tabsWrapper) return;
+
+    // Tabs HTML
+    tabsWrapper.innerHTML = `
+        <div class="tabs-container">
+            <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
+            <button class="tab-btn" data-tab="categories">🎯 CATEGORIES</button>
+            <button class="tab-btn" data-tab="trending">⚡ TRENDING</button>
+        </div>
+        <div class="tabs-underline"></div>
+    `;
+
+    // Attach tab click events
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+    });
+
+    // Ensure panels are visible
+    document.getElementById('latestPanel').classList.add('active-panel');
+    document.getElementById('categoriesPanel').classList.remove('active-panel');
+    document.getElementById('trendingPanel').classList.remove('active-panel');
+}
+
+// ========== VIDEO CARD ==========
 function generateVideoCard(video) {
     const thumbUrl = getThumbnailUrlSafe(video.id);
     return `
@@ -319,7 +345,6 @@ function switchTab(tabId) {
     if (tabId === 'trending') {
         loadTrendingVideos();
     }
-    // Close menu if open
     if (typeof closeMenu === 'function') closeMenu();
 }
 
@@ -341,6 +366,9 @@ function handleTouchEnd(e) {
 
 // ========== INIT ==========
 function initIndex() {
+    // Generate tabs and panels first
+    generateTabsAndPanels();
+
     if (typeof videos !== 'undefined' && videos && videos.length) {
         if (loadInterval) clearInterval(loadInterval);
         reversedVideos = [...videos].reverse();
