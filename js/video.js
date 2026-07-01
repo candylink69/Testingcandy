@@ -1,22 +1,32 @@
 // ============================================================
-// VIDEO.JS - Load Video, Prev/Next, Related Videos
+// VIDEO.JS - Load Video, Prev/Next, Related Videos with Preview
 // ============================================================
 
 const urlParams = new URLSearchParams(window.location.search);
 const videoId = urlParams.get('v') || 'V001';
 
-// ========== RELATED VIDEOS FUNCTION ==========
+// ========== THUMBNAIL SAFE ==========
+function getThumbnailUrlSafe(videoId) {
+    if (typeof getThumbnailUrl === 'function') {
+        try {
+            return getThumbnailUrl(videoId);
+        } catch(e) {
+            return `https://via.placeholder.com/320x180?text=${videoId}`;
+        }
+    }
+    return `https://via.placeholder.com/320x180?text=${videoId}`;
+}
+
+// ========== RELATED VIDEOS FUNCTION (With Preview) ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
 
-    // Check if videos array exists (from data.js)
     if (typeof videos === 'undefined' || !videos.length) {
         container.innerHTML = '<p style="color:#888; padding:10px;">Loading related videos...</p>';
         return;
     }
 
-    // Find current video to get its category
     const currentVideo = videos.find(v => v.id === currentVideoId);
     if (!currentVideo || !currentVideo.categories || !currentVideo.categories.length) {
         container.innerHTML = '<p style="color:#888; padding:10px;">No related videos found.</p>';
@@ -24,7 +34,6 @@ function loadRelatedVideos(currentVideoId) {
     }
 
     const categoryId = currentVideo.categories[0];
-    // Filter videos: same category, exclude current, limit to 5
     const related = videos
         .filter(v => v.id !== currentVideoId && v.categories && v.categories.includes(categoryId))
         .slice(0, 5);
@@ -36,18 +45,120 @@ function loadRelatedVideos(currentVideoId) {
 
     let html = `<div class="related-videos-grid">`;
     related.forEach(v => {
-        const thumb = (typeof getThumbnailUrlSafe === 'function') 
-            ? getThumbnailUrlSafe(v.id) 
-            : `https://via.placeholder.com/120x68?text=${v.id}`;
+        const thumbUrl = getThumbnailUrlSafe(v.id);
+        const previewHtml = v.preview ? 
+            `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : '';
+        const durationHtml = v.duration ? 
+            `<div class="duration">${v.duration}</div>` : '';
+
         html += `
-            <div class="related-video-card" onclick="goToVideo('${v.id}')">
-                <img src="${thumb}" loading="lazy" onerror="this.src='https://via.placeholder.com/120x68?text=No+Thumb'">
-                <div class="related-video-id">${v.id}</div>
+            <div class="related-video-card" data-video-id="${v.id}">
+                <div class="thumb-container">
+                    <img class="thumb-img" src="${thumbUrl}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+                    ${previewHtml}
+                    ${durationHtml}
+                </div>
+                <div class="latest-info">
+                    <div class="latest-id">${v.id}</div>
+                    ${v.title ? `<div class="latest-title">${v.title.substring(0, 50)}</div>` : ''}
+                </div>
             </div>
         `;
     });
     html += `</div>`;
     container.innerHTML = html;
+
+    // ===== ATTACH CLICK EVENTS =====
+    document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
+        const vid = card.getAttribute('data-video-id');
+        if (vid) {
+            card.addEventListener('click', (e) => {
+                e.stopPropagation();
+                goToVideo(vid);
+            });
+        }
+    });
+
+    // ===== SETUP PREVIEW HANDLERS =====
+    setupRelatedPreview();
+}
+
+// ========== PREVIEW HANDLERS FOR RELATED VIDEOS ==========
+let relatedActivePreview = null;
+
+function stopRelatedPreview() {
+    if (relatedActivePreview) {
+        const container = relatedActivePreview.querySelector('.thumb-container');
+        const previewVideo = container?.querySelector('.preview-video');
+        const thumbImg = container?.querySelector('.thumb-img');
+        if (previewVideo) {
+            previewVideo.pause();
+            previewVideo.style.display = 'none';
+        }
+        if (thumbImg) thumbImg.style.opacity = '1';
+        relatedActivePreview = null;
+    }
+}
+
+function startRelatedPreview(card) {
+    stopRelatedPreview();
+    const container = card.querySelector('.thumb-container');
+    const previewVideo = container?.querySelector('.preview-video');
+    const thumbImg = container?.querySelector('.thumb-img');
+    if (!previewVideo) return;
+    if (!previewVideo.src && previewVideo.dataset.src) {
+        previewVideo.src = previewVideo.dataset.src;
+        previewVideo.load();
+    }
+    previewVideo.currentTime = 0;
+    previewVideo.style.display = 'block';
+    previewVideo.play().catch(e => console.log('Preview play failed:', e));
+    if (thumbImg) thumbImg.style.opacity = '0.3';
+    relatedActivePreview = card;
+}
+
+function setupRelatedPreview() {
+    const container = document.getElementById('relatedVideos');
+    if (!container) return;
+
+    // Mouse events
+    container.removeEventListener('mouseover', handleRelatedMouseOver);
+    container.removeEventListener('mouseout', handleRelatedMouseOut);
+    container.addEventListener('mouseover', handleRelatedMouseOver);
+    container.addEventListener('mouseout', handleRelatedMouseOut);
+
+    // Touch events
+    container.removeEventListener('touchstart', handleRelatedTouchStart);
+    container.removeEventListener('touchend', handleRelatedTouchEnd);
+    container.addEventListener('touchstart', handleRelatedTouchStart, { passive: true });
+    container.addEventListener('touchend', handleRelatedTouchEnd);
+}
+
+let relatedTouchTimer = null;
+
+function handleRelatedMouseOver(e) {
+    const card = e.target.closest('.related-video-card');
+    if (card) startRelatedPreview(card);
+}
+
+function handleRelatedMouseOut(e) {
+    const card = e.target.closest('.related-video-card');
+    if (card && relatedActivePreview === card) stopRelatedPreview();
+}
+
+function handleRelatedTouchStart(e) {
+    const card = e.target.closest('.related-video-card');
+    if (card) relatedTouchTimer = setTimeout(() => startRelatedPreview(card), 100);
+}
+
+function handleRelatedTouchEnd(e) {
+    if (relatedTouchTimer) { clearTimeout(relatedTouchTimer); relatedTouchTimer = null; }
+    const card = e.target.closest('.related-video-card');
+    if (card && relatedActivePreview === card) {
+        setTimeout(() => {
+            if (relatedActivePreview === card) stopRelatedPreview();
+        }, 300);
+    }
 }
 
 // ========== MAIN VIDEO LOAD ==========
