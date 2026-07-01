@@ -6,109 +6,96 @@
     <title>CandyLink69 – Exclusive Videos Hub</title>
     <meta name="description" content="Watch the latest exclusive videos in HD. New categories and trending videos updated daily. All videos and movies are available with subtitles.">
     
-    <!-- ✅ CANONICAL FIX (Google Console Issue #1) -->
+    <!-- ✅ CANONICAL FIX -->
     <link rel="canonical" href="https://candylink69.com/" />
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     
-    <!-- ✅ CSS (Ek hi file for all pages) -->
+    <!-- ✅ CSS -->
     <link rel="stylesheet" href="css/style.css">
     
     <!-- Bubble System CSS -->
     <link rel="stylesheet" href="bubble-system/bubble-styles.css">
 
-    <!-- Favicon (Waise hi) -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <!-- ✅ Icons (Updated Path) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/site.webmanifest">
 </head>
 <body>
 
-    <!-- ========================================= -->
-    <!-- 1. SIDE MENU (Hamburger - common.js se load) -->
-    <!-- ========================================= -->
+    <!-- SIDE MENU -->
     <div id="sideMenu"></div>
 
-    <!-- ========================================= -->
-    <!-- 2. MAIN WRAPPER -->
-    <!-- ========================================= -->
+    <!-- MAIN WRAPPER -->
     <div class="container" id="appContainer">
 
-        <!-- HEADER: Title + Social Icons (common.js se load) -->
+        <!-- HEADER -->
         <div id="headerContainer"></div>
 
-        <!-- TOP AD (ads.js se load) -->
+        <!-- TOP AD -->
         <div id="ad-top" class="ad-spot"></div>
 
-        <!-- SEARCH BAR (common.js se load) -->
+        <!-- SEARCH BAR -->
         <div id="searchContainer"></div>
 
-        <!-- TABS (index.js se load) -->
+        <!-- TABS -->
         <div id="tabsWrapper"></div>
 
-        <!-- STATS BAR (index.js se load) -->
+        <!-- STATS BAR -->
         <div id="statsBar"></div>
 
-        <!-- ========================================= -->
-        <!-- 3. PANELS (index.js se load) -->
-        <!-- ========================================= -->
-        
-        <!-- LATEST PANEL -->
+        <!-- PANELS -->
         <div id="latestPanel" class="panel active-panel">
             <div class="pagination-wrapper" id="latestPaginationTop"></div>
             <div id="latestDynamicGrid" class="latest-grid"></div>
             <div class="pagination-wrapper" id="latestPaginationBottom"></div>
         </div>
 
-        <!-- CATEGORIES PANEL -->
         <div id="categoriesPanel" class="panel">
             <div class="categories-grid" id="categoriesContainer"></div>
         </div>
 
-        <!-- TRENDING PANEL -->
         <div id="trendingPanel" class="panel">
             <div class="trending-grid" id="trendingContainer"></div>
         </div>
 
-        <!-- BOTTOM AD (ads.js se load) -->
+        <!-- BOTTOM AD -->
         <div id="ad-bottom" class="ad-spot"></div>
 
-        <!-- FOOTER SOCIAL (common.js se load) -->
+        <!-- FOOTER SOCIAL -->
         <div id="footerContainer"></div>
 
     </div>
 
-    <!-- ========================================= -->
-    <!-- 4. STICKY AD FOOTER (ads.js se load) -->
-    <!-- ========================================= -->
+    <!-- STICKY AD -->
     <div id="sticky" class="sticky-ad"></div>
 
     <!-- ========================================= -->
-    <!-- 5. SCRIPTS (Modular Structure) -->
+    <!-- SCRIPTS (Updated Paths) -->
     <!-- ========================================= -->
     
-    <!-- Data Files (Root mein) -->
-    <script src="data.js"></script>
-    <script src="thumbs.js"></script>
+    <!-- Data Files (Ab data/ folder mein) -->
+    <script src="data/data.js"></script>
+    <script src="data/thumbs.js"></script>
     
-    <!-- Age Gate (Root mein) -->
+    <!-- Age Gate -->
     <script src="age-gate.js" async></script>
 
     <!-- JS Modules -->
-    <script src="js/common.js"></script>   <!-- Menu, Social, Search, In-App Redirect -->
-    <script src="js/ads.js"></script>      <!-- Saare Ad Codes (Copy-Paste) -->
-    <script src="js/index.js"></script>    <!-- Tabs, Grids, Stats, Pagination, Swipe -->
+    <script src="js/common.js"></script>
+    <script src="js/ads.js"></script>
+    <script src="js/index.js"></script>
 
     <!-- Bubble System -->
     <script src="bubble-system/bubble-sounds.js"></script>
     <script src="bubble-system/bubble-core.js"></script>
 
-    <!-- ✅ In-App Browser Redirect (Already inside common.js, but keeping for safety) -->
+    <!-- In-App Redirect (Safety) -->
     <script>
         (function() {
-            // Extra safety: Ye redirect common.js mein bhi hoga, but agar common.js load na ho toh
             const ua = navigator.userAgent;
             const isTelegram = /Telegram/i.test(ua);
             const isInApp = /FBAN|FBAV|Instagram|Twitter|Snapchat|LinkedIn|Messenger|FBIOS|FB_IAB/i.test(ua);
