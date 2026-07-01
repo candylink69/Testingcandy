@@ -5,7 +5,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const videoId = urlParams.get('v') || 'V001';
 
-fetch('videos.json')
+fetch('data/videos.json')
     .then(response => response.json())
     .then(videosData => {
         const video = videosData[videoId];
