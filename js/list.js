@@ -11,7 +11,7 @@ const PER_PAGE = 20;
 // ========== LOAD CATEGORIES ==========
 async function loadCategoriesData() {
     try {
-        const response = await fetch('categories.json');
+        const response = await fetch('data/categories.json');
         allCategories = await response.json();
     } catch (error) {
         console.log('Could not load categories.json');
