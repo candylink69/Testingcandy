@@ -17,32 +17,47 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RELATED VIDEOS FUNCTION (With Preview) ==========
+// ========== RELATED VIDEOS FUNCTION (With Preview + Fallback) ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
 
     if (typeof videos === 'undefined' || !videos.length) {
-        container.innerHTML = '<p style="color:#888; padding:10px;">Loading related videos...</p>';
+        container.innerHTML = '<p style="color:#888; padding:10px;">Loading videos...</p>';
         return;
     }
 
     const currentVideo = videos.find(v => v.id === currentVideoId);
-    if (!currentVideo || !currentVideo.categories || !currentVideo.categories.length) {
-        container.innerHTML = '<p style="color:#888; padding:10px;">No related videos found.</p>';
-        return;
+    let related = [];
+
+    // 1. Same category ki videos dhoondho
+    if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
+        const categoryId = currentVideo.categories[0];
+        related = videos
+            .filter(v => v.id !== currentVideoId && v.categories && v.categories.includes(categoryId))
+            .slice(0, 5);
     }
 
-    const categoryId = currentVideo.categories[0];
-    const related = videos
-        .filter(v => v.id !== currentVideoId && v.categories && v.categories.includes(categoryId))
-        .slice(0, 5);
+    // 2. Agar 5 se kam hain toh latest videos se fill karo
+    if (related.length < 5) {
+        const remainingCount = 5 - related.length;
+        const relatedIds = new Set(related.map(v => v.id));
+        relatedIds.add(currentVideoId);
 
+        const latestVideos = videos
+            .filter(v => !relatedIds.has(v.id))
+            .slice(0, remainingCount);
+
+        related = [...related, ...latestVideos];
+    }
+
+    // 3. Agar phir bhi koi video nahi mili (site pe sirf 1 video hai)
     if (related.length === 0) {
-        container.innerHTML = '<p style="color:#888; padding:10px;">No related videos found.</p>';
+        container.innerHTML = '<p style="color:#888; padding:10px;">No other videos available.</p>';
         return;
     }
 
+    // ===== HTML GENERATE =====
     let html = `<div class="related-videos-grid">`;
     related.forEach(v => {
         const thumbUrl = getThumbnailUrlSafe(v.id);
