@@ -1,5 +1,5 @@
 // ============================================================
-// INDEX.JS - Tabs, Grids, Stats, Pagination, Swipe
+// INDEX.JS - Original Logic (Tabs, Grid, Pagination, Stats, Swipe)
 // ============================================================
 
 let allCategories = [];
@@ -10,14 +10,6 @@ const AD_AFTER_EVERY = 5;
 const SWIPE_THRESHOLD = 80;
 let touchStartX = 0, touchStartY = 0;
 let currentTab = 'latest';
-let videoDataLoadAttempts = 0;
-const MAX_LOAD_ATTEMPTS = 30;
-let loadInterval = null;
-
-// ========== AD KEYS ==========
-const KEY_320x50 = '56b3e3a26900c426b81430f9f85a31d6';
-const KEY_300x250 = '8e09ed2a29423c808ccb93e333fa00c5';
-const KEY_728x90 = '57e196c0c8406efacc614d4b4d21d13d';
 
 // ========== THUMBNAIL SAFE ==========
 function getThumbnailUrlSafe(videoId) {
@@ -319,11 +311,41 @@ function switchTab(tabId) {
     if (tabId === 'trending') {
         loadTrendingVideos();
     }
-    // ✅ Close menu if open (for menu bar integration)
+    // Close menu if open (for menu bar integration)
     if (typeof closeMenu === 'function') closeMenu();
 }
 
-// ========== SWIPE ==========
+// ========== SEARCH ==========
+function setupSearch() {
+    const input = document.getElementById('searchInput');
+    const resultsDiv = document.getElementById('searchResults');
+    if (!input) return;
+    input.addEventListener('input', function() {
+        const q = this.value.toLowerCase().trim();
+        if (q.length < 2) { resultsDiv.style.display = 'none'; return; }
+        if (!videos) return;
+        const filtered = videos.filter(v => v.id.toLowerCase().includes(q) || (v.title && v.title.toLowerCase().includes(q)) || (v.categories && v.categories.some(c => c.toLowerCase().includes(q))));
+        if (filtered.length === 0) {
+            resultsDiv.innerHTML = '<div style="padding:15px;">No videos found</div>';
+            resultsDiv.style.display = 'block';
+            return;
+        }
+        let html = '';
+        filtered.forEach(v => {
+            html += `<div class="search-result-item" onclick="goToVideo('${v.id}')">
+                        <div class="search-video-id">${v.id}</div>
+                        ${v.title ? `<div class="search-video-title">${escapeHtml(v.title)}</div>` : ''}
+                    </div>`;
+        });
+        resultsDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+    });
+    document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !resultsDiv.contains(e.target)) resultsDiv.style.display = 'none';
+    });
+}
+
+// ========== SWIPE (IGNORE VERTICAL) ==========
 function handleTouchStart(e) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
@@ -350,10 +372,10 @@ function goToCategory(id) {
 // ========== INIT ==========
 function initIndex() {
     if (typeof videos !== 'undefined' && videos && videos.length) {
-        if (loadInterval) clearInterval(loadInterval);
         reversedVideos = [...videos].reverse();
         loadCategories();
         loadTrendingVideos();
+        setupSearch();
         renderLatestPage(1, false);
         updateStatsBar();
         document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -362,19 +384,14 @@ function initIndex() {
         document.addEventListener('touchstart', handleTouchStart, { passive: true });
         document.addEventListener('touchend', handleTouchEnd, { passive: true });
     } else {
-        videoDataLoadAttempts++;
-        if (videoDataLoadAttempts >= MAX_LOAD_ATTEMPTS) {
-            if (loadInterval) clearInterval(loadInterval);
-            document.getElementById('latestDynamicGrid').innerHTML = '<div class="no-videos-msg">⚠️ Failed to load videos. Please refresh.</div>';
-            document.getElementById('categoriesContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load categories.</div>';
-            document.getElementById('trendingContainer').innerHTML = '<div class="no-videos-msg">⚠️ Unable to load trending.</div>';
-            console.error('data.js failed to load');
-        }
+        // Retry logic
+        setTimeout(initIndex, 500);
     }
 }
 
-// Wait for DOM and data
-document.addEventListener('DOMContentLoaded', () => {
-    loadInterval = setInterval(initIndex, 100);
-    setTimeout(() => { if (typeof videos === 'undefined') initIndex(); }, 100);
-});
+// Document ready pe init
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initIndex);
+} else {
+    initIndex();
+        }
