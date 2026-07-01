@@ -33,32 +33,6 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
-// ========== GENERATE TABS + PANELS ==========
-function generateTabsAndPanels() {
-    const tabsWrapper = document.getElementById('tabsWrapper');
-    if (!tabsWrapper) return;
-
-    // Tabs HTML
-    tabsWrapper.innerHTML = `
-        <div class="tabs-container">
-            <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
-            <button class="tab-btn" data-tab="categories">🎯 CATEGORIES</button>
-            <button class="tab-btn" data-tab="trending">⚡ TRENDING</button>
-        </div>
-        <div class="tabs-underline"></div>
-    `;
-
-    // Attach tab click events
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
-    });
-
-    // Ensure panels are visible
-    document.getElementById('latestPanel').classList.add('active-panel');
-    document.getElementById('categoriesPanel').classList.remove('active-panel');
-    document.getElementById('trendingPanel').classList.remove('active-panel');
-}
-
 // ========== VIDEO CARD ==========
 function generateVideoCard(video) {
     const thumbUrl = getThumbnailUrlSafe(video.id);
@@ -345,6 +319,7 @@ function switchTab(tabId) {
     if (tabId === 'trending') {
         loadTrendingVideos();
     }
+    // ✅ Close menu if open (for menu bar integration)
     if (typeof closeMenu === 'function') closeMenu();
 }
 
@@ -364,11 +339,16 @@ function handleTouchEnd(e) {
     else if (diffX < 0 && idx < tabs.length-1) switchTab(tabs[idx+1]);
 }
 
+// ========== GLOBALS (Menu Support) ==========
+function goToVideo(id) { 
+    window.location.href = 'video.html?v=' + id; 
+}
+function goToCategory(id) { 
+    window.location.href = 'list.html?category=' + id; 
+}
+
 // ========== INIT ==========
 function initIndex() {
-    // Generate tabs and panels first
-    generateTabsAndPanels();
-
     if (typeof videos !== 'undefined' && videos && videos.length) {
         if (loadInterval) clearInterval(loadInterval);
         reversedVideos = [...videos].reverse();
