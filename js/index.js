@@ -207,7 +207,7 @@ function updatePaginationControls(totalPages, currentPage) {
 // ========== CATEGORIES ==========
 async function loadCategories() {
     try {
-        const res = await fetch('categories.json');
+        const res = await fetch('data/categories.json');
         allCategories = await res.json();
         if (videos) allCategories.forEach(cat => cat.videoCount = videos.filter(v => v.categories?.includes(cat.id)).length);
         displayCategories(allCategories);
