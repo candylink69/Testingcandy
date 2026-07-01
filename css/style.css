@@ -1070,3 +1070,144 @@ body,
     color: #555;
     font-size: 18px;
 }
+/* ============================================
+   SIDE MENU (Hamburger - Sliding Drawer)
+   ============================================ */
+
+/* ---- Overlay (Background dark karega) ---- */
+#menuOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9998;
+}
+
+/* ---- Drawer (Side se aayega) ---- */
+#menuDrawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 85%;
+    max-width: 320px;
+    height: 100%;
+    background: #111;
+    z-index: 9999;
+    overflow-y: auto;
+    padding: 20px 0;
+    transform: translateX(-100%);  /* 🔥 Pehle side mein chhupa rahega */
+    transition: transform 0.3s ease;  /* 🔥 Smooth slide */
+    box-shadow: 2px 0 15px rgba(0,0,0,0.8);
+    border-right: 2px solid #ff3300;
+}
+
+/* ---- Jab open class lagegi (JS toggle karega) ---- */
+#menuDrawer.open {
+    transform: translateX(0);  /* 🔥 Andar aayega */
+}
+
+/* ---- Menu Header (Logo + Close) ---- */
+#menuHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px 15px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 15px;
+}
+.menu-logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff9900;
+}
+.menu-close {
+    font-size: 28px;
+    color: #fff;
+    cursor: pointer;
+    padding: 0 10px;
+}
+.menu-close:hover {
+    color: #ff3300;
+}
+
+/* ---- Menu Navigation Links ---- */
+#menuNav {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 15px 0;
+}
+#menuNav li {
+    padding: 0;
+}
+#menuNav .menu-link {
+    display: block;
+    padding: 12px 20px;
+    color: #ccc;
+    text-decoration: none;
+    font-size: 16px;
+    border-left: 3px solid transparent;
+    transition: 0.2s;
+}
+#menuNav .menu-link:hover {
+    background: rgba(255, 51, 0, 0.1);
+    color: #fff;
+    border-left-color: #ff6600;
+}
+#menuNav .menu-link.active-link {
+    color: #ff9900;
+    border-left-color: #ff9900;
+    background: rgba(255, 153, 0, 0.05);
+}
+
+/* ---- Categories Heading ---- */
+#menuCategoryHeading {
+    color: #ff6600;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-top: 1px solid #333;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+/* ---- Category List in Menu ---- */
+#menuCategoryList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+}
+#menuCategoryList li {
+    padding: 0;
+}
+#menuCategoryList .menu-link {
+    display: block;
+    padding: 8px 20px;
+    color: #aaa;
+    text-decoration: none;
+    font-size: 14px;
+    transition: 0.2s;
+    border-left: 3px solid transparent;
+}
+#menuCategoryList .menu-link:hover {
+    background: rgba(255, 51, 0, 0.05);
+    color: #fff;
+    border-left-color: #ff6600;
+}
+
+/* ---- Menu Social Icons ---- */
+#menuSocial {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 15px 0;
+    border-top: 1px solid #333;
+    margin-top: 10px;
+}
+#menuSocial .social-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 20px;
+}
