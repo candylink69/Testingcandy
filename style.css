@@ -1038,3 +1038,35 @@ body,
     width: 100%;
     box-sizing: border-box;
 }
+/* ===== DOUBLE TAP INDICATOR (Video Page) ===== */
+.double-tap-indicator {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0 12px 0;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 40px;
+    border: 1px solid #333;
+    font-size: 18px;
+    color: #ffaa44;
+    flex-wrap: wrap;
+}
+.tap-icon {
+    font-size: 24px;
+    line-height: 1;
+    color: #ff9900;
+}
+.tap-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #ddd;
+    background: #222;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+.tap-divider {
+    color: #555;
+    font-size: 18px;
+}
