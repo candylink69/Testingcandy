@@ -1,13 +1,14 @@
 // ============================================================
-// 1. IN-APP BROWSER REDIRECT (Instagram, Telegram, Facebook)
+// COMMON.JS - Menu, Social, Search, In-App Redirect
 // ============================================================
+
+// ========== IN-APP REDIRECT ==========
 (function() {
     const ua = navigator.userAgent;
     const isTelegram = /Telegram/i.test(ua);
     const isInApp = /FBAN|FBAV|Instagram|Twitter|Snapchat|LinkedIn|Messenger|FBIOS|FB_IAB/i.test(ua);
     const currentUrl = window.location.href;
     const cleanUrl = currentUrl.replace(/^https?:\/\//, '');
-
     if (isTelegram || isInApp) {
         if (/Android/i.test(ua)) {
             window.location.href = 'intent://' + cleanUrl + '#Intent;scheme=https;action=android.intent.action.VIEW;end';
@@ -17,26 +18,18 @@
     }
 })();
 
-
-// ============================================================
-// 2. GLOBAL FUNCTIONS
-// ============================================================
+// ========== GLOBAL FUNCTIONS ==========
 function goToVideo(videoId) {
     window.location.href = 'video.html?v=' + videoId;
 }
-
 function goToCategory(categoryId) {
     window.location.href = 'list.html?category=' + categoryId;
 }
-
 function goToPage(url) {
     window.location.href = url;
 }
 
-
-// ============================================================
-// 3. SIDE MENU FUNCTIONS
-// ============================================================
+// ========== SIDE MENU FUNCTIONS ==========
 function openMenu() {
     const overlay = document.getElementById('menuOverlay');
     const drawer = document.getElementById('menuDrawer');
@@ -44,7 +37,6 @@ function openMenu() {
     if (drawer) drawer.classList.add('open');
     document.body.style.overflow = 'hidden';
 }
-
 function closeMenu() {
     const overlay = document.getElementById('menuOverlay');
     const drawer = document.getElementById('menuDrawer');
@@ -52,15 +44,11 @@ function closeMenu() {
     if (drawer) drawer.classList.remove('open');
     document.body.style.overflow = '';
 }
-
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeMenu();
 });
 
-
-// ============================================================
-// 4. LOAD SIDE MENU
-// ============================================================
+// ========== LOAD SIDE MENU ==========
 function loadSideMenu() {
     const menuHTML = `
         <div id="menuOverlay" onclick="closeMenu()"></div>
@@ -70,10 +58,15 @@ function loadSideMenu() {
                 <span class="menu-close" onclick="closeMenu()">✕</span>
             </div>
             <ul id="menuNav">
-                <li><a href="index.html" class="menu-link" data-page="index">🏠 Home</a></li>
-                <li><a href="index.html" class="menu-link" data-page="latest">🔥 Latest</a></li>
-                <li><a href="index.html" class="menu-link" data-page="categories">📂 Categories</a></li>
-                <li><a href="index.html" class="menu-link" data-page="trending">⚡ Trending</a></li>
+                <!-- ✅ Home -> Index pe jaaye -->
+                <li><a href="index.html" class="menu-link active-link" data-page="index">🏠 Home</a></li>
+                <!-- ✅ Latest -> Tab switch kare -->
+                <li><a href="javascript:void(0)" onclick="switchTab('latest'); closeMenu();" class="menu-link" data-page="latest">🔥 Latest</a></li>
+                <!-- ✅ Categories -> Tab switch kare -->
+                <li><a href="javascript:void(0)" onclick="switchTab('categories'); closeMenu();" class="menu-link" data-page="categories">📂 Categories</a></li>
+                <!-- ✅ Trending -> Tab switch kare -->
+                <li><a href="javascript:void(0)" onclick="switchTab('trending'); closeMenu();" class="menu-link" data-page="trending">⚡ Trending</a></li>
+                <!-- ✅ All Videos -> List page pe jaaye -->
                 <li><a href="list.html" class="menu-link" data-page="list">📋 All Videos</a></li>
             </ul>
             <div id="menuCategoryHeading">📁 ALL CATEGORIES</div>
@@ -115,6 +108,7 @@ function loadSideMenu() {
     highlightActiveMenu();
 }
 
+// ========== ACTIVE LINK HIGHLIGHT ==========
 function highlightActiveMenu() {
     const currentPath = window.location.pathname;
     const currentPage = currentPath.split('/').pop() || 'index.html';
@@ -128,21 +122,14 @@ function highlightActiveMenu() {
     });
 }
 
-
-// ============================================================
-// 5. LOAD HEADER (Title + Social Icons)
-// ============================================================
+// ========== LOAD HEADER ==========
 function loadHeader() {
     const container = document.getElementById('headerContainer');
     if (!container) return;
-
-    // Agar video.html hai toh sirf title (no social)
     if (window.location.pathname.includes('video.html')) {
         container.innerHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
         return;
     }
-
-    // Index / List pages ke liye full header (title + social)
     const headerHTML = `
         <div class="title">🔥 CandyLink69 🔥</div>
         <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
@@ -155,14 +142,10 @@ function loadHeader() {
     container.innerHTML = headerHTML;
 }
 
-
-// ============================================================
-// 6. LOAD FOOTER SOCIAL
-// ============================================================
+// ========== LOAD FOOTER ==========
 function loadFooter() {
     const container = document.getElementById('footerContainer');
     if (!container) return;
-
     const footerHTML = `
         <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
         <div class="social-row">
@@ -174,14 +157,10 @@ function loadFooter() {
     container.innerHTML = footerHTML;
 }
 
-
-// ============================================================
-// 7. LOAD SEARCH BAR
-// ============================================================
+// ========== LOAD SEARCH ==========
 function loadSearchBar() {
     const container = document.getElementById('searchContainer');
     if (!container) return;
-
     const searchHTML = `
         <div class="sticky-search">
             <div class="search-container">
@@ -194,28 +173,22 @@ function loadSearchBar() {
     setupSearchLogic();
 }
 
-
-// ============================================================
-// 8. SEARCH LOGIC
-// ============================================================
+// ========== SEARCH LOGIC ==========
 function setupSearchLogic() {
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     if (!searchInput) return;
-
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         if (query.length < 2) {
             searchResults.style.display = 'none';
             return;
         }
-
         if (typeof videos === 'undefined' || !videos.length) {
             searchResults.innerHTML = '<div style="padding:15px;color:#888;">Loading videos...</div>';
             searchResults.style.display = 'block';
             return;
         }
-
         const filtered = videos.filter(v => {
             const idMatch = v.id.toLowerCase().includes(query);
             const titleMatch = v.title && v.title.toLowerCase().includes(query);
@@ -225,13 +198,11 @@ function setupSearchLogic() {
             }
             return idMatch || titleMatch || catMatch;
         });
-
         if (filtered.length === 0) {
             searchResults.innerHTML = '<div style="padding:15px;color:#888;">No videos found</div>';
             searchResults.style.display = 'block';
             return;
         }
-
         let html = '';
         filtered.slice(0, 10).forEach(v => {
             html += `
@@ -244,7 +215,6 @@ function setupSearchLogic() {
         searchResults.innerHTML = html;
         searchResults.style.display = 'block';
     });
-
     document.addEventListener('click', function(e) {
         const container = document.querySelector('.search-container');
         if (container && !container.contains(e.target)) {
@@ -253,13 +223,9 @@ function setupSearchLogic() {
     });
 }
 
-
-// ============================================================
-// 9. MENU BUTTON INJECT (Hamburger Icon)
-// ============================================================
+// ========== INJECT MENU BUTTON ==========
 function injectMenuButton() {
     if (document.getElementById('menuToggleBtn')) return;
-
     const btn = document.createElement('div');
     btn.id = 'menuToggleBtn';
     btn.innerHTML = '☰';
@@ -268,15 +234,15 @@ function injectMenuButton() {
         top: 12px;
         left: 12px;
         z-index: 10000;
-        font-size: 30px;
+        font-size: 24px;
         color: #ff9900;
         cursor: pointer;
-        background: rgba(0,0,0,0.7);
-        padding: 2px 14px;
-        border-radius: 8px;
+        background: rgba(0,0,0,0.5);
+        padding: 2px 12px;
+        border-radius: 6px;
         border: 1px solid #ff6600;
         user-select: none;
-        line-height: 1.4;
+        line-height: 1.3;
     `;
     btn.onclick = function(e) {
         e.stopPropagation();
@@ -285,23 +251,17 @@ function injectMenuButton() {
     document.body.prepend(btn);
 }
 
-
-// ============================================================
-// 10. INITIALIZE
-// ============================================================
+// ========== INIT ==========
 function initCommon() {
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initCommon);
         return;
     }
-
     loadHeader();
     loadFooter();
     loadSearchBar();
     loadSideMenu();
-    injectMenuButton();  // ✅ Menu button har page pe inject hoga
-
+    injectMenuButton();
     console.log('✅ Common.js loaded successfully!');
 }
-
 initCommon();
