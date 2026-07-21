@@ -104,6 +104,22 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .ellipsis { color: #aaa; padding: 0 4px; }
 
 /* ============================================================
+   SUBTITLE BADGE (Index Page)
+   ============================================================ */
+.subtitle-badge {
+    background: linear-gradient(90deg, #ff3300, #ff9900);
+    color: #fff;
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: bold;
+    display: inline-block;
+    margin: 4px 0 10px 0;
+    box-shadow: 0 0 20px rgba(255, 51, 0, 0.3);
+    animation: pulseLight 1.5s infinite alternate;
+}
+
+/* ============================================================
    🟣 PART 4: LIST.HTML EXCLUSIVE STYLES
    ============================================================ */
 
