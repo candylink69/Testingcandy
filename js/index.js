@@ -25,6 +25,15 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
+// ========== BUBBLE LETTERS WRAPPER ==========
+function bubbleText(text) {
+    if (!text) return '';
+    return text.split('').map(char => {
+        if (char === ' ') return ' ';
+        return `<span class="bubble-letter">${char}</span>`;
+    }).join('');
+}
+
 // ========== GENERATE VIDEO CARD (with Categories as Buttons) ==========
 function generateVideoCard(video) {
     // Categories ko buttons mein convert karo (NAME dikhega, ID nahi)
@@ -48,7 +57,7 @@ function generateVideoCard(video) {
         </div>
         <div class="latest-info">
             <div class="latest-id">${escapeHtml(video.id)}</div>
-            ${video.title ? `<div class="latest-title">${escapeHtml(video.title)}</div>` : ''}
+            ${video.title ? `<div class="latest-title">${bubbleText(escapeHtml(video.title))}</div>` : ''}
             ${categoriesHtml}
         </div>
     </div>`;
@@ -246,7 +255,7 @@ function displayCategories(cats) {
     });
 }
 
-// ========== TRENDING (with Categories & 3D Titles) ==========
+// ========== TRENDING (with Categories & Bubble Titles) ==========
 function loadTrendingVideos() {
     const cont = document.getElementById('trendingContainer');
     if (!cont) return;
@@ -299,7 +308,7 @@ function loadTrendingVideos() {
                 <img src="${thumb}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
                 <div class="latest-info">
                     <div class="latest-id">${v.id}</div>
-                    ${v.title ? `<div class="latest-title">${escapeHtml(v.title)}</div>` : ''}
+                    ${v.title ? `<div class="latest-title">${bubbleText(escapeHtml(v.title))}</div>` : ''}
                     ${catHtml}
                 </div>
             </div>
