@@ -39,23 +39,20 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .search-result-item:hover { background: rgba(255,51,0,0.15); }
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
-/* ===== VIDEO TITLES (3D Double Outline Effect) ===== */
+/* ===== VIDEO TITLES (Stylish but Simple) ===== */
 .latest-title,
 .video-title,
 .related-video-card .latest-title {
     font-size: 14px;
-    font-weight: 900;
-    color: #000;  /* ✅ Black text */
+    font-weight: 800;
+    color: #111;
     text-shadow: 
-        -1px -1px 0 #fff,   /* ✅ White outline (top-left) */
-         1px  1px 0 #fff,   /* ✅ White outline (bottom-right) */
-        -2px -2px 0 #fff,   /* ✅ Second white outline (top-left) */
-         2px  2px 0 #fff,   /* ✅ Second white outline (bottom-right) */
-         0 0 8px rgba(255,255,255,0.2);  /* ✅ Soft glow */
+        0 0 5px rgba(255,255,255,0.8),
+        0 0 10px rgba(255,255,255,0.4);
     letter-spacing: 0.5px;
     line-height: 1.3;
     word-break: break-word;
-    padding: 4px 2px;
+    padding: 2px 0;
 }
 
 /* ===== CATEGORIES AS BUTTONS ===== */
