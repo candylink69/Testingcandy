@@ -118,13 +118,26 @@ function displaySearchResults(results, query) {
     searchResults.style.display = 'block';
 }
 
-// ========== GET CATEGORY NAMES ==========
+// ========== GET CATEGORY NAMES (as array) ==========
 function getCategoryNames(categoryIds) {
-    if (!categoryIds || !Array.isArray(categoryIds)) return '';
+    if (!categoryIds || !Array.isArray(categoryIds)) return [];
     return categoryIds.map(catId => {
         const cat = allCategories.find(c => c.id === catId);
         return cat ? cat.name : catId;
-    }).join(', ');
+    });
+}
+
+// ========== GENERATE CATEGORY BUTTONS HTML ==========
+function generateCategoryButtons(categoryIds) {
+    if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
+    let html = `<div class="video-categories">`;
+    categoryIds.forEach(catId => {
+        const cat = allCategories.find(c => c.id === catId);
+        const catName = cat ? cat.name : catId;
+        html += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
+    });
+    html += `</div>`;
+    return html;
 }
 
 // ========== GENERATE PAGINATION (List) ==========
@@ -234,7 +247,13 @@ function initializePage() {
             currentVideos.forEach((v, i) => {
                 const hasTitle = v.title && v.title.trim().length > 0;
                 const alignClass = hasTitle ? 'left' : 'center';
-                const categoryNames = getCategoryNames(v.categories);
+                
+                // Categories ko buttons mein convert karo (NAME dikhega)
+                let catHtml = '';
+                if (v.categories && Array.isArray(v.categories) && v.categories.length) {
+                    catHtml = generateCategoryButtons(v.categories);
+                }
+                
                 const videoHTML = `
                     <a href="video.html?v=${v.id}">
                         <div class="thumb-container">
@@ -245,7 +264,7 @@ function initializePage() {
                         <div class="video-title ${alignClass}">
                             ${hasTitle ? `<span class="vid-id">${v.id}:</span> ${v.title}` : v.id}
                         </div>
-                        ${categoryNames ? `<div class="video-categories">${categoryNames.split(', ').map(cat => `<span class="category-tag">${cat}</span>`).join('')}</div>` : ''}
+                        ${catHtml}
                     </a>`;
                 c.insertAdjacentHTML('beforeend', videoHTML);
             });
