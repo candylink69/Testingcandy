@@ -25,19 +25,31 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
-// ========== VIDEO CARD ==========
 function generateVideoCard(video) {
-    const thumbUrl = getThumbnailUrlSafe(video.id);
+    // Categories ko HTML mein convert karo
+    let categoriesHtml = '';
+    if (video.categories && Array.isArray(video.categories) && video.categories.length) {
+        categoriesHtml = `<div class="video-categories">`;
+        video.categories.forEach(catId => {
+            // Category name fetch karo (categories.json se)
+            const cat = allCategories.find(c => c.id === catId);
+            const catName = cat ? cat.name : catId;
+            categoriesHtml += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
+        });
+        categoriesHtml += `</div>`;
+    }
+
     return `
     <div class="latest-card" data-video-id="${video.id}">
         <div class="thumb-container">
-            <img class="thumb-img" src="${thumbUrl}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+            <img class="thumb-img" src="${getThumbnailUrlSafe(video.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
             ${video.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${video.preview}"></video>` : ''}
             ${video.duration ? `<div class="duration">${video.duration}</div>` : ''}
         </div>
         <div class="latest-info">
             <div class="latest-id">${escapeHtml(video.id)}</div>
             ${video.title ? `<div class="latest-title">${escapeHtml(video.title)}</div>` : ''}
+            ${categoriesHtml}
         </div>
     </div>`;
 }
