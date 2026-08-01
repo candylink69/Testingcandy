@@ -53,7 +53,7 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RELATED VIDEOS (With Bubble Titles) ==========
+// ========== RELATED VIDEOS ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -105,6 +105,7 @@ function loadRelatedVideos(currentVideoId) {
                 <div class="latest-info">
                     <div class="latest-id">${v.id}</div>
                     ${v.title ? `<div class="latest-title">${bubbleText(v.title.substring(0, 50))}</div>` : ''}
+                    ${catHtml}
                 </div>
             </div>
         `;
@@ -236,18 +237,21 @@ async function loadVideo() {
             document.getElementById('videoPlayer').src = video.embed;
             document.getElementById('currentVideoId').textContent = videoId;
 
-            // ===== VIDEO TITLE (Bubble) =====
+            // ===== VIDEO TITLE (Bubble, Big) =====
             const titleContainer = document.getElementById('videoTitle');
-            if (titleContainer && video.title) {
-                titleContainer.innerHTML = bubbleText(video.title);
+            if (titleContainer) {
+                if (video.title) {
+                    titleContainer.innerHTML = bubbleText(video.title);
+                } else {
+                    titleContainer.innerHTML = videoId;
+                }
             }
 
             // ===== VIDEO CATEGORIES =====
             const catContainer = document.getElementById('videoCategories');
             if (catContainer) {
-                // Current video ki categories fetch karo (videos array se)
                 const currentVideo = videos.find(v => v.id === videoId);
-                if (currentVideo && currentVideo.categories) {
+                if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
                     catContainer.innerHTML = generateCategoryButtons(currentVideo.categories);
                 } else {
                     catContainer.innerHTML = '';
@@ -256,8 +260,12 @@ async function loadVideo() {
 
             // ===== VIDEO DESCRIPTION =====
             const descContainer = document.getElementById('videoDescription');
-            if (descContainer && video.description) {
-                descContainer.textContent = video.description;
+            if (descContainer) {
+                if (video.description) {
+                    descContainer.textContent = video.description;
+                } else {
+                    descContainer.textContent = '';
+                }
             }
 
             // Prev / Next
@@ -280,11 +288,17 @@ async function loadVideo() {
         } else {
             document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ccc; text-align:center">❌ This video is no longer available.</div>';
             document.getElementById('relatedVideos').innerHTML = '';
+            document.getElementById('videoTitle').innerHTML = '';
+            document.getElementById('videoCategories').innerHTML = '';
+            document.getElementById('videoDescription').textContent = '';
         }
     } catch (error) {
         console.error('Error loading video:', error);
         document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ff8888">⚠️ Failed to load video data.</div>';
         document.getElementById('relatedVideos').innerHTML = '';
+        document.getElementById('videoTitle').innerHTML = '';
+        document.getElementById('videoCategories').innerHTML = '';
+        document.getElementById('videoDescription').textContent = '';
     }
 }
 
