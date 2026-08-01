@@ -40,94 +40,138 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
 /* ============================================
-   GLASS BUBBLE + WATER EFFECT (Video Titles)
+   PREMIUM LIQUID GLASS TEXT v2.0
    ============================================ */
 
 .latest-title,
 .video-title,
 .related-video-card .latest-title {
+
+    position: relative;
+    display: inline-block;
+
     font-family: Arial, sans-serif;
     font-size: 15px;
     font-weight: 900;
     font-style: italic;
-    letter-spacing: 0.6px;
+
+    letter-spacing: .5px;
     line-height: 1.3;
     padding: 2px 0;
-    display: inline-block;
     word-break: break-word;
 
-    /* ===== WATER / GLASS FILL (Transparent) ===== */
+    /* ===== Transparent Water Fill ===== */
     background: linear-gradient(
         180deg,
-        rgba(120, 200, 255, 0.35) 0%,
-        rgba(200, 240, 255, 0.20) 25%,
-        rgba(255, 255, 255, 0.05) 50%,
-        rgba(100, 180, 255, 0.30) 75%,
-        rgba(255, 255, 255, 0.15) 100%
+        rgba(255,255,255,.55) 0%,
+        rgba(190,230,255,.18) 18%,
+        rgba(255,255,255,.03) 42%,
+        rgba(120,190,255,.12) 68%,
+        rgba(255,255,255,.25) 100%
     );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
 
-    /* ===== WHITE OUTLINE (Thick) ===== */
-    -webkit-text-stroke: 1.2px rgba(255, 255, 255, 0.85);
+    background-size:100% 220%;
+    background-position:center top;
 
-    /* ===== 3D GLASS SHADOW ===== */
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+
+    /* ===== Thin White Glass Border ===== */
+    -webkit-text-stroke:.5px rgba(255,255,255,.82);
+
+    /* ===== 3D Glass Depth ===== */
     text-shadow:
-        0 -1px 0 rgba(255, 255, 255, 0.7),
-        0 1px 2px rgba(255, 255, 255, 0.4),
-        0 3px 6px rgba(0, 0, 0, 0.15),
-        0 6px 12px rgba(0, 0, 0, 0.20);
+        0 -1px 0 rgba(255,255,255,.45),
+        0 1px 1px rgba(255,255,255,.18),
+        0 2px 3px rgba(0,0,0,.12),
+        0 5px 8px rgba(0,0,0,.18);
 
-    /* ===== WATER REFLECTION (Extra Sparkle) ===== */
-    filter: brightness(1.05) drop-shadow(0 2px 6px rgba(0, 150, 255, 0.15));
+    filter:
+        brightness(1)
+        drop-shadow(0 2px 4px rgba(0,180,255,.08));
 
-    /* ===== WATER ANIMATION (Ripple) ===== */
-    animation: waterShine 3.5s ease-in-out infinite;
+    animation:waterGlass 4s ease-in-out infinite;
 }
 
-/* ===== WATER SHINE ANIMATION ===== */
-@keyframes waterShine {
-    0% {
-        filter: brightness(1.0) drop-shadow(0 2px 6px rgba(0, 150, 255, 0.10));
-        background-position: 0% 0%;
+/* ===== Moving Shine ===== */
+
+@keyframes waterGlass{
+
+    0%{
+        background-position:center top;
+        filter:
+        brightness(1)
+        drop-shadow(0 2px 4px rgba(0,180,255,.08));
     }
-    50% {
-        filter: brightness(1.25) drop-shadow(0 3px 10px rgba(0, 200, 255, 0.25));
-        background-position: 0% 100%;
+
+    50%{
+        background-position:center bottom;
+        filter:
+        brightness(1.18)
+        drop-shadow(0 3px 8px rgba(0,200,255,.18));
     }
-    100% {
-        filter: brightness(1.0) drop-shadow(0 2px 6px rgba(0, 150, 255, 0.10));
-        background-position: 0% 0%;
+
+    100%{
+        background-position:center top;
+        filter:
+        brightness(1)
+        drop-shadow(0 2px 4px rgba(0,180,255,.08));
     }
+
 }
 
-/* ===== WATER RIPPLE EFFECT (Background mein) ===== */
+/* ===== Bubble Reflection ===== */
+
 .latest-title::before,
 .video-title::before,
-.related-video-card .latest-title::before {
-    content: '';
-    position: absolute;
-    top: -2px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(
-        ellipse at 30% 50%,
-        rgba(255, 255, 255, 0.25) 0%,
-        transparent 60%
-    );
-    pointer-events: none;
-    z-index: -1;
-    border-radius: 50%;
-    filter: blur(4px);
-    animation: waterRipple 4s ease-in-out infinite;
+.related-video-card .latest-title::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:8%;
+    left:14%;
+
+    width:35%;
+    height:22%;
+
+    border-radius:50%;
+
+    background:radial-gradient(circle,
+        rgba(255,255,255,.75) 0%,
+        rgba(255,255,255,.08) 70%,
+        transparent 100%);
+
+    filter:blur(.6px);
+
+    pointer-events:none;
 }
 
-@keyframes waterRipple {
-    0% { transform: translateX(-10%) scale(0.95); opacity: 0.6; }
-    50% { transform: translateX(10%) scale(1.05); opacity: 1; }
-    100% { transform: translateX(-10%) scale(0.95); opacity: 0.6; }
+/* Small Reflection */
+
+.latest-title::after,
+.video-title::after,
+.related-video-card .latest-title::after{
+
+    content:"";
+
+    position:absolute;
+
+    bottom:20%;
+    right:16%;
+
+    width:10%;
+    height:10%;
+
+    border-radius:50%;
+
+    background:radial-gradient(circle,
+        rgba(255,255,255,.45),
+        transparent 80%);
+
+    pointer-events:none;
 }
 
 /* ===== CATEGORIES AS BUTTONS ===== */
