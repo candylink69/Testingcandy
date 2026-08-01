@@ -43,16 +43,12 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .latest-title,
 .video-title,
 .related-video-card .latest-title {
-    font-size: 14px;
-    font-weight: 800;
-    color: #111;
-    text-shadow: 
-        0 0 5px rgba(255,255,255,0.8),
-        0 0 10px rgba(255,255,255,0.4);
-    letter-spacing: 0.5px;
-    line-height: 1.3;
-    word-break: break-word;
-    padding: 2px 0;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-style: italic;
+    transform: skew(-8deg);
 }
 
 /* ===== CATEGORIES AS BUTTONS ===== */
