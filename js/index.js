@@ -25,13 +25,13 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
+// ========== GENERATE VIDEO CARD (with Categories as Buttons) ==========
 function generateVideoCard(video) {
-    // Categories ko HTML mein convert karo
+    // Categories ko buttons mein convert karo (NAME dikhega, ID nahi)
     let categoriesHtml = '';
     if (video.categories && Array.isArray(video.categories) && video.categories.length) {
         categoriesHtml = `<div class="video-categories">`;
         video.categories.forEach(catId => {
-            // Category name fetch karo (categories.json se)
             const cat = allCategories.find(c => c.id === catId);
             const catName = cat ? cat.name : catId;
             categoriesHtml += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
@@ -246,14 +246,15 @@ function displayCategories(cats) {
     });
 }
 
-// ========== TRENDING ==========
+// ========== TRENDING (with Categories & 3D Titles) ==========
 function loadTrendingVideos() {
     const cont = document.getElementById('trendingContainer');
     if (!cont) return;
     cont.innerHTML = '';
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
-    // Native ad card
+    
+    // Native ad card (already hai)
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     const nativeInner = document.createElement('div');
@@ -265,6 +266,7 @@ function loadTrendingVideos() {
     titleDiv.textContent = 'Sponsored';
     nativeCard.appendChild(titleDiv);
     cont.appendChild(nativeCard);
+    
     const script = document.createElement('script');
     script.async = true;
     script.setAttribute('data-cfasync', 'false');
@@ -276,12 +278,32 @@ function loadTrendingVideos() {
     adDiv.style.minHeight = '200px';
     nativeInner.appendChild(adDiv);
     
+    // Trending videos with categories
     trendingVideos.forEach(v => {
         const thumb = getThumbnailUrlSafe(v.id);
-        cont.innerHTML += `<div class="trending-item" onclick="goToVideo('${v.id}')">
-            <img src="${thumb}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
-            <div class="trending-title">${v.id}</div>
-        </div>`;
+        
+        // Categories ko buttons mein convert karo (NAME dikhega)
+        let catHtml = '';
+        if (v.categories && Array.isArray(v.categories) && v.categories.length) {
+            catHtml = `<div class="video-categories">`;
+            v.categories.forEach(catId => {
+                const cat = allCategories.find(c => c.id === catId);
+                const catName = cat ? cat.name : catId;
+                catHtml += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
+            });
+            catHtml += `</div>`;
+        }
+        
+        cont.innerHTML += `
+            <div class="trending-item" onclick="goToVideo('${v.id}')">
+                <img src="${thumb}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
+                <div class="latest-info">
+                    <div class="latest-id">${v.id}</div>
+                    ${v.title ? `<div class="latest-title">${escapeHtml(v.title)}</div>` : ''}
+                    ${catHtml}
+                </div>
+            </div>
+        `;
     });
 }
 
@@ -323,7 +345,6 @@ function switchTab(tabId) {
     if (tabId === 'trending') {
         loadTrendingVideos();
     }
-    // Close menu if open (for menu bar integration)
     if (typeof closeMenu === 'function') closeMenu();
 }
 
@@ -357,7 +378,7 @@ function setupSearch() {
     });
 }
 
-// ========== SWIPE (IGNORE VERTICAL) ==========
+// ========== SWIPE ==========
 function handleTouchStart(e) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
@@ -396,7 +417,6 @@ function initIndex() {
         document.addEventListener('touchstart', handleTouchStart, { passive: true });
         document.addEventListener('touchend', handleTouchEnd, { passive: true });
     } else {
-        // Retry logic
         setTimeout(initIndex, 500);
     }
 }
@@ -406,4 +426,4 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initIndex);
 } else {
     initIndex();
-        }
+            }
