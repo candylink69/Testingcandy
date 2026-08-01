@@ -61,6 +61,15 @@ function filterVideosByCategory() {
     document.getElementById('searchInput').placeholder = `🔍 Search ${categoryName} videos...`;
 }
 
+// ========== BUBBLE LETTERS WRAPPER ==========
+function bubbleText(text) {
+    if (!text) return '';
+    return text.split('').map(char => {
+        if (char === ' ') return ' ';
+        return `<span class="bubble-letter">${char}</span>`;
+    }).join('');
+}
+
 // ========== SEARCH (List) ==========
 function setupSearch() {
     const searchInput = document.getElementById('searchInput');
@@ -262,7 +271,7 @@ function initializePage() {
                             ${v.duration ? `<div class="duration">${v.duration}</div>` : ''}
                         </div>
                         <div class="video-title ${alignClass}">
-                            ${hasTitle ? `<span class="vid-id">${v.id}:</span> ${v.title}` : v.id}
+                            ${hasTitle ? `<span class="vid-id">${v.id}:</span> ${bubbleText(v.title)}` : v.id}
                         </div>
                         ${catHtml}
                     </a>`;
