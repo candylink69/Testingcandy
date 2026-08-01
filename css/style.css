@@ -40,140 +40,90 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
 /* ============================================
-   PREMIUM LIQUID GLASS TEXT v2.0
+   LIQUID GLASS WATER TEXT v3.0
    ============================================ */
 
 .latest-title,
 .video-title,
-.related-video-card .latest-title {
+.related-video-card .latest-title{
 
-    position: relative;
-    display: inline-block;
+    position:relative;
+    display:inline-block;
 
-    font-family: Arial, sans-serif;
-    font-size: 15px;
-    font-weight: 900;
-    font-style: italic;
+    font-family:Arial,sans-serif;
+    font-size:15px;
+    font-weight:900;
+    font-style:italic;
 
-    letter-spacing: .5px;
-    line-height: 1.3;
-    padding: 2px 0;
-    word-break: break-word;
+    letter-spacing:.4px;
+    line-height:1.3;
+    padding:2px 0;
 
-    /* ===== Transparent Water Fill ===== */
-    background: linear-gradient(
+    /* Liquid Glass Fill */
+    background:linear-gradient(
         180deg,
-        rgba(255,255,255,.55) 0%,
-        rgba(190,230,255,.18) 18%,
-        rgba(255,255,255,.03) 42%,
-        rgba(120,190,255,.12) 68%,
-        rgba(255,255,255,.25) 100%
+        rgba(255,255,255,.12) 0%,
+        rgba(170,220,255,.08) 20%,
+        rgba(255,255,255,.01) 50%,
+        rgba(120,190,255,.08) 80%,
+        rgba(255,255,255,.12) 100%
     );
 
-    background-size:100% 220%;
+    background-size:100% 250%;
     background-position:center top;
 
     -webkit-background-clip:text;
     background-clip:text;
     -webkit-text-fill-color:transparent;
 
-    /* ===== Thin White Glass Border ===== */
-    -webkit-text-stroke:.5px rgba(255,255,255,.82);
+    /* Thin Bubble Border */
+    -webkit-text-stroke:.45px rgba(255,255,255,.75);
 
-    /* ===== 3D Glass Depth ===== */
+    /* Deep Glass Effect */
     text-shadow:
-        0 -1px 0 rgba(255,255,255,.45),
-        0 1px 1px rgba(255,255,255,.18),
-        0 2px 3px rgba(0,0,0,.12),
-        0 5px 8px rgba(0,0,0,.18);
+        0 1px 1px rgba(255,255,255,.08),
+        0 2px 4px rgba(0,0,0,.20),
+        0 5px 10px rgba(0,0,0,.28),
+        0 8px 18px rgba(0,0,0,.18);
 
     filter:
         brightness(1)
-        drop-shadow(0 2px 4px rgba(0,180,255,.08));
+        saturate(1.1)
+        drop-shadow(0 2px 4px rgba(0,0,0,.18));
 
-    animation:waterGlass 4s ease-in-out infinite;
+    animation:waterFlow 4s ease-in-out infinite;
 }
 
-/* ===== Moving Shine ===== */
+/* ===== Smooth Water Movement ===== */
 
-@keyframes waterGlass{
+@keyframes waterFlow{
 
     0%{
         background-position:center top;
         filter:
-        brightness(1)
-        drop-shadow(0 2px 4px rgba(0,180,255,.08));
+            brightness(1)
+            saturate(1.05)
+            drop-shadow(0 2px 4px rgba(0,0,0,.18));
     }
 
     50%{
         background-position:center bottom;
         filter:
-        brightness(1.18)
-        drop-shadow(0 3px 8px rgba(0,200,255,.18));
+            brightness(1.12)
+            saturate(1.18)
+            drop-shadow(0 3px 6px rgba(0,0,0,.22));
     }
 
     100%{
         background-position:center top;
         filter:
-        brightness(1)
-        drop-shadow(0 2px 4px rgba(0,180,255,.08));
+            brightness(1)
+            saturate(1.05)
+            drop-shadow(0 2px 4px rgba(0,0,0,.18));
     }
 
 }
-
-/* ===== Bubble Reflection ===== */
-
-.latest-title::before,
-.video-title::before,
-.related-video-card .latest-title::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:8%;
-    left:14%;
-
-    width:35%;
-    height:22%;
-
-    border-radius:50%;
-
-    background:radial-gradient(circle,
-        rgba(255,255,255,.75) 0%,
-        rgba(255,255,255,.08) 70%,
-        transparent 100%);
-
-    filter:blur(.6px);
-
-    pointer-events:none;
-}
-
-/* Small Reflection */
-
-.latest-title::after,
-.video-title::after,
-.related-video-card .latest-title::after{
-
-    content:"";
-
-    position:absolute;
-
-    bottom:20%;
-    right:16%;
-
-    width:10%;
-    height:10%;
-
-    border-radius:50%;
-
-    background:radial-gradient(circle,
-        rgba(255,255,255,.45),
-        transparent 80%);
-
-    pointer-events:none;
-}
-
+        
 /* ===== CATEGORIES AS BUTTONS ===== */
 .video-categories {
     display: flex;
