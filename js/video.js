@@ -5,6 +5,20 @@
 const urlParams = new URLSearchParams(window.location.search);
 const videoId = urlParams.get('v') || 'V001';
 
+// ========== GLOBAL CATEGORIES (for name lookup) ==========
+let allCategories = [];
+
+// ========== LOAD CATEGORIES ==========
+async function loadCategoriesForVideo() {
+    try {
+        const response = await fetch('data/categories.json');
+        allCategories = await response.json();
+    } catch (error) {
+        console.log('Could not load categories.json');
+        allCategories = [];
+    }
+}
+
 // ========== THUMBNAIL SAFE ==========
 function getThumbnailUrlSafe(videoId) {
     if (typeof getThumbnailUrl === 'function') {
@@ -17,7 +31,20 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RELATED VIDEOS FUNCTION (With Preview + Fallback) ==========
+// ========== GENERATE CATEGORY BUTTONS ==========
+function generateCategoryButtons(categoryIds) {
+    if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
+    let html = `<div class="video-categories">`;
+    categoryIds.forEach(catId => {
+        const cat = allCategories.find(c => c.id === catId);
+        const catName = cat ? cat.name : catId;
+        html += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
+    });
+    html += `</div>`;
+    return html;
+}
+
+// ========== RELATED VIDEOS FUNCTION (With Preview + Fallback + Categories) ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -51,7 +78,7 @@ function loadRelatedVideos(currentVideoId) {
         related = [...related, ...latestVideos];
     }
 
-    // 3. Agar phir bhi koi video nahi mili (site pe sirf 1 video hai)
+    // 3. Agar phir bhi koi video nahi mili
     if (related.length === 0) {
         container.innerHTML = '<p style="color:#888; padding:10px;">No other videos available.</p>';
         return;
@@ -65,6 +92,9 @@ function loadRelatedVideos(currentVideoId) {
             `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : '';
         const durationHtml = v.duration ? 
             `<div class="duration">${v.duration}</div>` : '';
+        
+        // Categories buttons generate karo
+        const catHtml = generateCategoryButtons(v.categories);
 
         html += `
             <div class="related-video-card" data-video-id="${v.id}">
@@ -76,6 +106,7 @@ function loadRelatedVideos(currentVideoId) {
                 <div class="latest-info">
                     <div class="latest-id">${v.id}</div>
                     ${v.title ? `<div class="latest-title">${v.title.substring(0, 50)}</div>` : ''}
+                    ${catHtml}
                 </div>
             </div>
         `;
@@ -136,13 +167,11 @@ function setupRelatedPreview() {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
 
-    // Mouse events
     container.removeEventListener('mouseover', handleRelatedMouseOver);
     container.removeEventListener('mouseout', handleRelatedMouseOut);
     container.addEventListener('mouseover', handleRelatedMouseOver);
     container.addEventListener('mouseout', handleRelatedMouseOut);
 
-    // Touch events
     container.removeEventListener('touchstart', handleRelatedTouchStart);
     container.removeEventListener('touchend', handleRelatedTouchEnd);
     container.addEventListener('touchstart', handleRelatedTouchStart, { passive: true });
@@ -177,10 +206,15 @@ function handleRelatedTouchEnd(e) {
 }
 
 // ========== MAIN VIDEO LOAD ==========
-fetch('data/videos.json')
-    .then(response => response.json())
-    .then(videosData => {
+async function loadVideo() {
+    // Pehle categories load karo
+    await loadCategoriesForVideo();
+
+    try {
+        const response = await fetch('data/videos.json');
+        const videosData = await response.json();
         const video = videosData[videoId];
+
         if (video) {
             // Title
             document.title = `CandyLink69 – ${video.title || videoId}`;
@@ -194,7 +228,7 @@ fetch('data/videos.json')
             }
             metaDesc.content = `Watch ${video.title || videoId} in HD. ${video.description ? video.description.substring(0, 120) : 'Exclusive video on CandyLink69.'}`;
             
-            // Canonical (Fix for GSC)
+            // Canonical
             let canonical = document.querySelector('link[rel="canonical"]');
             if (!canonical) {
                 canonical = document.createElement('link');
@@ -227,44 +261,25 @@ fetch('data/videos.json')
             // ===== LOAD RELATED VIDEOS =====
             loadRelatedVideos(videoId);
 
-            related.forEach(v => {
-    // Categories generate karo
-    let catHtml = '';
-    if (v.categories && Array.isArray(v.categories) && v.categories.length) {
-        catHtml = `<div class="video-categories">`;
-        v.categories.forEach(catId => {
-            const cat = allCategories.find(c => c.id === catId);
-            const catName = cat ? cat.name : catId;
-            catHtml += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
-        });
-        catHtml += `</div>`;
-    }
-
-    html += `
-        <div class="related-video-card" data-video-id="${v.id}">
-            <div class="thumb-container">
-                <img class="thumb-img" src="${getThumbnailUrlSafe(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
-                ${v.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : ''}
-                ${v.duration ? `<div class="duration">${v.duration}</div>` : ''}
-            </div>
-            <div class="latest-info">
-                <div class="latest-id">${v.id}</div>
-                ${v.title ? `<div class="latest-title">${v.title.substring(0, 50)}</div>` : ''}
-                ${catHtml}
-            </div>
-        </div>
-    `;
-});
-
         } else {
             document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ccc; text-align:center">❌ This video is no longer available.</div>';
             document.getElementById('relatedVideos').innerHTML = '';
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error loading video:', error);
         document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ff8888">⚠️ Failed to load video data.</div>';
         document.getElementById('relatedVideos').innerHTML = '';
-    });
+    }
+}
 
+// ========== GLOBAL FUNCTIONS (for menu) ==========
+function goToVideo(id) { 
+    window.location.href = 'video.html?v=' + id; 
+}
+function goToCategory(id) { 
+    window.location.href = 'list.html?category=' + id; 
+}
+
+// ========== START ==========
+document.addEventListener('DOMContentLoaded', loadVideo);
 console.log('✅ video.js loaded successfully');
