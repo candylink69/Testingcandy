@@ -39,6 +39,59 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .search-result-item:hover { background: rgba(255,51,0,0.15); }
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
+/* ===== VIDEO TITLES (3D + Bold + White Border) ===== */
+.latest-title,
+.video-title,
+.related-video-card .latest-title {
+    font-size: 14px;           /* ✅ Thoda bada */
+    font-weight: 800;          /* ✅ Bold */
+    color: #fff;
+    text-shadow: 
+        0 0 5px rgba(255,255,255,0.3),
+        0 2px 4px rgba(0,0,0,0.8);  /* ✅ 3D shadow */
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    word-break: break-word;
+    padding: 2px 0;
+    border-bottom: 2px solid rgba(255,255,255,0.15);  /* ✅ White border effect */
+}
+
+/* ===== CATEGORIES AS BUTTONS ===== */
+.video-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.category-tag {
+    background: linear-gradient(135deg, #ff3300, #ff6600);
+    color: #fff;
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: bold;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    transition: 0.2s;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 2px 8px rgba(255, 51, 0, 0.3);
+    letter-spacing: 0.3px;
+}
+
+.category-tag:hover {
+    transform: scale(1.05);
+    background: linear-gradient(135deg, #ff5500, #ff8800);
+    box-shadow: 0 4px 12px rgba(255, 51, 0, 0.5);
+}
+
+.category-tag a {
+    color: #fff;
+    text-decoration: none;
+    display: block;
+}
+
 /* ============================================================
    🔵 PART 3: INDEX.HTML EXCLUSIVE STYLES
    ============================================================ */
