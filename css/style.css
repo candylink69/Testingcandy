@@ -39,69 +39,44 @@ body, .category-name, .video-title, .latest-id, .trending-title, .stat-number, .
 .search-result-item:hover { background: rgba(255,51,0,0.15); }
 .search-video-id { color: #ff9900; font-weight: bold; font-size: 12px; }
 
-/* ===== VIDEO TITLES ===== */
-/* ===== Glass Bubble 3D Text ===== */
+/* ===== BUBBLE / WATER DROP TITLES ===== */
 .latest-title,
 .video-title,
 .related-video-card .latest-title {
-
-    font-family: Arial, sans-serif;
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 900;
-    font-style: italic;
-
-    /* Glass Fill */
-    background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0.95) 0%,
-    rgba(255,255,255,0.55) 20%,
-    rgba(255,255,255,0.15) 45%,
-    rgba(255,255,255,0.05) 70%,
-    rgba(255,255,255,0.25) 100%
-);
-
--webkit-background-clip: text;
-background-clip: text;
--webkit-text-fill-color: rgba(255,255,255,0.12); /* Transparent fill */
--webkit-text-stroke: 0.8px rgba(255,255,255,0.9);
-
-    /* White Outline */
-    -webkit-text-stroke: 1px rgba(255,255,255,0.9);
-
-    /* Glass 3D Effect */
-    text-shadow:
-        0 -1px 0 rgba(255,255,255,.9),
-        0 1px 1px rgba(255,255,255,.6),
-        0 2px 3px rgba(0,0,0,.15),
-        0 5px 8px rgba(0,0,0,.20);
-
-    letter-spacing: 0.4px;
-    line-height: 1.3;
-    padding: 2px 0;
-
-    filter: brightness(1)
-            drop-shadow(0 2px 4px rgba(0,0,0,.25));
-
-    animation: glassShine 4s ease-in-out infinite;
+    color: #00d4ff;
+    text-shadow: 
+        0 0 5px rgba(0, 212, 255, 0.3),
+        0 0 10px rgba(0, 212, 255, 0.2),
+        0 0 20px rgba(0, 212, 255, 0.1),
+        inset 0 0 10px rgba(255,255,255,0.3);
+    background: linear-gradient(145deg, #0a0a0a, #1a1a2e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 1px;
+    line-height: 1.4;
+    word-break: break-word;
+    padding: 4px 2px;
+    display: inline-block;
+    position: relative;
 }
 
-/* Shine Animation */
-@keyframes glassShine {
-
-    0% {
-        filter: brightness(1)
-                drop-shadow(0 2px 4px rgba(0,0,0,.25));
-    }
-
-    50% {
-        filter: brightness(1.25)
-                drop-shadow(0 3px 6px rgba(0,0,0,.35));
-    }
-
-    100% {
-        filter: brightness(1)
-                drop-shadow(0 2px 4px rgba(0,0,0,.25));
-    }
+/* Bubble shine effect (extra sparkle) */
+.latest-title::before,
+.video-title::before,
+.related-video-card .latest-title::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 10%;
+    width: 80%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    border-radius: 50%;
+    filter: blur(2px);
+    pointer-events: none;
 }
 
 /* ===== CATEGORIES AS BUTTONS ===== */
