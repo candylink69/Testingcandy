@@ -227,6 +227,35 @@ fetch('data/videos.json')
             // ===== LOAD RELATED VIDEOS =====
             loadRelatedVideos(videoId);
 
+            related.forEach(v => {
+    // Categories generate karo
+    let catHtml = '';
+    if (v.categories && Array.isArray(v.categories) && v.categories.length) {
+        catHtml = `<div class="video-categories">`;
+        v.categories.forEach(catId => {
+            const cat = allCategories.find(c => c.id === catId);
+            const catName = cat ? cat.name : catId;
+            catHtml += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
+        });
+        catHtml += `</div>`;
+    }
+
+    html += `
+        <div class="related-video-card" data-video-id="${v.id}">
+            <div class="thumb-container">
+                <img class="thumb-img" src="${getThumbnailUrlSafe(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+                ${v.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : ''}
+                ${v.duration ? `<div class="duration">${v.duration}</div>` : ''}
+            </div>
+            <div class="latest-info">
+                <div class="latest-id">${v.id}</div>
+                ${v.title ? `<div class="latest-title">${v.title.substring(0, 50)}</div>` : ''}
+                ${catHtml}
+            </div>
+        </div>
+    `;
+});
+
         } else {
             document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ccc; text-align:center">❌ This video is no longer available.</div>';
             document.getElementById('relatedVideos').innerHTML = '';
