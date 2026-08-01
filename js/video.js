@@ -1,11 +1,11 @@
 // ============================================================
-// VIDEO.JS - Load Video, Prev/Next, Related Videos with Preview
+// VIDEO.JS - Load Video, Prev/Next, Related Videos
 // ============================================================
 
 const urlParams = new URLSearchParams(window.location.search);
 const videoId = urlParams.get('v') || 'V001';
 
-// ========== GLOBAL CATEGORIES (for name lookup) ==========
+// ========== GLOBAL CATEGORIES ==========
 let allCategories = [];
 
 // ========== LOAD CATEGORIES ==========
@@ -17,6 +17,28 @@ async function loadCategoriesForVideo() {
         console.log('Could not load categories.json');
         allCategories = [];
     }
+}
+
+// ========== BUBBLE LETTERS WRAPPER ==========
+function bubbleText(text) {
+    if (!text) return '';
+    return text.split('').map(char => {
+        if (char === ' ') return ' ';
+        return `<span class="bubble-letter">${char}</span>`;
+    }).join('');
+}
+
+// ========== GENERATE CATEGORY BUTTONS ==========
+function generateCategoryButtons(categoryIds) {
+    if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
+    let html = `<div class="video-categories" style="margin:6px 0;">`;
+    categoryIds.forEach(catId => {
+        const cat = allCategories.find(c => c.id === catId);
+        const catName = cat ? cat.name : catId;
+        html += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
+    });
+    html += `</div>`;
+    return html;
 }
 
 // ========== THUMBNAIL SAFE ==========
@@ -31,20 +53,7 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== GENERATE CATEGORY BUTTONS ==========
-function generateCategoryButtons(categoryIds) {
-    if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
-    let html = `<div class="video-categories">`;
-    categoryIds.forEach(catId => {
-        const cat = allCategories.find(c => c.id === catId);
-        const catName = cat ? cat.name : catId;
-        html += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
-    });
-    html += `</div>`;
-    return html;
-}
-
-// ========== RELATED VIDEOS FUNCTION (With Preview + Fallback + Categories) ==========
+// ========== RELATED VIDEOS (With Bubble Titles) ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -57,7 +66,6 @@ function loadRelatedVideos(currentVideoId) {
     const currentVideo = videos.find(v => v.id === currentVideoId);
     let related = [];
 
-    // 1. Same category ki videos dhoondho
     if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
         const categoryId = currentVideo.categories[0];
         related = videos
@@ -65,26 +73,19 @@ function loadRelatedVideos(currentVideoId) {
             .slice(0, 5);
     }
 
-    // 2. Agar 5 se kam hain toh latest videos se fill karo
     if (related.length < 5) {
         const remainingCount = 5 - related.length;
         const relatedIds = new Set(related.map(v => v.id));
         relatedIds.add(currentVideoId);
-
-        const latestVideos = videos
-            .filter(v => !relatedIds.has(v.id))
-            .slice(0, remainingCount);
-
+        const latestVideos = videos.filter(v => !relatedIds.has(v.id)).slice(0, remainingCount);
         related = [...related, ...latestVideos];
     }
 
-    // 3. Agar phir bhi koi video nahi mili
     if (related.length === 0) {
         container.innerHTML = '<p style="color:#888; padding:10px;">No other videos available.</p>';
         return;
     }
 
-    // ===== HTML GENERATE =====
     let html = `<div class="related-videos-grid">`;
     related.forEach(v => {
         const thumbUrl = getThumbnailUrlSafe(v.id);
@@ -92,8 +93,6 @@ function loadRelatedVideos(currentVideoId) {
             `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : '';
         const durationHtml = v.duration ? 
             `<div class="duration">${v.duration}</div>` : '';
-        
-        // Categories buttons generate karo
         const catHtml = generateCategoryButtons(v.categories);
 
         html += `
@@ -105,8 +104,7 @@ function loadRelatedVideos(currentVideoId) {
                 </div>
                 <div class="latest-info">
                     <div class="latest-id">${v.id}</div>
-                    ${v.title ? `<div class="latest-title">${v.title.substring(0, 50)}</div>` : ''}
-                    ${catHtml}
+                    ${v.title ? `<div class="latest-title">${bubbleText(v.title.substring(0, 50))}</div>` : ''}
                 </div>
             </div>
         `;
@@ -114,7 +112,6 @@ function loadRelatedVideos(currentVideoId) {
     html += `</div>`;
     container.innerHTML = html;
 
-    // ===== ATTACH CLICK EVENTS =====
     document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
         const vid = card.getAttribute('data-video-id');
         if (vid) {
@@ -125,11 +122,10 @@ function loadRelatedVideos(currentVideoId) {
         }
     });
 
-    // ===== SETUP PREVIEW HANDLERS =====
     setupRelatedPreview();
 }
 
-// ========== PREVIEW HANDLERS FOR RELATED VIDEOS ==========
+// ========== PREVIEW HANDLERS ==========
 let relatedActivePreview = null;
 
 function stopRelatedPreview() {
@@ -207,7 +203,6 @@ function handleRelatedTouchEnd(e) {
 
 // ========== MAIN VIDEO LOAD ==========
 async function loadVideo() {
-    // Pehle categories load karo
     await loadCategoriesForVideo();
 
     try {
@@ -240,8 +235,29 @@ async function loadVideo() {
             // Load Player
             document.getElementById('videoPlayer').src = video.embed;
             document.getElementById('currentVideoId').textContent = videoId;
-            if (video.description) {
-                document.getElementById('videoDescription').textContent = video.description;
+
+            // ===== VIDEO TITLE (Bubble) =====
+            const titleContainer = document.getElementById('videoTitle');
+            if (titleContainer && video.title) {
+                titleContainer.innerHTML = bubbleText(video.title);
+            }
+
+            // ===== VIDEO CATEGORIES =====
+            const catContainer = document.getElementById('videoCategories');
+            if (catContainer) {
+                // Current video ki categories fetch karo (videos array se)
+                const currentVideo = videos.find(v => v.id === videoId);
+                if (currentVideo && currentVideo.categories) {
+                    catContainer.innerHTML = generateCategoryButtons(currentVideo.categories);
+                } else {
+                    catContainer.innerHTML = '';
+                }
+            }
+
+            // ===== VIDEO DESCRIPTION =====
+            const descContainer = document.getElementById('videoDescription');
+            if (descContainer && video.description) {
+                descContainer.textContent = video.description;
             }
 
             // Prev / Next
@@ -272,7 +288,7 @@ async function loadVideo() {
     }
 }
 
-// ========== GLOBAL FUNCTIONS (for menu) ==========
+// ========== GLOBAL FUNCTIONS ==========
 function goToVideo(id) { 
     window.location.href = 'video.html?v=' + id; 
 }
