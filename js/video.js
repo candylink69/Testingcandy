@@ -28,10 +28,15 @@ function bubbleText(text) {
     }).join('');
 }
 
-// ========== GENERATE CATEGORY BUTTONS ==========
+// ========== GENERATE CATEGORY BUTTONS (with "Tag:" label) ==========
 function generateCategoryButtons(categoryIds) {
     if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
-    let html = `<div class="video-categories" style="margin:6px 0;">`;
+    
+    let html = `<div class="video-categories" style="margin:6px 0; display:flex; flex-wrap:wrap; align-items:center; gap:6px;">`;
+    
+    // ✅ "Tag:" label add karo
+    html += `<span style="color:#ff9900; font-weight:bold; font-size:14px; margin-right:4px;">Tag:</span>`;
+    
     categoryIds.forEach(catId => {
         const cat = allCategories.find(c => c.id === catId);
         const catName = cat ? cat.name : catId;
@@ -262,7 +267,7 @@ async function loadVideo() {
                 }
             }
 
-            // ✅ VIDEO CATEGORIES (New structure support)
+            // ✅ VIDEO CATEGORIES (New structure support) - with "Tag:" label
             const catContainer = document.getElementById('videoCategories');
             if (catContainer) {
                 if (videoInfo.categories && videoInfo.categories.length) {
@@ -302,11 +307,17 @@ async function loadVideo() {
         } else {
             document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ccc; text-align:center">❌ This video is no longer available.</div>';
             document.getElementById('relatedVideos').innerHTML = '';
+            document.getElementById('videoTitle').innerHTML = '';
+            document.getElementById('videoCategories').innerHTML = '';
+            document.getElementById('videoDescription').textContent = '';
         }
     } catch (error) {
         console.error('Error loading video:', error);
         document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ff8888">⚠️ Failed to load video data.</div>';
         document.getElementById('relatedVideos').innerHTML = '';
+        document.getElementById('videoTitle').innerHTML = '';
+        document.getElementById('videoCategories').innerHTML = '';
+        document.getElementById('videoDescription').textContent = '';
     }
 }
 
