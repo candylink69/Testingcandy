@@ -1,5 +1,5 @@
 // ============================================================
-// INDEX.JS - FIXED (Bubble Text Word-Level + All Bug Fixes)
+// INDEX.JS - FIXED (Bubble Text + Scroll/Page Save)
 // ============================================================
 
 let allCategories = [];
@@ -29,10 +29,9 @@ function escapeHtml(str) {
 // ========== BUBBLE TEXT - FIXED (Word-Level, NOT Letter-Level) ==========
 function bubbleText(text) {
     if (!text) return '';
-    // ✅ Pehle escape, phir words mein split
     const escaped = escapeHtml(text);
     return escaped.split(' ').map(word => {
-        if (!word) return ' '; // extra spaces preserve
+        if (!word) return ' ';
         return `<span class="bubble-word">${word}</span>`;
     }).join(' ');
 }
@@ -50,7 +49,6 @@ function generateVideoCard(video) {
         categoriesHtml += `</div>`;
     }
 
-    // ✅ ID aur Title ko ek saath latest-id mein
     const idDisplay = video.id ? `${escapeHtml(video.id)}:-` : '';
     const titleDisplay = video.title ? bubbleText(escapeHtml(video.title)) : '';
 
@@ -140,7 +138,6 @@ function renderLatestPage(pageNum, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
     
-    // ✅ Ensure categories are loaded
     if (!allCategories.length) {
         setTimeout(() => renderLatestPage(pageNum, scrollToTop), 200);
         return;
@@ -301,7 +298,6 @@ function loadTrendingVideos() {
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
     
-    // Native trending card
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     const nativeInner = document.createElement('div');
@@ -325,7 +321,6 @@ function loadTrendingVideos() {
     adDiv.style.minHeight = '200px';
     nativeInner.appendChild(adDiv);
     
-    // ✅ FIXED: bubbleText word-level for trending titles
     trendingVideos.forEach(v => {
         const thumb = getThumbnailUrlSafe(v.id);
         let catHtml = '';
@@ -451,7 +446,10 @@ function handleTouchEnd(e) {
 }
 
 // ========== GLOBALS ==========
+// ✅ FIXED: Save scroll + page + tab state before navigating to video
 function goToVideo(id) { 
+    const returnUrl = `index.html?tab=${currentTab}&page=${latestCurrentPage}&scroll=${window.scrollY}`;
+    sessionStorage.setItem('returnUrl', returnUrl);
     window.location.href = 'video.html?v=' + id; 
 }
 
@@ -475,8 +473,24 @@ function initIndex() {
         loadCategories();
         loadTrendingVideos();
         setupSearch();
-        renderLatestPage(1, false);
         updateStatsBar();
+        
+        // ✅ FIXED: URL params se tab/page/scroll restore karo
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab') || 'latest';
+        const pageParam = parseInt(urlParams.get('page')) || 1;
+        const scrollParam = parseInt(urlParams.get('scroll')) || 0;
+        
+        switchTab(tabParam);
+        
+        if (tabParam === 'latest') {
+            renderLatestPage(pageParam, false);
+        }
+        
+        if (scrollParam > 0) {
+            setTimeout(() => window.scrollTo(0, scrollParam), 300);
+        }
+        
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
         });
