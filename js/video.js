@@ -8,12 +8,11 @@ const videoId = urlParams.get('v') || 'V001';
 // ========== GLOBAL CATEGORIES ==========
 let allCategories = [];
 
-// ========== RELATED VIDEOS PAGINATION (Point 8) ==========
+// ========== RELATED VIDEOS PAGINATION ==========
 let relatedVideosList = [];
 let relatedCurrentPage = 1;
 const RELATED_PER_PAGE = 5;
 const RELATED_MAX = 25;
-let relatedLoadMoreBtn = null;
 
 // ========== LOAD CATEGORIES ==========
 async function loadCategoriesForVideo() {
@@ -63,7 +62,7 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RENDER RELATED VIDEOS (Point 8) ==========
+// ========== RENDER RELATED VIDEOS ==========
 function renderRelatedVideos() {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -87,6 +86,9 @@ function renderRelatedVideos() {
             `<div class="duration">${v.duration}</div>` : '';
         const catHtml = generateCategoryButtons(v.categories);
 
+        // ✅ Fix: Title ko bubbleText se wrap karo
+        const titleDisplay = v.title ? bubbleText(v.title.substring(0, 50)) : '';
+
         html += `
             <div class="related-video-card" data-video-id="${v.id}">
                 <div class="thumb-container">
@@ -96,7 +98,7 @@ function renderRelatedVideos() {
                 </div>
                 <div class="latest-info">
                     <div class="latest-id">${v.id}</div>
-                    ${v.title ? `<div class="latest-title">${bubbleText(v.title.substring(0, 50))}</div>` : ''}
+                    ${titleDisplay ? `<div class="latest-title">${titleDisplay}</div>` : ''}
                     ${catHtml}
                 </div>
             </div>
@@ -104,7 +106,7 @@ function renderRelatedVideos() {
     });
     html += `</div>`;
 
-    // ✅ Point 8: "More Videos ↓" button
+    // "More Videos ↓" button
     if (hasMore && end < RELATED_MAX) {
         const remaining = Math.min(RELATED_MAX - end, RELATED_PER_PAGE);
         html += `<div class="more-videos-container">
@@ -132,14 +134,23 @@ function renderRelatedVideos() {
     setupRelatedPreview();
 }
 
-// ========== LOAD MORE RELATED VIDEOS (Point 8) ==========
+// ========== LOAD MORE RELATED VIDEOS (With Native Banner Reload) ==========
 function loadMoreRelated() {
     if (relatedCurrentPage * RELATED_PER_PAGE >= RELATED_MAX) return;
     relatedCurrentPage++;
     renderRelatedVideos();
+    
+    // ✅ Native banner reload karo (Point 8)
+    const nativeContainer = document.querySelector('.native-ad-container');
+    if (nativeContainer) {
+        nativeContainer.innerHTML = `
+            <script async data-cfasync="false" src="https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js"><\/script>
+            <div id="container-4b10501c070917e2ceca3f13f9e60117"></div>
+        `;
+    }
 }
 
-// ========== LOAD RELATED VIDEOS LIST ==========
+// ========== LOAD RELATED VIDEOS LIST (With Proper Fallback) ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -152,21 +163,30 @@ function loadRelatedVideos(currentVideoId) {
     const currentVideo = videos.find(v => v.id === currentVideoId);
     let related = [];
 
+    // 1. Same category ki videos dhoondho
     if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
         const categoryId = currentVideo.categories[0];
         related = videos
             .filter(v => v.id !== currentVideoId && v.categories && v.categories.includes(categoryId));
     }
 
-    // Agar related videos kam hain toh latest se fill karo
+    // 2. Agar related videos 5 se kam hain toh latest videos se fill karo
     if (related.length < 5) {
         const relatedIds = new Set(related.map(v => v.id));
         relatedIds.add(currentVideoId);
         const latestVideos = videos.filter(v => !relatedIds.has(v.id));
-        related = [...related, ...latestVideos];
+        // Pehle same category wali, phir latest se fill
+        const remaining = 5 - related.length;
+        related = [...related, ...latestVideos.slice(0, remaining)];
     }
 
-    // ✅ Point 8: Max 25 videos tak limit
+    // 3. Agar phir bhi 0 hain toh "No other videos" dikhao
+    if (related.length === 0) {
+        container.innerHTML = '<p style="color:#888; padding:10px;">No other videos available.</p>';
+        return;
+    }
+
+    // ✅ Max 25 videos tak limit
     relatedVideosList = related.slice(0, RELATED_MAX);
     relatedCurrentPage = 1;
     renderRelatedVideos();
@@ -248,7 +268,7 @@ function handleRelatedTouchEnd(e) {
     }
 }
 
-// ========== GO BACK TO PREVIOUS PAGE (Point 10) ==========
+// ========== GO BACK TO PREVIOUS PAGE ==========
 function goBackToPrevious() {
     if (document.referrer && document.referrer.includes(window.location.hostname)) {
         sessionStorage.setItem('scrollPosition', window.scrollY);
