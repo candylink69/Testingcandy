@@ -1,5 +1,5 @@
 // ============================================================
-// INDEX.JS - Original Logic (Tabs, Grid, Pagination, Swipe)
+// INDEX.JS - FIXED (Bubble Text Word-Level + All Bug Fixes)
 // ============================================================
 
 let allCategories = [];
@@ -26,15 +26,16 @@ function escapeHtml(str) {
     return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;')).substring(0, 80);
 }
 
-// ========== BUBBLE LETTERS WRAPPER ==========
+// ========== BUBBLE TEXT - FIXED (Word-Level, NOT Letter-Level) ==========
 function bubbleText(text) {
     if (!text) return '';
-    return text.split('').map(char => {
-        if (char === ' ') return ' ';
-        return `<span class="bubble-letter">${char}</span>`;
-    }).join('');
+    // ✅ Pehle escape, phir words mein split
+    const escaped = escapeHtml(text);
+    return escaped.split(' ').map(word => {
+        if (!word) return ' '; // extra spaces preserve
+        return `<span class="bubble-word">${word}</span>`;
+    }).join(' ');
 }
-
 
 // ========== GENERATE VIDEO CARD (FIXED) ==========
 function generateVideoCard(video) {
@@ -49,7 +50,7 @@ function generateVideoCard(video) {
         categoriesHtml += `</div>`;
     }
 
-    // ✅ ID aur Title ko ek saath latest-id mein rakho
+    // ✅ ID aur Title ko ek saath latest-id mein
     const idDisplay = video.id ? `${escapeHtml(video.id)}:-` : '';
     const titleDisplay = video.title ? bubbleText(escapeHtml(video.title)) : '';
 
@@ -66,8 +67,10 @@ function generateVideoCard(video) {
         </div>
     </div>`;
 }
+
 // ========== PREVIEW HANDLERS ==========
 let currentActivePreview = null;
+
 function stopPreview() {
     if (currentActivePreview) {
         const container = currentActivePreview.querySelector('.thumb-container');
@@ -78,6 +81,7 @@ function stopPreview() {
         currentActivePreview = null;
     }
 }
+
 function startPreview(card) {
     stopPreview();
     const container = card.querySelector('.thumb-container');
@@ -94,6 +98,7 @@ function startPreview(card) {
     if (thumbImg) thumbImg.style.opacity = '0.3';
     currentActivePreview = card;
 }
+
 function setupPreviewHandlers() {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
@@ -106,31 +111,36 @@ function setupPreviewHandlers() {
     container.addEventListener('touchstart', handlePreviewTouchStart, { passive: true });
     container.addEventListener('touchend', handlePreviewTouchEnd);
 }
+
 function handlePreviewMouseOver(e) {
     const card = e.target.closest('.latest-card');
     if (card) startPreview(card);
 }
+
 function handlePreviewMouseOut(e) {
     const card = e.target.closest('.latest-card');
     if (card && currentActivePreview === card) stopPreview();
 }
+
 let previewTouchTimer = null;
+
 function handlePreviewTouchStart(e) {
     const card = e.target.closest('.latest-card');
     if (card) previewTouchTimer = setTimeout(() => startPreview(card), 100);
 }
+
 function handlePreviewTouchEnd(e) {
     if (previewTouchTimer) { clearTimeout(previewTouchTimer); previewTouchTimer = null; }
     const card = e.target.closest('.latest-card');
     if (card && currentActivePreview === card) setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 300);
 }
 
-// ========== RENDER LATEST (WITH CATEGORIES CHECK) ==========
+// ========== RENDER LATEST PAGE ==========
 function renderLatestPage(pageNum, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
     
-    // ✅ Ensure categories are loaded before rendering
+    // ✅ Ensure categories are loaded
     if (!allCategories.length) {
         setTimeout(() => renderLatestPage(pageNum, scrollToTop), 200);
         return;
@@ -142,15 +152,18 @@ function renderLatestPage(pageNum, scrollToTop = true) {
         document.getElementById('latestPaginationBottom').innerHTML = '';
         return;
     }
+    
     const totalPages = Math.ceil(reversedVideos.length / LATEST_PER_PAGE);
     if (pageNum < 1) pageNum = 1;
     if (pageNum > totalPages) pageNum = totalPages;
     latestCurrentPage = pageNum;
+    
     const start = (pageNum - 1) * LATEST_PER_PAGE;
     const pageVideos = reversedVideos.slice(start, start + LATEST_PER_PAGE);
     
     let itemsHtml = [];
     const adSlots = [];
+    
     for (let idx = 0; idx < pageVideos.length; idx++) {
         itemsHtml.push(generateVideoCard(pageVideos[idx]));
         if ((idx + 1) % AD_AFTER_EVERY === 0 && idx + 1 < pageVideos.length) {
@@ -159,7 +172,9 @@ function renderLatestPage(pageNum, scrollToTop = true) {
             adSlots.push(adId);
         }
     }
+    
     container.innerHTML = `<div class="latest-video-row">${itemsHtml.join('')}</div>`;
+    
     adSlots.forEach(adId => {
         const el = document.getElementById(adId);
         if (el && typeof loadInlineAd === 'function') loadInlineAd(adId);
@@ -175,36 +190,45 @@ function renderLatestPage(pageNum, scrollToTop = true) {
             });
         }
     });
+    
     updatePaginationControls(totalPages, pageNum);
     setupPreviewHandlers();
     if (scrollToTop) window.scrollTo({ top: 0, behavior: 'instant' });
 }
 
+// ========== UPDATE PAGINATION CONTROLS ==========
 function updatePaginationControls(totalPages, currentPage) {
     const topDiv = document.getElementById('latestPaginationTop');
     const bottomDiv = document.getElementById('latestPaginationBottom');
+    
     if (totalPages <= 1) {
         if (topDiv) topDiv.innerHTML = '';
         if (bottomDiv) bottomDiv.innerHTML = '';
         return;
     }
+    
     let paginationHtml = '';
     paginationHtml += `<button class="pagination-btn" id="prevPageBtn" ${currentPage === 1 ? 'disabled' : ''}>◀ PREV</button>`;
+    
     const maxVisible = 5;
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, startPage + maxVisible - 1);
     if (endPage - startPage + 1 < maxVisible) { startPage = Math.max(1, endPage - maxVisible + 1); }
+    
     if (startPage > 1) {
         paginationHtml += `<button class="page-num" data-page="1">1</button>`;
         if (startPage > 2) paginationHtml += `<span class="ellipsis">...</span>`;
     }
+    
     for (let i = startPage; i <= endPage; i++) {
         paginationHtml += `<button class="page-num ${i === currentPage ? 'active-page' : ''}" data-page="${i}">${i}</button>`;
     }
+    
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) paginationHtml += `<span class="ellipsis">...</span>`;
         paginationHtml += `<button class="page-num" data-page="${totalPages}">${totalPages}</button>`;
     }
+    
     paginationHtml += `<button class="pagination-btn" id="nextPageBtn" ${currentPage === totalPages ? 'disabled' : ''}>NEXT ▶</button>`;
     
     if (topDiv) topDiv.innerHTML = paginationHtml;
@@ -223,6 +247,7 @@ function updatePaginationControls(totalPages, currentPage) {
             };
         });
     };
+    
     if (topDiv) attachEvents(topDiv);
     if (bottomDiv) attachEvents(bottomDiv);
 }
@@ -240,6 +265,7 @@ async function loadCategories() {
     }
     updateStatsBar();
 }
+
 function createDefaultCategories() {
     const map = {};
     if (videos) videos.forEach(v => {
@@ -251,6 +277,7 @@ function createDefaultCategories() {
     if (Object.keys(map).length) return Object.values(map);
     return [{ id: 'indian', name: '🇮🇳 Indian', thumbnail: 'Thumbs/HM001.webp', videoCount: videos?.length || 0 }];
 }
+
 function displayCategories(cats) {
     const cont = document.getElementById('categoriesContainer');
     if (!cont) return;
@@ -274,6 +301,7 @@ function loadTrendingVideos() {
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
     
+    // Native trending card
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     const nativeInner = document.createElement('div');
@@ -297,6 +325,7 @@ function loadTrendingVideos() {
     adDiv.style.minHeight = '200px';
     nativeInner.appendChild(adDiv);
     
+    // ✅ FIXED: bubbleText word-level for trending titles
     trendingVideos.forEach(v => {
         const thumb = getThumbnailUrlSafe(v.id);
         let catHtml = '';
@@ -401,6 +430,7 @@ function handleTouchStart(e) {
         initialPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
     }
 }
+
 function handleTouchEnd(e) {
     if (initialPinchDistance > 0) {
         const currentZoom = window.visualViewport ? window.visualViewport.scale : 1;
@@ -424,6 +454,7 @@ function handleTouchEnd(e) {
 function goToVideo(id) { 
     window.location.href = 'video.html?v=' + id; 
 }
+
 function goToCategory(id) { 
     window.location.href = 'list.html?category=' + id; 
 }
