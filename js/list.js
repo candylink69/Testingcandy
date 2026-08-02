@@ -1,5 +1,5 @@
 // ============================================================
-// LIST.JS - Category Filter, Grid, Pagination
+// LIST.JS - FIXED (Bubble Text Word-Level + All Fixes)
 // ============================================================
 
 let allCategories = [];
@@ -8,12 +8,39 @@ let categoryName = "All Categories";
 let filteredVideos = [];
 const PER_PAGE = 20;
 
+// ========== ESCAPE HTML ==========
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
+}
+
+// ========== BUBBLE TEXT - FIXED (Word-Level) ==========
+function bubbleText(text) {
+    if (!text) return '';
+    const escaped = escapeHtml(text);
+    return escaped.split(' ').map(word => {
+        if (!word) return ' ';
+        return `<span class="bubble-word">${word}</span>`;
+    }).join(' ');
+}
+
+// ========== THUMBNAIL SAFE ==========
+function getThumbnailUrlSafe(videoId) {
+    if (typeof getThumbnailUrl === 'function') {
+        try {
+            return getThumbnailUrl(videoId);
+        } catch(e) {
+            return `https://via.placeholder.com/320x180?text=${videoId}`;
+        }
+    }
+    return `https://via.placeholder.com/320x180?text=${videoId}`;
+}
+
 // ========== LOAD CATEGORIES ==========
 async function loadCategoriesData() {
     try {
         const response = await fetch('data/categories.json');
         allCategories = await response.json();
-        // ✅ Point 6: Categories ko alphabetically sort karo (name ke hisaab se)
         allCategories.sort((a, b) => a.name.localeCompare(b.name));
     } catch (error) {
         console.log('Could not load categories.json');
@@ -29,7 +56,7 @@ function getSelectedCategory() {
     return urlCategory || storageCategory;
 }
 
-// ========== SETUP CATEGORY INFO (Point 4: "Showing videos in" hatao) ==========
+// ========== SETUP CATEGORY INFO ==========
 function setupCategoryInfo(categoryId) {
     selectedCategory = categoryId;
     if (!selectedCategory) {
@@ -40,7 +67,6 @@ function setupCategoryInfo(categoryId) {
     const category = allCategories.find(cat => cat.id === selectedCategory);
     categoryName = category ? category.name : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
     
-    // ✅ Point 4: Sirf category name show karo (Showing videos in hatao)
     const currentCategoryEl = document.getElementById('currentCategory');
     if (currentCategoryEl) {
         currentCategoryEl.textContent = categoryName;
@@ -55,7 +81,6 @@ function setupCategoryInfo(categoryId) {
     }
     metaDesc.content = `Browse all ${categoryName} videos on CandyLink69. HD quality, daily updates.`;
     
-    // ✅ Point 4: Heading chhota (h1 se h2)
     const pageTitle = document.getElementById('pageTitle');
     if (pageTitle) {
         pageTitle.textContent = `🔥 ${categoryName} Videos 🔥`;
@@ -72,15 +97,6 @@ function filterVideosByCategory() {
     }
     filteredVideos = videos.filter(video => video.categories && video.categories.includes(selectedCategory));
     document.getElementById('searchInput').placeholder = `🔍 Search ${categoryName} videos...`;
-}
-
-// ========== BUBBLE LETTERS WRAPPER ==========
-function bubbleText(text) {
-    if (!text) return '';
-    return text.split('').map(char => {
-        if (char === ' ') return ' ';
-        return `<span class="bubble-letter">${char}</span>`;
-    }).join('');
 }
 
 // ========== SEARCH (List) ==========
@@ -115,10 +131,11 @@ function setupSearch() {
         }
     });
 }
+
 function displaySearchResults(results, query) {
     const searchResults = document.getElementById('searchResults');
     if (results.length === 0) {
-        searchResults.innerHTML = `<div class="search-no-results">No videos found for "${query}"</div>`;
+        searchResults.innerHTML = `<div class="search-no-results">No videos found for "${escapeHtml(query)}"</div>`;
         searchResults.style.display = 'block';
         return;
     }
@@ -131,22 +148,13 @@ function displaySearchResults(results, query) {
         resultsHTML += `
             <div class="search-result-item" onclick="goToVideo('${video.id}')">
                 <div class="search-video-id">${video.id}</div>
-                ${video.title ? `<div class="search-video-title">${video.title}</div>` : ''}
-                <div style="color:#888; font-size:11px; margin-top:2px;">${categoryNames}</div>
+                ${video.title ? `<div class="search-video-title">${escapeHtml(video.title)}</div>` : ''}
+                <div style="color:#888; font-size:11px; margin-top:2px;">${escapeHtml(categoryNames)}</div>
             </div>
         `;
     });
     searchResults.innerHTML = resultsHTML;
     searchResults.style.display = 'block';
-}
-
-// ========== GET CATEGORY NAMES (as array) ==========
-function getCategoryNames(categoryIds) {
-    if (!categoryIds || !Array.isArray(categoryIds)) return [];
-    return categoryIds.map(catId => {
-        const cat = allCategories.find(c => c.id === catId);
-        return cat ? cat.name : catId;
-    });
 }
 
 // ========== GENERATE CATEGORY BUTTONS HTML ==========
@@ -229,13 +237,23 @@ function setupTouchPreview() {
     });
 }
 
-// ========== RESTORE SCROLL POSITION (Point 10) ==========
+// ========== RESTORE SCROLL POSITION ==========
 function restoreScrollPosition() {
     const scrollPos = sessionStorage.getItem('scrollPosition');
     if (scrollPos) {
         window.scrollTo(0, parseInt(scrollPos));
         sessionStorage.removeItem('scrollPosition');
     }
+}
+
+// ========== GLOBAL FUNCTIONS ==========
+function goToVideo(id) { 
+    window.location.href = 'video.html?v=' + id; 
+}
+
+function goToCategory(id) { 
+    localStorage.setItem('selectedCategory', id);
+    window.location.href = 'list.html?category=' + id; 
 }
 
 // ========== INITIALIZE ==========
@@ -279,20 +297,19 @@ function initializePage() {
                 const hasTitle = v.title && v.title.trim().length > 0;
                 const alignClass = hasTitle ? 'left' : 'center';
                 
-                // Categories ko buttons mein convert karo (NAME dikhega)
                 let catHtml = '';
                 if (v.categories && Array.isArray(v.categories) && v.categories.length) {
                     catHtml = generateCategoryButtons(v.categories);
                 }
                 
-                // ✅ Point 1 style: ID:- Title format
-                const idDisplay = v.id ? `${v.id}:-` : '';
+                // ✅ FIXED: bubbleText word-level
+                const idDisplay = v.id ? `${escapeHtml(v.id)}:-` : '';
                 const titleDisplay = hasTitle ? bubbleText(v.title) : '';
                 
                 const videoHTML = `
                     <a href="video.html?v=${v.id}">
                         <div class="thumb-container">
-                            <img class="thumb-img" src="${getThumbnailUrl(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+                            <img class="thumb-img" src="${getThumbnailUrlSafe(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
                             ${v.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : ''}
                             ${v.duration ? `<div class="duration">${v.duration}</div>` : ''}
                         </div>
@@ -310,8 +327,6 @@ function initializePage() {
             const categoryParam = selectedCategory ? `?category=${selectedCategory}` : '';
             window.history.replaceState({}, document.title, `list.html${categoryParam}`);
         }
-        
-        // ✅ Point 10: Scroll position restore
         restoreScrollPosition();
     });
 }
