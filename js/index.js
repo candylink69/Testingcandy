@@ -10,7 +10,7 @@ const AD_AFTER_EVERY = 5;
 const SWIPE_THRESHOLD = 80;
 let touchStartX = 0, touchStartY = 0;
 let currentTab = 'latest';
-let initialPinchDistance = 0; // Point 2: Zoom detection
+let initialPinchDistance = 0;
 
 // ========== THUMBNAIL SAFE ==========
 function getThumbnailUrlSafe(videoId) {
@@ -35,9 +35,9 @@ function bubbleText(text) {
     }).join('');
 }
 
-// ========== GENERATE VIDEO CARD (Point 1: O005:- Title + Categories) ==========
+// ========== GENERATE VIDEO CARD ==========
 function generateVideoCard(video) {
-    // Categories ko buttons mein convert karo (NAME dikhega, ID nahi)
+    // Categories ko buttons mein convert karo
     let categoriesHtml = '';
     if (video.categories && Array.isArray(video.categories) && video.categories.length) {
         categoriesHtml = `<div class="video-categories">`;
@@ -49,7 +49,7 @@ function generateVideoCard(video) {
         categoriesHtml += `</div>`;
     }
 
-    // ✅ Point 1: Video ID ke baad ":-" aur title
+    // ✅ Fix: ID:- Title format (title sahi se show ho)
     const idDisplay = video.id ? `${escapeHtml(video.id)}:-` : '';
     const titleDisplay = video.title ? bubbleText(escapeHtml(video.title)) : '';
 
@@ -246,13 +246,12 @@ function createDefaultCategories() {
     return [{ id: 'indian', name: '🇮🇳 Indian', thumbnail: 'Thumbs/HM001.webp', videoCount: videos?.length || 0 }];
 }
 
-// ========== DISPLAY CATEGORIES (Point 6: Alphabetically Sorted) ==========
+// ========== DISPLAY CATEGORIES (Alphabetically Sorted) ==========
 function displayCategories(cats) {
     const cont = document.getElementById('categoriesContainer');
     if (!cont) return;
     cont.innerHTML = '';
     
-    // ✅ Point 6: Categories ko alphabetically sort karo (name ke hisaab se)
     const sortedCats = [...cats].sort((a, b) => a.name.localeCompare(b.name));
     
     sortedCats.forEach(cat => {
@@ -265,7 +264,7 @@ function displayCategories(cats) {
     });
 }
 
-// ========== TRENDING (with Categories & Bubble Titles) ==========
+// ========== TRENDING ==========
 function loadTrendingVideos() {
     const cont = document.getElementById('trendingContainer');
     if (!cont) return;
@@ -273,7 +272,6 @@ function loadTrendingVideos() {
     const trendingIds = ["Movie006","Movie005","HM002","D001"];
     const trendingVideos = videos?.filter(v => trendingIds.includes(v.id)) || [];
     
-    // Native ad card
     const nativeCard = document.createElement('div');
     nativeCard.className = 'native-trending-card';
     const nativeInner = document.createElement('div');
@@ -311,7 +309,6 @@ function loadTrendingVideos() {
             catHtml += `</div>`;
         }
         
-        // ✅ Point 1: Trending mein bhi ID:- Title format
         const idDisplay = v.id ? `${escapeHtml(v.id)}:-` : '';
         const titleDisplay = v.title ? bubbleText(escapeHtml(v.title)) : '';
         
@@ -327,20 +324,19 @@ function loadTrendingVideos() {
     });
 }
 
-// ========== STATS (Point 3: Will be replaced by new count display) ==========
+// ========== STATS (Fixed - Count Update) ==========
 function updateStatsBar() {
-    const sb = document.getElementById('statsBar');
-    if (!sb) return;
-    // Stats bar will be replaced with new design in index.html + style.css
-    // This function is kept for compatibility but will be overridden
     const totalVideos = videos?.length || 0;
     const totalCategories = allCategories?.length || 0;
     const trendingCount = Math.min(4, videos?.length || 0);
-    sb.innerHTML = `
-        <div class="stat-item"><div class="stat-number">${totalVideos}</div><div class="stat-label">Videos</div></div>
-        <div class="stat-item"><div class="stat-number">${totalCategories}</div><div class="stat-label">Categories</div></div>
-        <div class="stat-item"><div class="stat-number">${trendingCount}</div><div class="stat-label">Trending</div></div>
-    `;
+    
+    const videosCount = document.getElementById('totalVideosCount');
+    const categoriesCount = document.getElementById('totalCategoriesCount');
+    const trendingCountEl = document.getElementById('trendingCount');
+    
+    if (videosCount) videosCount.textContent = `${totalVideos} Videos`;
+    if (categoriesCount) categoriesCount.textContent = `${totalCategories} Categories`;
+    if (trendingCountEl) trendingCountEl.textContent = `${trendingCount} Trending`;
 }
 
 // ========== TAB SWITCHING ==========
@@ -396,12 +392,11 @@ function setupSearch() {
     });
 }
 
-// ========== SWIPE (Point 2: Zoom ke baad ignore) ==========
+// ========== SWIPE ==========
 function handleTouchStart(e) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
     
-    // ✅ Point 2: Zoom detection - check if pinch zoom is active
     if (e.touches && e.touches.length === 2) {
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
@@ -410,18 +405,15 @@ function handleTouchStart(e) {
 }
 
 function handleTouchEnd(e) {
-    // ✅ Point 2: Agar zoom active hai toh swipe ignore karo
     if (initialPinchDistance > 0) {
-        // Check if zoom level changed significantly (>10px difference)
         const currentZoom = window.visualViewport ? window.visualViewport.scale : 1;
         if (currentZoom > 1.1) {
             initialPinchDistance = 0;
-            return; // Zoom active hai, swipe ignore
+            return;
         }
         initialPinchDistance = 0;
     }
     
-    // Normal swipe logic
     const diffX = e.changedTouches[0].screenX - touchStartX;
     const diffY = e.changedTouches[0].screenY - touchStartY;
     if (Math.abs(diffY) > Math.abs(diffX)) return;
@@ -432,7 +424,7 @@ function handleTouchEnd(e) {
     else if (diffX < 0 && idx < tabs.length-1) switchTab(tabs[idx+1]);
 }
 
-// ========== GLOBALS (Menu Support) ==========
+// ========== GLOBALS ==========
 function goToVideo(id) { 
     window.location.href = 'video.html?v=' + id; 
 }
@@ -440,7 +432,7 @@ function goToCategory(id) {
     window.location.href = 'list.html?category=' + id; 
 }
 
-// ========== RESTORE SCROLL POSITION (Point 10) ==========
+// ========== RESTORE SCROLL POSITION ==========
 function restoreScrollPosition() {
     const scrollPos = sessionStorage.getItem('scrollPosition');
     if (scrollPos) {
@@ -463,15 +455,12 @@ function initIndex() {
         });
         document.addEventListener('touchstart', handleTouchStart, { passive: true });
         document.addEventListener('touchend', handleTouchEnd, { passive: true });
-        
-        // ✅ Point 10: Scroll position restore
         restoreScrollPosition();
     } else {
         setTimeout(initIndex, 500);
     }
 }
 
-// Document ready pe init
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initIndex);
 } else {
