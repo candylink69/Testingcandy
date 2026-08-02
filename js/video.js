@@ -1,5 +1,5 @@
 // ============================================================
-// VIDEO.JS - Load Video, Prev/Next, Related Videos
+// VIDEO.JS - FULLY FIXED (Bubble Text + Related Videos + Native Ad)
 // ============================================================
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -25,16 +25,23 @@ async function loadCategoriesForVideo() {
     }
 }
 
-// ========== BUBBLE LETTERS WRAPPER ==========
-function bubbleText(text) {
-    if (!text) return '';
-    return text.split('').map(char => {
-        if (char === ' ') return ' ';
-        return `<span class="bubble-letter">${char}</span>`;
-    }).join('');
+// ========== ESCAPE HTML ==========
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : (m === '<' ? '&lt;' : '&gt;'));
 }
 
-// ========== GENERATE CATEGORY BUTTONS (with "Tag:" label) ==========
+// ========== BUBBLE TEXT - FIXED (Word-Level, NOT Letter-Level) ==========
+function bubbleText(text) {
+    if (!text) return '';
+    const escaped = escapeHtml(text);
+    return escaped.split(' ').map(word => {
+        if (!word) return ' ';
+        return `<span class="bubble-word">${word}</span>`;
+    }).join(' ');
+}
+
+// ========== GENERATE CATEGORY BUTTONS ==========
 function generateCategoryButtons(categoryIds) {
     if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
     
@@ -62,8 +69,8 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RENDER RELATED VIDEOS ==========
-function renderRelatedVideos() {
+// ========== RENDER RELATED VIDEOS - FIXED ==========
+function renderRelatedVideos(isFirstLoad = false) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
 
@@ -77,7 +84,9 @@ function renderRelatedVideos() {
     const visibleVideos = relatedVideosList.slice(start, end);
     const hasMore = end < relatedVideosList.length && end < RELATED_MAX;
 
-    let html = `<div class="related-videos-grid">`;
+    // ✅ Videos grid HTML
+    let html = `<div class="related-videos-grid" id="relatedVideosGrid">`;
+    
     visibleVideos.forEach(v => {
         const thumbUrl = getThumbnailUrlSafe(v.id);
         const previewHtml = v.preview ? 
@@ -86,7 +95,7 @@ function renderRelatedVideos() {
             `<div class="duration">${v.duration}</div>` : '';
         const catHtml = generateCategoryButtons(v.categories);
 
-        // ✅ Fix: Title ko bubbleText se wrap karo
+        // ✅ FIXED: bubbleText word-level
         const titleDisplay = v.title ? bubbleText(v.title.substring(0, 50)) : '';
 
         html += `
@@ -106,19 +115,40 @@ function renderRelatedVideos() {
     });
     html += `</div>`;
 
-    // "More Videos ↓" button
+    // ✅ Native Ad: SIRF pehli baar load (5 videos ke baad)
+    if (isFirstLoad && visibleVideos.length >= 5) {
+        html += `
+            <div class="native-ad-container" id="nativeAdContainer">
+                <div id="container-4b10501c070917e2ceca3f13f9e60117"></div>
+            </div>
+        `;
+    }
+
+    // ✅ More Videos button ya End message
     if (hasMore && end < RELATED_MAX) {
         const remaining = Math.min(RELATED_MAX - end, RELATED_PER_PAGE);
         html += `<div class="more-videos-container">
             <button class="more-videos-btn" onclick="loadMoreRelated()">More Videos ↓ (${remaining} more)</button>
         </div>`;
-    } else if (end >= RELATED_MAX) {
+    } else if (end >= RELATED_MAX || !hasMore) {
         html += `<div class="more-videos-container">
             <span class="max-videos-reached">✨ You've reached the end</span>
         </div>`;
     }
 
     container.innerHTML = html;
+
+    // ✅ Native ad script sirf pehli baar inject
+    if (isFirstLoad && visibleVideos.length >= 5) {
+        const nativeContainer = document.getElementById('nativeAdContainer');
+        if (nativeContainer) {
+            const script = document.createElement('script');
+            script.async = true;
+            script.setAttribute('data-cfasync', 'false');
+            script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
+            nativeContainer.appendChild(script);
+        }
+    }
 
     // Attach click events
     document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
@@ -134,23 +164,17 @@ function renderRelatedVideos() {
     setupRelatedPreview();
 }
 
-// ========== LOAD MORE RELATED VIDEOS (With Native Banner Reload) ==========
+// ========== LOAD MORE RELATED - FIXED (No Native Banner Reload) ==========
 function loadMoreRelated() {
     if (relatedCurrentPage * RELATED_PER_PAGE >= RELATED_MAX) return;
-    relatedCurrentPage++;
-    renderRelatedVideos();
+    if (relatedCurrentPage * RELATED_PER_PAGE >= relatedVideosList.length) return;
     
-    // ✅ Native banner reload karo (Point 8)
-    const nativeContainer = document.querySelector('.native-ad-container');
-    if (nativeContainer) {
-        nativeContainer.innerHTML = `
-            <script async data-cfasync="false" src="https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js"><\/script>
-            <div id="container-4b10501c070917e2ceca3f13f9e60117"></div>
-        `;
-    }
+    relatedCurrentPage++;
+    // ✅ false = NOT first load, no native ad injected
+    renderRelatedVideos(false);
 }
 
-// ========== LOAD RELATED VIDEOS LIST (With Proper Fallback) ==========
+// ========== LOAD RELATED VIDEOS LIST - FIXED (25 Videos Tak Fill) ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -162,34 +186,46 @@ function loadRelatedVideos(currentVideoId) {
 
     const currentVideo = videos.find(v => v.id === currentVideoId);
     let related = [];
+    const usedIds = new Set();
+    usedIds.add(currentVideoId);
 
-    // 1. Same category ki videos dhoondho
+    // ✅ STEP 1: Same category videos
     if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
-        const categoryId = currentVideo.categories[0];
-        related = videos
-            .filter(v => v.id !== currentVideoId && v.categories && v.categories.includes(categoryId));
+        const sameCatVideos = videos.filter(v => 
+            !usedIds.has(v.id) && 
+            v.categories && 
+            v.categories.includes(currentVideo.categories[0])
+        );
+        related.push(...sameCatVideos);
+        sameCatVideos.forEach(v => usedIds.add(v.id));
     }
 
-    // 2. Agar related videos 5 se kam hain toh latest videos se fill karo
-    if (related.length < 5) {
-        const relatedIds = new Set(related.map(v => v.id));
-        relatedIds.add(currentVideoId);
-        const latestVideos = videos.filter(v => !relatedIds.has(v.id));
-        // Pehle same category wali, phir latest se fill
-        const remaining = 5 - related.length;
-        related = [...related, ...latestVideos.slice(0, remaining)];
+    // ✅ STEP 2: Agar 25 se kam hain to latest videos se fill karo
+    if (related.length < RELATED_MAX) {
+        const latestVideos = videos
+            .filter(v => !usedIds.has(v.id))
+            .reverse(); // Latest first
+        const needed = RELATED_MAX - related.length;
+        const fillVideos = latestVideos.slice(0, needed);
+        related.push(...fillVideos);
+        fillVideos.forEach(v => usedIds.add(v.id));
     }
 
-    // 3. Agar phir bhi 0 hain toh "No other videos" dikhao
-    if (related.length === 0) {
-        container.innerHTML = '<p style="color:#888; padding:10px;">No other videos available.</p>';
-        return;
+    // ✅ STEP 3: Agar phir bhi kam to random videos se fill karo
+    if (related.length < RELATED_MAX) {
+        const remainingVideos = videos
+            .filter(v => !usedIds.has(v.id))
+            .sort(() => Math.random() - 0.5); // Shuffle
+        const needed = RELATED_MAX - related.length;
+        related.push(...remainingVideos.slice(0, needed));
     }
 
-    // ✅ Max 25 videos tak limit
+    // ✅ Max 25 tak limit
     relatedVideosList = related.slice(0, RELATED_MAX);
     relatedCurrentPage = 1;
-    renderRelatedVideos();
+    
+    // ✅ true = first load (native ad inject hoga)
+    renderRelatedVideos(true);
 }
 
 // ========== PREVIEW HANDLERS ==========
@@ -278,7 +314,7 @@ function goBackToPrevious() {
     }
 }
 
-// ========== MAIN VIDEO LOAD ==========
+// ========== MAIN VIDEO LOAD - FIXED ==========
 async function loadVideo() {
     await loadCategoriesForVideo();
 
@@ -328,7 +364,7 @@ async function loadVideo() {
                 idContainer.textContent = videoId;
             }
 
-            // VIDEO TITLE
+            // ✅ FIXED: Video Title - bubbleText word-level
             const titleContainer = document.getElementById('videoTitle');
             if (titleContainer) {
                 if (videoInfo.title) {
@@ -366,13 +402,17 @@ async function loadVideo() {
             if (currentIndex > 0) {
                 prevBtn.href = `video.html?v=${videoIds[currentIndex - 1]}`;
                 prevBtn.style.display = 'inline-block';
+            } else {
+                prevBtn.style.display = 'none';
             }
             if (currentIndex < videoIds.length - 1) {
                 nextBtn.href = `video.html?v=${videoIds[currentIndex + 1]}`;
                 nextBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'none';
             }
 
-            // ===== LOAD RELATED VIDEOS =====
+            // ✅ FIXED: Load Related Videos (with 25-video fill)
             loadRelatedVideos(videoId);
 
         } else {
@@ -396,10 +436,11 @@ async function loadVideo() {
 function goToVideo(id) { 
     window.location.href = 'video.html?v=' + id; 
 }
+
 function goToCategory(id) { 
     window.location.href = 'list.html?category=' + id; 
 }
 
 // ========== START ==========
 document.addEventListener('DOMContentLoaded', loadVideo);
-console.log('✅ video.js loaded successfully');
+console.log('✅ video.js loaded successfully - All bugs fixed');
