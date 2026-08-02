@@ -502,62 +502,27 @@ img,
 }
 
 /* ============================================================
-   🟢 LATEST TITLE - FINAL FIXED (Single Definition, No Duplicate)
+   🟢 LATEST TITLE - Helvetica Neue Black + White Outline
    ============================================================ */
 .latest-title {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 300;
     font-size: 14px;
-    font-weight: 900;
     font-style: italic;
-    font-family: Arial, sans-serif;
     line-height: 1.3;
     
-    /* ✅ SOLID FALLBACK - Kabhi invisible nahi hoga */
-    color: #ffffff;
+    /* Black inside, white outline */
+    color: #000;
+    -webkit-text-fill-color: #000;
+    -webkit-text-stroke: 1.5px #fff;
     
-    /* ✅ Liquid glass effect - OPTIONAL, remove if causing issues */
-    background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.12) 0%,
-            rgba(170, 220, 255, 0.08) 20%,
-            rgba(255, 255, 255, 0.01) 50%,
-            rgba(120, 190, 255, 0.08) 80%,
-            rgba(255, 255, 255, 0.12) 100%);
-    background-size: 100% 250%;
-    background-position: center top;
-    -webkit-background-clip: text;
-    background-clip: text;
+    /* Clean look - no shadow/filter */
     
-    /* ✅ REMOVED: -webkit-text-fill-color: transparent (was causing invisible text) */
-    
-    /* ✅ Text stroke for glass effect */
-    -webkit-text-stroke: 0.4px rgba(255, 255, 255, 0.7);
-    text-shadow:
-        0 1px 1px rgba(255, 255, 255, 0.08),
-        0 2px 4px rgba(0, 0, 0, 0.20),
-        0 5px 10px rgba(0, 0, 0, 0.28),
-        0 8px 18px rgba(0, 0, 0, 0.18);
-    filter: brightness(1) saturate(1.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
-    animation: waterFlow 4s ease-in-out infinite;
-    
-    /* ✅ Word wrapping - FIXED */
+    /* Word wrapping */
     display: block;
     white-space: normal;
     word-break: normal;
     overflow-wrap: break-word;
-}
-
-@keyframes waterFlow {
-    0% {
-        background-position: center top;
-        filter: brightness(1) saturate(1.05) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
-    }
-    50% {
-        background-position: center bottom;
-        filter: brightness(1.12) saturate(1.18) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.22));
-    }
-    100% {
-        background-position: center top;
-        filter: brightness(1) saturate(1.05) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
-    }
 }
 
 /* ============================================================
@@ -566,12 +531,10 @@ img,
 .bubble-word {
     display: inline-block;
     white-space: nowrap;
-    /* Inherit parent's bubble effect styling */
+    margin-right: 0.25em;
 }
 
-/* ✅ OLD .bubble-letter - REMOVED (was causing all problems) */
 .bubble-letter {
-    /* KEPT AS EMPTY - won't break anything if JS still references it */
     display: inline;
 }
 
@@ -732,15 +695,20 @@ img,
     display: block;
 }
 
-/* --- Video Title (List) --- */
+/* --- Video Title (List) - Helvetica Neue + Flex Wrap --- */
 .video-title {
-    margin-top: 5px;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 300;
     font-size: 13px;
-    font-weight: 700;
-    color: #fff;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    
+    color: #000;
+    -webkit-text-fill-color: #000;
+    -webkit-text-stroke: 1px #fff;
+    
+    margin-top: 5px;
     min-height: 30px;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     line-height: 1.3;
     white-space: normal;
@@ -1007,45 +975,25 @@ img,
     display: inline-block;
 }
 
-/* --- Video Page Title (Big Bubble) --- */
+/* --- Video Page Title (Big) - Helvetica Neue --- */
 .video-title-big {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 300;
     font-size: 24px;
-    font-weight: 900;
+    font-style: italic;
     line-height: 1.4;
     margin-bottom: 8px;
     padding: 4px 0;
     text-align: center;
+    
+    color: #000;
+    -webkit-text-fill-color: #000;
+    -webkit-text-stroke: 2px #fff;
+    
+    display: block;
     white-space: normal;
     word-break: normal;
     overflow-wrap: break-word;
-    
-    /* ✅ SOLID FALLBACK */
-    color: #ffffff;
-    
-    /* Bubble effect */
-    position: relative;
-    display: block;
-    font-family: Arial, sans-serif;
-    font-style: italic;
-    letter-spacing: 0.4px;
-    background: linear-gradient(180deg,
-            rgba(255, 255, 255, 0.12) 0%,
-            rgba(170, 220, 255, 0.08) 20%,
-            rgba(255, 255, 255, 0.01) 50%,
-            rgba(120, 190, 255, 0.08) 80%,
-            rgba(255, 255, 255, 0.12) 100%);
-    background-size: 100% 250%;
-    background-position: center top;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-stroke: 0.6px rgba(255, 255, 255, 0.85);
-    text-shadow:
-        0 1px 1px rgba(255, 255, 255, 0.08),
-        0 2px 4px rgba(0, 0, 0, 0.20),
-        0 5px 10px rgba(0, 0, 0, 0.28),
-        0 8px 18px rgba(0, 0, 0, 0.18);
-    filter: brightness(1) saturate(1.1) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
-    animation: waterFlow 4s ease-in-out infinite;
 }
 
 /* --- Video Description --- */
@@ -1198,7 +1146,6 @@ img,
     }
 }
 
-/* ✅ FIXED: Related video card - overflow visible */
 .related-video-card {
     background: #1a1a1a;
     border-radius: 10px;
@@ -1251,7 +1198,6 @@ img,
     color: #fff;
 }
 
-/* ✅ FIXED: Related video info - height auto, overflow visible */
 .related-video-card .latest-info {
     padding: 6px 8px;
     text-align: left;
@@ -1267,11 +1213,13 @@ img,
     font-size: 12px;
 }
 
-/* ✅ FIXED: Related video title - full visibility */
 .related-video-card .latest-title {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-weight: 300;
     font-size: 12px;
-    font-weight: 700;
-    color: #fff;
+    color: #000;
+    -webkit-text-fill-color: #000;
+    -webkit-text-stroke: 0.8px #fff;
     line-height: 1.4;
     display: block;
     white-space: normal;
@@ -1671,4 +1619,4 @@ img,
     .sticky {
         display: none;
     }
-   }
+}
