@@ -8,6 +8,13 @@ const videoId = urlParams.get('v') || 'V001';
 // ========== GLOBAL CATEGORIES ==========
 let allCategories = [];
 
+// ========== RELATED VIDEOS PAGINATION (Point 8) ==========
+let relatedVideosList = [];
+let relatedCurrentPage = 1;
+const RELATED_PER_PAGE = 5;
+const RELATED_MAX = 25;
+let relatedLoadMoreBtn = null;
+
 // ========== LOAD CATEGORIES ==========
 async function loadCategoriesForVideo() {
     try {
@@ -33,8 +40,6 @@ function generateCategoryButtons(categoryIds) {
     if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
     
     let html = `<div class="video-categories" style="margin:6px 0; display:flex; flex-wrap:wrap; align-items:center; gap:6px;">`;
-    
-    // ✅ "Tag:" label add karo
     html += `<span style="color:#ff9900; font-weight:bold; font-size:14px; margin-right:4px;">Tag:</span>`;
     
     categoryIds.forEach(catId => {
@@ -58,41 +63,23 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RELATED VIDEOS ==========
-function loadRelatedVideos(currentVideoId) {
+// ========== RENDER RELATED VIDEOS (Point 8) ==========
+function renderRelatedVideos() {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
 
-    if (typeof videos === 'undefined' || !videos.length) {
-        container.innerHTML = '<p style="color:#888; padding:10px;">Loading videos...</p>';
-        return;
-    }
-
-    const currentVideo = videos.find(v => v.id === currentVideoId);
-    let related = [];
-
-    if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
-        const categoryId = currentVideo.categories[0];
-        related = videos
-            .filter(v => v.id !== currentVideoId && v.categories && v.categories.includes(categoryId))
-            .slice(0, 5);
-    }
-
-    if (related.length < 5) {
-        const remainingCount = 5 - related.length;
-        const relatedIds = new Set(related.map(v => v.id));
-        relatedIds.add(currentVideoId);
-        const latestVideos = videos.filter(v => !relatedIds.has(v.id)).slice(0, remainingCount);
-        related = [...related, ...latestVideos];
-    }
-
-    if (related.length === 0) {
+    if (relatedVideosList.length === 0) {
         container.innerHTML = '<p style="color:#888; padding:10px;">No other videos available.</p>';
         return;
     }
 
+    const start = 0;
+    const end = relatedCurrentPage * RELATED_PER_PAGE;
+    const visibleVideos = relatedVideosList.slice(start, end);
+    const hasMore = end < relatedVideosList.length && end < RELATED_MAX;
+
     let html = `<div class="related-videos-grid">`;
-    related.forEach(v => {
+    visibleVideos.forEach(v => {
         const thumbUrl = getThumbnailUrlSafe(v.id);
         const previewHtml = v.preview ? 
             `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : '';
@@ -116,8 +103,22 @@ function loadRelatedVideos(currentVideoId) {
         `;
     });
     html += `</div>`;
+
+    // ✅ Point 8: "More Videos ↓" button
+    if (hasMore && end < RELATED_MAX) {
+        const remaining = Math.min(RELATED_MAX - end, RELATED_PER_PAGE);
+        html += `<div class="more-videos-container">
+            <button class="more-videos-btn" onclick="loadMoreRelated()">More Videos ↓ (${remaining} more)</button>
+        </div>`;
+    } else if (end >= RELATED_MAX) {
+        html += `<div class="more-videos-container">
+            <span class="max-videos-reached">✨ You've reached the end</span>
+        </div>`;
+    }
+
     container.innerHTML = html;
 
+    // Attach click events
     document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
         const vid = card.getAttribute('data-video-id');
         if (vid) {
@@ -129,6 +130,46 @@ function loadRelatedVideos(currentVideoId) {
     });
 
     setupRelatedPreview();
+}
+
+// ========== LOAD MORE RELATED VIDEOS (Point 8) ==========
+function loadMoreRelated() {
+    if (relatedCurrentPage * RELATED_PER_PAGE >= RELATED_MAX) return;
+    relatedCurrentPage++;
+    renderRelatedVideos();
+}
+
+// ========== LOAD RELATED VIDEOS LIST ==========
+function loadRelatedVideos(currentVideoId) {
+    const container = document.getElementById('relatedVideos');
+    if (!container) return;
+
+    if (typeof videos === 'undefined' || !videos.length) {
+        container.innerHTML = '<p style="color:#888; padding:10px;">Loading videos...</p>';
+        return;
+    }
+
+    const currentVideo = videos.find(v => v.id === currentVideoId);
+    let related = [];
+
+    if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
+        const categoryId = currentVideo.categories[0];
+        related = videos
+            .filter(v => v.id !== currentVideoId && v.categories && v.categories.includes(categoryId));
+    }
+
+    // Agar related videos kam hain toh latest se fill karo
+    if (related.length < 5) {
+        const relatedIds = new Set(related.map(v => v.id));
+        relatedIds.add(currentVideoId);
+        const latestVideos = videos.filter(v => !relatedIds.has(v.id));
+        related = [...related, ...latestVideos];
+    }
+
+    // ✅ Point 8: Max 25 videos tak limit
+    relatedVideosList = related.slice(0, RELATED_MAX);
+    relatedCurrentPage = 1;
+    renderRelatedVideos();
 }
 
 // ========== PREVIEW HANDLERS ==========
@@ -207,6 +248,16 @@ function handleRelatedTouchEnd(e) {
     }
 }
 
+// ========== GO BACK TO PREVIOUS PAGE (Point 10) ==========
+function goBackToPrevious() {
+    if (document.referrer && document.referrer.includes(window.location.hostname)) {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+        window.location.href = document.referrer;
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+
 // ========== MAIN VIDEO LOAD ==========
 async function loadVideo() {
     await loadCategoriesForVideo();
@@ -251,13 +302,13 @@ async function loadVideo() {
             // Load Player
             document.getElementById('videoPlayer').src = videoEmbedData.embed;
             
-            // ✅ VIDEO ID (Old structure support)
+            // VIDEO ID
             const idContainer = document.getElementById('currentVideoId');
             if (idContainer) {
                 idContainer.textContent = videoId;
             }
 
-            // ✅ VIDEO TITLE (New structure support)
+            // VIDEO TITLE
             const titleContainer = document.getElementById('videoTitle');
             if (titleContainer) {
                 if (videoInfo.title) {
@@ -267,7 +318,7 @@ async function loadVideo() {
                 }
             }
 
-            // ✅ VIDEO CATEGORIES (New structure support) - with "Tag:" label
+            // VIDEO CATEGORIES
             const catContainer = document.getElementById('videoCategories');
             if (catContainer) {
                 if (videoInfo.categories && videoInfo.categories.length) {
@@ -277,7 +328,7 @@ async function loadVideo() {
                 }
             }
 
-            // ✅ VIDEO DESCRIPTION (Both structures)
+            // VIDEO DESCRIPTION
             const descContainer = document.getElementById('videoDescription');
             if (descContainer) {
                 if (videoEmbedData.description) {
