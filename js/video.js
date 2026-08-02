@@ -207,16 +207,25 @@ async function loadVideo() {
     await loadCategoriesForVideo();
 
     try {
+        // ✅ 1. videos.json se sirf embed + description lo
         const response = await fetch('data/videos.json');
         if (!response.ok) {
-            throw new Error('videos.json not found (Status: ' + response.status + ')');
+            throw new Error('videos.json not found');
         }
         const videosData = await response.json();
-        const video = videosData[videoId];
+        const videoEmbedData = videosData[videoId];  // Sirf embed + description
 
-        if (video) {
+        // ✅ 2. data.js se title + categories + preview + duration lo
+        if (typeof videos === 'undefined' || !videos.length) {
+            console.warn('⚠️ videos array not loaded yet');
+            setTimeout(loadVideo, 500);
+            return;
+        }
+        const videoInfo = videos.find(v => v.id === videoId);
+
+        if (videoEmbedData && videoInfo) {
             // Title
-            document.title = `CandyLink69 – ${video.title || videoId}`;
+            document.title = `CandyLink69 – ${videoInfo.title || videoId}`;
             
             // Meta Description
             let metaDesc = document.querySelector('meta[name="description"]');
@@ -225,7 +234,7 @@ async function loadVideo() {
                 metaDesc.name = "description";
                 document.head.appendChild(metaDesc);
             }
-            metaDesc.content = `Watch ${video.title || videoId} in HD. ${video.description ? video.description.substring(0, 120) : 'Exclusive video on CandyLink69.'}`;
+            metaDesc.content = `Watch ${videoInfo.title || videoId} in HD. ${videoEmbedData.description ? videoEmbedData.description.substring(0, 120) : 'Exclusive video on CandyLink69.'}`;
             
             // Canonical
             let canonical = document.querySelector('link[rel="canonical"]');
@@ -237,35 +246,34 @@ async function loadVideo() {
             canonical.href = `https://candylink69.com/video.html?v=${videoId}`;
 
             // Load Player
-            document.getElementById('videoPlayer').src = video.embed;
+            document.getElementById('videoPlayer').src = videoEmbedData.embed;
             document.getElementById('currentVideoId').textContent = videoId;
 
-            // ===== VIDEO TITLE =====
+            // ===== VIDEO TITLE (data.js se) =====
             const titleContainer = document.getElementById('videoTitle');
             if (titleContainer) {
-                if (video.title) {
-                    titleContainer.innerHTML = bubbleText(video.title);
+                if (videoInfo.title) {
+                    titleContainer.innerHTML = bubbleText(videoInfo.title);
                 } else {
                     titleContainer.innerHTML = videoId;
                 }
             }
 
-            // ===== VIDEO CATEGORIES =====
+            // ===== VIDEO CATEGORIES (data.js se) =====
             const catContainer = document.getElementById('videoCategories');
             if (catContainer) {
-                const currentVideo = videos.find(v => v.id === videoId);
-                if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
-                    catContainer.innerHTML = generateCategoryButtons(currentVideo.categories);
+                if (videoInfo.categories && videoInfo.categories.length) {
+                    catContainer.innerHTML = generateCategoryButtons(videoInfo.categories);
                 } else {
                     catContainer.innerHTML = '';
                 }
             }
 
-            // ===== VIDEO DESCRIPTION =====
+            // ===== VIDEO DESCRIPTION (videos.json se) =====
             const descContainer = document.getElementById('videoDescription');
             if (descContainer) {
-                if (video.description) {
-                    descContainer.textContent = video.description;
+                if (videoEmbedData.description) {
+                    descContainer.textContent = videoEmbedData.description;
                 } else {
                     descContainer.textContent = '';
                 }
@@ -293,7 +301,7 @@ async function loadVideo() {
             document.getElementById('relatedVideos').innerHTML = '';
             document.getElementById('videoTitle').innerHTML = '';
             document.getElementById('videoCategories').innerHTML = '';
-            document.getElementById('videoDescription').textContent = '❌ Video not found.';
+            document.getElementById('videoDescription').textContent = '';
         }
     } catch (error) {
         console.error('Error loading video:', error);
@@ -301,7 +309,7 @@ async function loadVideo() {
         document.getElementById('relatedVideos').innerHTML = '';
         document.getElementById('videoTitle').innerHTML = '';
         document.getElementById('videoCategories').innerHTML = '';
-        document.getElementById('videoDescription').textContent = '⚠️ Error loading description.';
+        document.getElementById('videoDescription').textContent = '';
     }
 }
 
