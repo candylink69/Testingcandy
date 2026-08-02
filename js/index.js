@@ -35,7 +35,7 @@ function bubbleText(text) {
     }).join('');
 }
 
-// ========== GENERATE VIDEO CARD ==========
+// ========== GENERATE VIDEO CARD (FIXED) ==========
 function generateVideoCard(video) {
     // Categories ko buttons mein convert karo
     let categoriesHtml = '';
@@ -49,7 +49,7 @@ function generateVideoCard(video) {
         categoriesHtml += `</div>`;
     }
 
-    // ✅ Fix: ID:- Title format (title sahi se show ho)
+    // Title: ID:- Title format
     const idDisplay = video.id ? `${escapeHtml(video.id)}:-` : '';
     const titleDisplay = video.title ? bubbleText(escapeHtml(video.title)) : '';
 
@@ -126,10 +126,17 @@ function handlePreviewTouchEnd(e) {
     if (card && currentActivePreview === card) setTimeout(() => { if (currentActivePreview === card) stopPreview(); }, 300);
 }
 
-// ========== RENDER LATEST ==========
+// ========== RENDER LATEST (WITH CATEGORIES CHECK) ==========
 function renderLatestPage(pageNum, scrollToTop = true) {
     const container = document.getElementById('latestDynamicGrid');
     if (!container) return;
+    
+    // ✅ Ensure categories are loaded before rendering
+    if (!allCategories.length) {
+        setTimeout(() => renderLatestPage(pageNum, scrollToTop), 200);
+        return;
+    }
+    
     if (!reversedVideos.length) {
         container.innerHTML = '<div class="no-videos-msg">✨ No videos available yet.</div>';
         document.getElementById('latestPaginationTop').innerHTML = '';
@@ -245,15 +252,11 @@ function createDefaultCategories() {
     if (Object.keys(map).length) return Object.values(map);
     return [{ id: 'indian', name: '🇮🇳 Indian', thumbnail: 'Thumbs/HM001.webp', videoCount: videos?.length || 0 }];
 }
-
-// ========== DISPLAY CATEGORIES (Alphabetically Sorted) ==========
 function displayCategories(cats) {
     const cont = document.getElementById('categoriesContainer');
     if (!cont) return;
     cont.innerHTML = '';
-    
     const sortedCats = [...cats].sort((a, b) => a.name.localeCompare(b.name));
-    
     sortedCats.forEach(cat => {
         const cnt = videos?.filter(v => v.categories?.includes(cat.id)).length || 0;
         cont.innerHTML += `<div class="category-card" onclick="goToCategory('${cat.id}')">
@@ -297,7 +300,6 @@ function loadTrendingVideos() {
     
     trendingVideos.forEach(v => {
         const thumb = getThumbnailUrlSafe(v.id);
-        
         let catHtml = '';
         if (v.categories && Array.isArray(v.categories) && v.categories.length) {
             catHtml = `<div class="video-categories">`;
@@ -308,10 +310,8 @@ function loadTrendingVideos() {
             });
             catHtml += `</div>`;
         }
-        
         const idDisplay = v.id ? `${escapeHtml(v.id)}:-` : '';
         const titleDisplay = v.title ? bubbleText(escapeHtml(v.title)) : '';
-        
         cont.innerHTML += `
             <div class="trending-item" onclick="goToVideo('${v.id}')">
                 <img src="${thumb}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
@@ -324,7 +324,7 @@ function loadTrendingVideos() {
     });
 }
 
-// ========== STATS (Fixed - Count Update) ==========
+// ========== STATS ==========
 function updateStatsBar() {
     const totalVideos = videos?.length || 0;
     const totalCategories = allCategories?.length || 0;
@@ -396,14 +396,12 @@ function setupSearch() {
 function handleTouchStart(e) {
     touchStartX = e.changedTouches[0].screenX;
     touchStartY = e.changedTouches[0].screenY;
-    
     if (e.touches && e.touches.length === 2) {
         const touch1 = e.touches[0];
         const touch2 = e.touches[1];
         initialPinchDistance = Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
     }
 }
-
 function handleTouchEnd(e) {
     if (initialPinchDistance > 0) {
         const currentZoom = window.visualViewport ? window.visualViewport.scale : 1;
@@ -413,7 +411,6 @@ function handleTouchEnd(e) {
         }
         initialPinchDistance = 0;
     }
-    
     const diffX = e.changedTouches[0].screenX - touchStartX;
     const diffY = e.changedTouches[0].screenY - touchStartY;
     if (Math.abs(diffY) > Math.abs(diffX)) return;
