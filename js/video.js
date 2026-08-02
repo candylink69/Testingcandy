@@ -1,5 +1,5 @@
 // ============================================================
-// VIDEO.JS - FINAL FIXED (Native Ad HTML only, No JS duplicate)
+// VIDEO.JS - FINAL FIXED (Native Ad HTML only + Back State Restore)
 // ============================================================
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -84,7 +84,6 @@ function renderRelatedVideos() {
     const visibleVideos = relatedVideosList.slice(start, end);
     const hasMore = end < relatedVideosList.length && end < RELATED_MAX;
 
-    // ✅ Videos grid HTML
     let html = `<div class="related-videos-grid" id="relatedVideosGrid">`;
     
     visibleVideos.forEach(v => {
@@ -95,7 +94,6 @@ function renderRelatedVideos() {
             `<div class="duration">${v.duration}</div>` : '';
         const catHtml = generateCategoryButtons(v.categories);
 
-        // ✅ FIXED: bubbleText word-level
         const titleDisplay = v.title ? bubbleText(v.title.substring(0, 50)) : '';
 
         html += `
@@ -115,7 +113,6 @@ function renderRelatedVideos() {
     });
     html += `</div>`;
 
-    // ✅ More Videos button ya End message
     if (hasMore && end < RELATED_MAX) {
         const remaining = Math.min(RELATED_MAX - end, RELATED_PER_PAGE);
         html += `<div class="more-videos-container">
@@ -129,7 +126,6 @@ function renderRelatedVideos() {
 
     container.innerHTML = html;
 
-    // Attach click events
     document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
         const vid = card.getAttribute('data-video-id');
         if (vid) {
@@ -167,7 +163,6 @@ function loadRelatedVideos(currentVideoId) {
     const usedIds = new Set();
     usedIds.add(currentVideoId);
 
-    // ✅ STEP 1: Same category videos
     if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
         const sameCatVideos = videos.filter(v => 
             !usedIds.has(v.id) && 
@@ -178,7 +173,6 @@ function loadRelatedVideos(currentVideoId) {
         sameCatVideos.forEach(v => usedIds.add(v.id));
     }
 
-    // ✅ STEP 2: Agar 25 se kam hain to latest videos se fill karo
     if (related.length < RELATED_MAX) {
         const latestVideos = videos
             .filter(v => !usedIds.has(v.id))
@@ -189,7 +183,6 @@ function loadRelatedVideos(currentVideoId) {
         fillVideos.forEach(v => usedIds.add(v.id));
     }
 
-    // ✅ STEP 3: Agar phir bhi kam to random videos se fill karo
     if (related.length < RELATED_MAX) {
         const remainingVideos = videos
             .filter(v => !usedIds.has(v.id))
@@ -198,7 +191,6 @@ function loadRelatedVideos(currentVideoId) {
         related.push(...remainingVideos.slice(0, needed));
     }
 
-    // ✅ Max 25 tak limit
     relatedVideosList = related.slice(0, RELATED_MAX);
     relatedCurrentPage = 1;
     renderRelatedVideos();
@@ -280,9 +272,14 @@ function handleRelatedTouchEnd(e) {
     }
 }
 
-// ========== GO BACK TO PREVIOUS PAGE ==========
+// ========== GO BACK TO PREVIOUS PAGE - FIXED ==========
+// ✅ FIXED: index.js se saved returnUrl use karo for exact state restore
 function goBackToPrevious() {
-    if (document.referrer && document.referrer.includes(window.location.hostname)) {
+    const returnUrl = sessionStorage.getItem('returnUrl');
+    if (returnUrl) {
+        sessionStorage.removeItem('returnUrl');
+        window.location.href = returnUrl;
+    } else if (document.referrer && document.referrer.includes(window.location.hostname)) {
         sessionStorage.setItem('scrollPosition', window.scrollY);
         window.location.href = document.referrer;
     } else {
@@ -409,4 +406,4 @@ function goToCategory(id) {
 
 // ========== START ==========
 document.addEventListener('DOMContentLoaded', loadVideo);
-console.log('✅ video.js loaded successfully - Native ad HTML only, No JS duplicate');
+console.log('✅ video.js loaded successfully - Native ad HTML only, Back button fixed');
