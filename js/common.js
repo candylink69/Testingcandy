@@ -223,7 +223,7 @@ function setupSearchLogic() {
     });
 }
 
-// ========== INJECT MENU BUTTON ==========
+// ========== INJECT MENU BUTTON (Point 7: Toggle) ==========
 function injectMenuButton() {
     if (document.getElementById('menuToggleBtn')) return;
     const btn = document.createElement('div');
@@ -244,10 +244,18 @@ function injectMenuButton() {
         user-select: none;
         line-height: 1.3;
     `;
+    
+    // ✅ Point 7: Toggle functionality - agar menu already open hai toh close karo
     btn.onclick = function(e) {
         e.stopPropagation();
-        openMenu();
+        const drawer = document.getElementById('menuDrawer');
+        if (drawer && drawer.classList.contains('open')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
     };
+    
     document.body.prepend(btn);
 }
 
