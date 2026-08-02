@@ -29,6 +29,18 @@ function goToPage(url) {
     window.location.href = url;
 }
 
+// ✅ NEW: Smart tab navigation - works on all pages
+function goToTab(tabName) {
+    closeMenu();
+    // Agar index page pe hain to direct switch karo
+    if (typeof switchTab === 'function') {
+        switchTab(tabName);
+    } else {
+        // Dusre page pe hain to index pe jaake tab open karo
+        window.location.href = 'index.html?tab=' + tabName;
+    }
+}
+
 // ========== SIDE MENU FUNCTIONS ==========
 function openMenu() {
     const overlay = document.getElementById('menuOverlay');
@@ -60,12 +72,12 @@ function loadSideMenu() {
             <ul id="menuNav">
                 <!-- ✅ Home -> Index pe jaaye -->
                 <li><a href="index.html" class="menu-link active-link" data-page="index">🏠 Home</a></li>
-                <!-- ✅ Latest -> Tab switch kare -->
-                <li><a href="javascript:void(0)" onclick="switchTab('latest'); closeMenu();" class="menu-link" data-page="latest">🔥 Latest</a></li>
-                <!-- ✅ Categories -> Tab switch kare -->
-                <li><a href="javascript:void(0)" onclick="switchTab('categories'); closeMenu();" class="menu-link" data-page="categories">📂 Categories</a></li>
-                <!-- ✅ Trending -> Tab switch kare -->
-                <li><a href="javascript:void(0)" onclick="switchTab('trending'); closeMenu();" class="menu-link" data-page="trending">⚡ Trending</a></li>
+                <!-- ✅ Latest -> Tab switch kare (all pages) -->
+                <li><a href="javascript:void(0)" onclick="goToTab('latest');" class="menu-link" data-page="latest">🔥 Latest</a></li>
+                <!-- ✅ Categories -> Tab switch kare (all pages) -->
+                <li><a href="javascript:void(0)" onclick="goToTab('categories');" class="menu-link" data-page="categories">📂 Categories</a></li>
+                <!-- ✅ Trending -> Tab switch kare (all pages) -->
+                <li><a href="javascript:void(0)" onclick="goToTab('trending');" class="menu-link" data-page="trending">⚡ Trending</a></li>
                 <!-- ✅ All Videos -> List page pe jaaye -->
                 <li><a href="list.html" class="menu-link" data-page="list">📋 All Videos</a></li>
             </ul>
@@ -223,7 +235,7 @@ function setupSearchLogic() {
     });
 }
 
-// ========== INJECT MENU BUTTON (Point 7: Toggle) ==========
+// ========== INJECT MENU BUTTON ==========
 function injectMenuButton() {
     if (document.getElementById('menuToggleBtn')) return;
     const btn = document.createElement('div');
@@ -245,7 +257,6 @@ function injectMenuButton() {
         line-height: 1.3;
     `;
     
-    // ✅ Point 7: Toggle functionality - agar menu already open hai toh close karo
     btn.onclick = function(e) {
         e.stopPropagation();
         const drawer = document.getElementById('menuDrawer');
