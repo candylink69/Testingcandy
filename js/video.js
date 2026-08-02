@@ -1,5 +1,5 @@
 // ============================================================
-// VIDEO.JS - FULLY FIXED (Bubble Text + Related Videos + Native Ad)
+// VIDEO.JS - FINAL FIXED (Native Ad HTML only, No JS duplicate)
 // ============================================================
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -69,8 +69,8 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RENDER RELATED VIDEOS - FIXED ==========
-function renderRelatedVideos(isFirstLoad = false) {
+// ========== RENDER RELATED VIDEOS - FIXED (No Native Ad in JS) ==========
+function renderRelatedVideos() {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
 
@@ -115,15 +115,6 @@ function renderRelatedVideos(isFirstLoad = false) {
     });
     html += `</div>`;
 
-    // ✅ Native Ad: SIRF pehli baar load (5 videos ke baad)
-    if (isFirstLoad && visibleVideos.length >= 5) {
-        html += `
-            <div class="native-ad-container" id="nativeAdContainer">
-                <div id="container-4b10501c070917e2ceca3f13f9e60117"></div>
-            </div>
-        `;
-    }
-
     // ✅ More Videos button ya End message
     if (hasMore && end < RELATED_MAX) {
         const remaining = Math.min(RELATED_MAX - end, RELATED_PER_PAGE);
@@ -137,18 +128,6 @@ function renderRelatedVideos(isFirstLoad = false) {
     }
 
     container.innerHTML = html;
-
-    // ✅ Native ad script sirf pehli baar inject
-    if (isFirstLoad && visibleVideos.length >= 5) {
-        const nativeContainer = document.getElementById('nativeAdContainer');
-        if (nativeContainer) {
-            const script = document.createElement('script');
-            script.async = true;
-            script.setAttribute('data-cfasync', 'false');
-            script.src = 'https://encyclopediainsoluble.com/4b10501c070917e2ceca3f13f9e60117/invoke.js';
-            nativeContainer.appendChild(script);
-        }
-    }
 
     // Attach click events
     document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
@@ -164,14 +143,13 @@ function renderRelatedVideos(isFirstLoad = false) {
     setupRelatedPreview();
 }
 
-// ========== LOAD MORE RELATED - FIXED (No Native Banner Reload) ==========
+// ========== LOAD MORE RELATED ==========
 function loadMoreRelated() {
     if (relatedCurrentPage * RELATED_PER_PAGE >= RELATED_MAX) return;
     if (relatedCurrentPage * RELATED_PER_PAGE >= relatedVideosList.length) return;
     
     relatedCurrentPage++;
-    // ✅ false = NOT first load, no native ad injected
-    renderRelatedVideos(false);
+    renderRelatedVideos();
 }
 
 // ========== LOAD RELATED VIDEOS LIST - FIXED (25 Videos Tak Fill) ==========
@@ -204,7 +182,7 @@ function loadRelatedVideos(currentVideoId) {
     if (related.length < RELATED_MAX) {
         const latestVideos = videos
             .filter(v => !usedIds.has(v.id))
-            .reverse(); // Latest first
+            .reverse();
         const needed = RELATED_MAX - related.length;
         const fillVideos = latestVideos.slice(0, needed);
         related.push(...fillVideos);
@@ -215,7 +193,7 @@ function loadRelatedVideos(currentVideoId) {
     if (related.length < RELATED_MAX) {
         const remainingVideos = videos
             .filter(v => !usedIds.has(v.id))
-            .sort(() => Math.random() - 0.5); // Shuffle
+            .sort(() => Math.random() - 0.5);
         const needed = RELATED_MAX - related.length;
         related.push(...remainingVideos.slice(0, needed));
     }
@@ -223,9 +201,7 @@ function loadRelatedVideos(currentVideoId) {
     // ✅ Max 25 tak limit
     relatedVideosList = related.slice(0, RELATED_MAX);
     relatedCurrentPage = 1;
-    
-    // ✅ true = first load (native ad inject hoga)
-    renderRelatedVideos(true);
+    renderRelatedVideos();
 }
 
 // ========== PREVIEW HANDLERS ==========
@@ -334,10 +310,8 @@ async function loadVideo() {
         const videoInfo = videos.find(v => v.id === videoId);
 
         if (videoEmbedData && videoInfo) {
-            // Title
             document.title = `CandyLink69 – ${videoInfo.title || videoId}`;
             
-            // Meta Description
             let metaDesc = document.querySelector('meta[name="description"]');
             if (!metaDesc) {
                 metaDesc = document.createElement('meta');
@@ -346,7 +320,6 @@ async function loadVideo() {
             }
             metaDesc.content = `Watch ${videoInfo.title || videoId} in HD. ${videoEmbedData.description ? videoEmbedData.description.substring(0, 120) : 'Exclusive video on CandyLink69.'}`;
             
-            // Canonical
             let canonical = document.querySelector('link[rel="canonical"]');
             if (!canonical) {
                 canonical = document.createElement('link');
@@ -355,16 +328,13 @@ async function loadVideo() {
             }
             canonical.href = `https://candylink69.com/video.html?v=${videoId}`;
 
-            // Load Player
             document.getElementById('videoPlayer').src = videoEmbedData.embed;
             
-            // VIDEO ID
             const idContainer = document.getElementById('currentVideoId');
             if (idContainer) {
                 idContainer.textContent = videoId;
             }
 
-            // ✅ FIXED: Video Title - bubbleText word-level
             const titleContainer = document.getElementById('videoTitle');
             if (titleContainer) {
                 if (videoInfo.title) {
@@ -374,7 +344,6 @@ async function loadVideo() {
                 }
             }
 
-            // VIDEO CATEGORIES
             const catContainer = document.getElementById('videoCategories');
             if (catContainer) {
                 if (videoInfo.categories && videoInfo.categories.length) {
@@ -384,7 +353,6 @@ async function loadVideo() {
                 }
             }
 
-            // VIDEO DESCRIPTION
             const descContainer = document.getElementById('videoDescription');
             if (descContainer) {
                 if (videoEmbedData.description) {
@@ -394,7 +362,6 @@ async function loadVideo() {
                 }
             }
 
-            // Prev / Next
             const videoIds = Object.keys(videosData);
             const currentIndex = videoIds.indexOf(videoId);
             const prevBtn = document.getElementById('prevBtn');
@@ -412,7 +379,6 @@ async function loadVideo() {
                 nextBtn.style.display = 'none';
             }
 
-            // ✅ FIXED: Load Related Videos (with 25-video fill)
             loadRelatedVideos(videoId);
 
         } else {
@@ -443,4 +409,4 @@ function goToCategory(id) {
 
 // ========== START ==========
 document.addEventListener('DOMContentLoaded', loadVideo);
-console.log('✅ video.js loaded successfully - All bugs fixed');
+console.log('✅ video.js loaded successfully - Native ad HTML only, No JS duplicate');
