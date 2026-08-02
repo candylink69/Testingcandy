@@ -482,12 +482,15 @@ body,
 }
 .latest-title {
     font-size: 14px;
-    font-weight: 700;
-    color: #fff;
-    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
-    line-height: 1.4;
-    word-break: normal;
-    overflow-wrap: break-word;
+    font-weight: 900;
+    font-style: italic;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(180deg, ...);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -webkit-text-stroke: 0.4px rgba(255, 255, 255, 0.7);
+    /* ... */
 }
 .ad-inline {
     background: transparent;
