@@ -62,10 +62,14 @@
             <iframe id="videoPlayer" src="" allowfullscreen></iframe>
         </div>
 
-        <!-- ===== VIDEO INFO ===== -->
-        <div class="video-info" style="margin:4px 0; padding:4px 10px;">
-            <div>🎬 Video ID: <span class="video-id" id="currentVideoId">V001</span></div>
-            <div id="videoDescription" style="margin-top:4px; font-size:13px;"></div>
+        <!-- ===== VIDEO INFO (Title + Categories + Description) ===== -->
+        <div class="video-info" id="videoInfo" style="margin:4px 0; padding:4px 10px;">
+            <!-- Title (Bubble effect, big) -->
+            <div id="videoTitle" class="video-title-big"></div>
+            <!-- Categories (Buttons) -->
+            <div id="videoCategories"></div>
+            <!-- Description -->
+            <div id="videoDescription" style="margin-top:6px; font-size:14px; color:#ccc;"></div>
         </div>
 
         <!-- ===== NAVIGATION ===== -->
@@ -141,4 +145,4 @@
     <script async src="https://encyclopediainsoluble.com/4d/13/c4/4d13c4d080a3a07b7d1b3476eb816003.js"></script>
 
 </body>
-                </html>
+</html>
