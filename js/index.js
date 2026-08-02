@@ -38,7 +38,6 @@ function bubbleText(text) {
 
 // ========== GENERATE VIDEO CARD (FIXED) ==========
 function generateVideoCard(video) {
-    // Categories ko buttons mein convert karo
     let categoriesHtml = '';
     if (video.categories && Array.isArray(video.categories) && video.categories.length) {
         categoriesHtml = `<div class="video-categories">`;
@@ -50,7 +49,7 @@ function generateVideoCard(video) {
         categoriesHtml += `</div>`;
     }
 
-    // ✅ ID aur Title ko alag-alag classes mein rakho
+    // ✅ ID aur Title ko ek saath latest-id mein rakho
     const idDisplay = video.id ? `${escapeHtml(video.id)}:-` : '';
     const titleDisplay = video.title ? bubbleText(escapeHtml(video.title)) : '';
 
@@ -62,8 +61,7 @@ function generateVideoCard(video) {
             ${video.duration ? `<div class="duration">${video.duration}</div>` : ''}
         </div>
         <div class="latest-info">
-            <div class="latest-id">${idDisplay}</div>
-            ${titleDisplay ? `<div class="latest-title">${titleDisplay}</div>` : ''}
+            <div class="latest-id">${idDisplay} ${titleDisplay}</div>
             ${categoriesHtml}
         </div>
     </div>`;
