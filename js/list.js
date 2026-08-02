@@ -13,6 +13,8 @@ async function loadCategoriesData() {
     try {
         const response = await fetch('data/categories.json');
         allCategories = await response.json();
+        // ✅ Point 6: Categories ko alphabetically sort karo (name ke hisaab se)
+        allCategories.sort((a, b) => a.name.localeCompare(b.name));
     } catch (error) {
         console.log('Could not load categories.json');
         allCategories = [];
@@ -27,7 +29,7 @@ function getSelectedCategory() {
     return urlCategory || storageCategory;
 }
 
-// ========== SETUP CATEGORY INFO ==========
+// ========== SETUP CATEGORY INFO (Point 4: "Showing videos in" hatao) ==========
 function setupCategoryInfo(categoryId) {
     selectedCategory = categoryId;
     if (!selectedCategory) {
@@ -37,7 +39,13 @@ function setupCategoryInfo(categoryId) {
     }
     const category = allCategories.find(cat => cat.id === selectedCategory);
     categoryName = category ? category.name : selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1);
-    document.getElementById('currentCategory').textContent = categoryName;
+    
+    // ✅ Point 4: Sirf category name show karo (Showing videos in hatao)
+    const currentCategoryEl = document.getElementById('currentCategory');
+    if (currentCategoryEl) {
+        currentCategoryEl.textContent = categoryName;
+    }
+    
     document.title = `${categoryName} Videos - CandyLink69`;
     let metaDesc = document.querySelector('meta[name="description"]');
     if (!metaDesc) {
@@ -46,7 +54,12 @@ function setupCategoryInfo(categoryId) {
         document.head.appendChild(metaDesc);
     }
     metaDesc.content = `Browse all ${categoryName} videos on CandyLink69. HD quality, daily updates.`;
-    document.getElementById('pageTitle').textContent = `🔥 ${categoryName} Videos 🔥`;
+    
+    // ✅ Point 4: Heading chhota (h1 se h2)
+    const pageTitle = document.getElementById('pageTitle');
+    if (pageTitle) {
+        pageTitle.textContent = `🔥 ${categoryName} Videos 🔥`;
+    }
 }
 
 // ========== FILTER VIDEOS ==========
@@ -216,6 +229,15 @@ function setupTouchPreview() {
     });
 }
 
+// ========== RESTORE SCROLL POSITION (Point 10) ==========
+function restoreScrollPosition() {
+    const scrollPos = sessionStorage.getItem('scrollPosition');
+    if (scrollPos) {
+        window.scrollTo(0, parseInt(scrollPos));
+        sessionStorage.removeItem('scrollPosition');
+    }
+}
+
 // ========== INITIALIZE ==========
 function initializePage() {
     loadCategoriesData().then(() => {
@@ -263,6 +285,10 @@ function initializePage() {
                     catHtml = generateCategoryButtons(v.categories);
                 }
                 
+                // ✅ Point 1 style: ID:- Title format
+                const idDisplay = v.id ? `${v.id}:-` : '';
+                const titleDisplay = hasTitle ? bubbleText(v.title) : '';
+                
                 const videoHTML = `
                     <a href="video.html?v=${v.id}">
                         <div class="thumb-container">
@@ -271,7 +297,7 @@ function initializePage() {
                             ${v.duration ? `<div class="duration">${v.duration}</div>` : ''}
                         </div>
                         <div class="video-title ${alignClass}">
-                            ${hasTitle ? `<span class="vid-id">${v.id}:</span> ${bubbleText(v.title)}` : v.id}
+                            <span class="vid-id">${idDisplay}</span> ${titleDisplay}
                         </div>
                         ${catHtml}
                     </a>`;
@@ -284,6 +310,9 @@ function initializePage() {
             const categoryParam = selectedCategory ? `?category=${selectedCategory}` : '';
             window.history.replaceState({}, document.title, `list.html${categoryParam}`);
         }
+        
+        // ✅ Point 10: Scroll position restore
+        restoreScrollPosition();
     });
 }
 
