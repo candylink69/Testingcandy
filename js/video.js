@@ -1,9 +1,45 @@
 // ============================================================
-// VIDEO.JS - Load Video, Prev/Next, Related Videos with Preview
+// VIDEO.JS - Load Video, Prev/Next, Related Videos
 // ============================================================
 
 const urlParams = new URLSearchParams(window.location.search);
 const videoId = urlParams.get('v') || 'V001';
+
+// ========== GLOBAL CATEGORIES ==========
+let allCategories = [];
+
+// ========== LOAD CATEGORIES ==========
+async function loadCategoriesForVideo() {
+    try {
+        const response = await fetch('data/categories.json');
+        allCategories = await response.json();
+    } catch (error) {
+        console.log('Could not load categories.json');
+        allCategories = [];
+    }
+}
+
+// ========== BUBBLE LETTERS WRAPPER ==========
+function bubbleText(text) {
+    if (!text) return '';
+    return text.split('').map(char => {
+        if (char === ' ') return ' ';
+        return `<span class="bubble-letter">${char}</span>`;
+    }).join('');
+}
+
+// ========== GENERATE CATEGORY BUTTONS ==========
+function generateCategoryButtons(categoryIds) {
+    if (!categoryIds || !Array.isArray(categoryIds) || !categoryIds.length) return '';
+    let html = `<div class="video-categories" style="margin:6px 0;">`;
+    categoryIds.forEach(catId => {
+        const cat = allCategories.find(c => c.id === catId);
+        const catName = cat ? cat.name : catId;
+        html += `<span class="category-tag" onclick="event.stopPropagation(); goToCategory('${catId}')">${catName}</span>`;
+    });
+    html += `</div>`;
+    return html;
+}
 
 // ========== THUMBNAIL SAFE ==========
 function getThumbnailUrlSafe(videoId) {
@@ -17,7 +53,7 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RELATED VIDEOS FUNCTION (With Preview + Fallback) ==========
+// ========== RELATED VIDEOS ==========
 function loadRelatedVideos(currentVideoId) {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -30,7 +66,6 @@ function loadRelatedVideos(currentVideoId) {
     const currentVideo = videos.find(v => v.id === currentVideoId);
     let related = [];
 
-    // 1. Same category ki videos dhoondho
     if (currentVideo && currentVideo.categories && currentVideo.categories.length) {
         const categoryId = currentVideo.categories[0];
         related = videos
@@ -38,26 +73,19 @@ function loadRelatedVideos(currentVideoId) {
             .slice(0, 5);
     }
 
-    // 2. Agar 5 se kam hain toh latest videos se fill karo
     if (related.length < 5) {
         const remainingCount = 5 - related.length;
         const relatedIds = new Set(related.map(v => v.id));
         relatedIds.add(currentVideoId);
-
-        const latestVideos = videos
-            .filter(v => !relatedIds.has(v.id))
-            .slice(0, remainingCount);
-
+        const latestVideos = videos.filter(v => !relatedIds.has(v.id)).slice(0, remainingCount);
         related = [...related, ...latestVideos];
     }
 
-    // 3. Agar phir bhi koi video nahi mili (site pe sirf 1 video hai)
     if (related.length === 0) {
         container.innerHTML = '<p style="color:#888; padding:10px;">No other videos available.</p>';
         return;
     }
 
-    // ===== HTML GENERATE =====
     let html = `<div class="related-videos-grid">`;
     related.forEach(v => {
         const thumbUrl = getThumbnailUrlSafe(v.id);
@@ -65,6 +93,7 @@ function loadRelatedVideos(currentVideoId) {
             `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : '';
         const durationHtml = v.duration ? 
             `<div class="duration">${v.duration}</div>` : '';
+        const catHtml = generateCategoryButtons(v.categories);
 
         html += `
             <div class="related-video-card" data-video-id="${v.id}">
@@ -75,7 +104,8 @@ function loadRelatedVideos(currentVideoId) {
                 </div>
                 <div class="latest-info">
                     <div class="latest-id">${v.id}</div>
-                    ${v.title ? `<div class="latest-title">${v.title.substring(0, 50)}</div>` : ''}
+                    ${v.title ? `<div class="latest-title">${bubbleText(v.title.substring(0, 50))}</div>` : ''}
+                    ${catHtml}
                 </div>
             </div>
         `;
@@ -83,7 +113,6 @@ function loadRelatedVideos(currentVideoId) {
     html += `</div>`;
     container.innerHTML = html;
 
-    // ===== ATTACH CLICK EVENTS =====
     document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
         const vid = card.getAttribute('data-video-id');
         if (vid) {
@@ -94,11 +123,10 @@ function loadRelatedVideos(currentVideoId) {
         }
     });
 
-    // ===== SETUP PREVIEW HANDLERS =====
     setupRelatedPreview();
 }
 
-// ========== PREVIEW HANDLERS FOR RELATED VIDEOS ==========
+// ========== PREVIEW HANDLERS ==========
 let relatedActivePreview = null;
 
 function stopRelatedPreview() {
@@ -136,13 +164,11 @@ function setupRelatedPreview() {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
 
-    // Mouse events
     container.removeEventListener('mouseover', handleRelatedMouseOver);
     container.removeEventListener('mouseout', handleRelatedMouseOut);
     container.addEventListener('mouseover', handleRelatedMouseOver);
     container.addEventListener('mouseout', handleRelatedMouseOut);
 
-    // Touch events
     container.removeEventListener('touchstart', handleRelatedTouchStart);
     container.removeEventListener('touchend', handleRelatedTouchEnd);
     container.addEventListener('touchstart', handleRelatedTouchStart, { passive: true });
@@ -177,13 +203,27 @@ function handleRelatedTouchEnd(e) {
 }
 
 // ========== MAIN VIDEO LOAD ==========
-fetch('data/videos.json')
-    .then(response => response.json())
-    .then(videosData => {
-        const video = videosData[videoId];
-        if (video) {
+async function loadVideo() {
+    await loadCategoriesForVideo();
+
+    try {
+        const response = await fetch('data/videos.json');
+        if (!response.ok) {
+            throw new Error('videos.json not found');
+        }
+        const videosData = await response.json();
+        const videoEmbedData = videosData[videoId];
+
+        if (typeof videos === 'undefined' || !videos.length) {
+            console.warn('⚠️ videos array not loaded yet');
+            setTimeout(loadVideo, 500);
+            return;
+        }
+        const videoInfo = videos.find(v => v.id === videoId);
+
+        if (videoEmbedData && videoInfo) {
             // Title
-            document.title = `CandyLink69 – ${video.title || videoId}`;
+            document.title = `CandyLink69 – ${videoInfo.title || videoId}`;
             
             // Meta Description
             let metaDesc = document.querySelector('meta[name="description"]');
@@ -192,9 +232,9 @@ fetch('data/videos.json')
                 metaDesc.name = "description";
                 document.head.appendChild(metaDesc);
             }
-            metaDesc.content = `Watch ${video.title || videoId} in HD. ${video.description ? video.description.substring(0, 120) : 'Exclusive video on CandyLink69.'}`;
+            metaDesc.content = `Watch ${videoInfo.title || videoId} in HD. ${videoEmbedData.description ? videoEmbedData.description.substring(0, 120) : 'Exclusive video on CandyLink69.'}`;
             
-            // Canonical (Fix for GSC)
+            // Canonical
             let canonical = document.querySelector('link[rel="canonical"]');
             if (!canonical) {
                 canonical = document.createElement('link');
@@ -204,10 +244,42 @@ fetch('data/videos.json')
             canonical.href = `https://candylink69.com/video.html?v=${videoId}`;
 
             // Load Player
-            document.getElementById('videoPlayer').src = video.embed;
-            document.getElementById('currentVideoId').textContent = videoId;
-            if (video.description) {
-                document.getElementById('videoDescription').textContent = video.description;
+            document.getElementById('videoPlayer').src = videoEmbedData.embed;
+            
+            // ✅ VIDEO ID (Old structure support)
+            const idContainer = document.getElementById('currentVideoId');
+            if (idContainer) {
+                idContainer.textContent = videoId;
+            }
+
+            // ✅ VIDEO TITLE (New structure support)
+            const titleContainer = document.getElementById('videoTitle');
+            if (titleContainer) {
+                if (videoInfo.title) {
+                    titleContainer.innerHTML = bubbleText(videoInfo.title);
+                } else {
+                    titleContainer.innerHTML = videoId;
+                }
+            }
+
+            // ✅ VIDEO CATEGORIES (New structure support)
+            const catContainer = document.getElementById('videoCategories');
+            if (catContainer) {
+                if (videoInfo.categories && videoInfo.categories.length) {
+                    catContainer.innerHTML = generateCategoryButtons(videoInfo.categories);
+                } else {
+                    catContainer.innerHTML = '';
+                }
+            }
+
+            // ✅ VIDEO DESCRIPTION (Both structures)
+            const descContainer = document.getElementById('videoDescription');
+            if (descContainer) {
+                if (videoEmbedData.description) {
+                    descContainer.textContent = videoEmbedData.description;
+                } else {
+                    descContainer.textContent = '';
+                }
             }
 
             // Prev / Next
@@ -231,11 +303,21 @@ fetch('data/videos.json')
             document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ccc; text-align:center">❌ This video is no longer available.</div>';
             document.getElementById('relatedVideos').innerHTML = '';
         }
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error loading video:', error);
         document.querySelector('.video-box').innerHTML = '<div style="padding:50px;color:#ff8888">⚠️ Failed to load video data.</div>';
         document.getElementById('relatedVideos').innerHTML = '';
-    });
+    }
+}
 
+// ========== GLOBAL FUNCTIONS ==========
+function goToVideo(id) { 
+    window.location.href = 'video.html?v=' + id; 
+}
+function goToCategory(id) { 
+    window.location.href = 'list.html?category=' + id; 
+}
+
+// ========== START ==========
+document.addEventListener('DOMContentLoaded', loadVideo);
 console.log('✅ video.js loaded successfully');
