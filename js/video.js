@@ -208,6 +208,9 @@ async function loadVideo() {
 
     try {
         const response = await fetch('data/videos.json');
+        if (!response.ok) {
+            throw new Error('videos.json not found (Status: ' + response.status + ')');
+        }
         const videosData = await response.json();
         const video = videosData[videoId];
 
@@ -237,7 +240,7 @@ async function loadVideo() {
             document.getElementById('videoPlayer').src = video.embed;
             document.getElementById('currentVideoId').textContent = videoId;
 
-            // ===== VIDEO TITLE (Bubble, Big) =====
+            // ===== VIDEO TITLE =====
             const titleContainer = document.getElementById('videoTitle');
             if (titleContainer) {
                 if (video.title) {
@@ -290,7 +293,7 @@ async function loadVideo() {
             document.getElementById('relatedVideos').innerHTML = '';
             document.getElementById('videoTitle').innerHTML = '';
             document.getElementById('videoCategories').innerHTML = '';
-            document.getElementById('videoDescription').textContent = '';
+            document.getElementById('videoDescription').textContent = '❌ Video not found.';
         }
     } catch (error) {
         console.error('Error loading video:', error);
@@ -298,7 +301,7 @@ async function loadVideo() {
         document.getElementById('relatedVideos').innerHTML = '';
         document.getElementById('videoTitle').innerHTML = '';
         document.getElementById('videoCategories').innerHTML = '';
-        document.getElementById('videoDescription').textContent = '';
+        document.getElementById('videoDescription').textContent = '⚠️ Error loading description.';
     }
 }
 
