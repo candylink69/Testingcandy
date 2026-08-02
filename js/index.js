@@ -35,6 +35,7 @@ function bubbleText(text) {
     }).join('');
 }
 
+
 // ========== GENERATE VIDEO CARD (FIXED) ==========
 function generateVideoCard(video) {
     // Categories ko buttons mein convert karo
@@ -49,7 +50,7 @@ function generateVideoCard(video) {
         categoriesHtml += `</div>`;
     }
 
-    // Title: ID:- Title format
+    // ✅ ID aur Title ko alag-alag classes mein rakho
     const idDisplay = video.id ? `${escapeHtml(video.id)}:-` : '';
     const titleDisplay = video.title ? bubbleText(escapeHtml(video.title)) : '';
 
@@ -61,12 +62,12 @@ function generateVideoCard(video) {
             ${video.duration ? `<div class="duration">${video.duration}</div>` : ''}
         </div>
         <div class="latest-info">
-            <div class="latest-id">${idDisplay} ${titleDisplay}</div>
+            <div class="latest-id">${idDisplay}</div>
+            ${titleDisplay ? `<div class="latest-title">${titleDisplay}</div>` : ''}
             ${categoriesHtml}
         </div>
     </div>`;
 }
-
 // ========== PREVIEW HANDLERS ==========
 let currentActivePreview = null;
 function stopPreview() {
