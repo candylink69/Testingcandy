@@ -1,5 +1,5 @@
 // ============================================================
-// VIDEO.JS - FINAL FIXED (Native Ad HTML only + Back State Restore)
+// VIDEO.JS - FINAL FIXED (List-Style Related Videos + Back State)
 // ============================================================
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -69,7 +69,7 @@ function getThumbnailUrlSafe(videoId) {
     return `https://via.placeholder.com/320x180?text=${videoId}`;
 }
 
-// ========== RENDER RELATED VIDEOS - FIXED (No Native Ad in JS) ==========
+// ========== RENDER RELATED VIDEOS - LIST PAGE STYLE ==========
 function renderRelatedVideos() {
     const container = document.getElementById('relatedVideos');
     if (!container) return;
@@ -84,7 +84,8 @@ function renderRelatedVideos() {
     const visibleVideos = relatedVideosList.slice(start, end);
     const hasMore = end < relatedVideosList.length && end < RELATED_MAX;
 
-    let html = `<div class="related-videos-grid" id="relatedVideosGrid">`;
+    // ✅ Same grid as list page
+    let html = `<div class="grid">`;
     
     visibleVideos.forEach(v => {
         const thumbUrl = getThumbnailUrlSafe(v.id);
@@ -94,21 +95,24 @@ function renderRelatedVideos() {
             `<div class="duration">${v.duration}</div>` : '';
         const catHtml = generateCategoryButtons(v.categories);
 
-        const titleDisplay = v.title ? bubbleText(v.title.substring(0, 50)) : '';
+        const hasTitle = v.title && v.title.trim().length > 0;
+        const alignClass = hasTitle ? 'left' : 'center';
+        const idDisplay = v.id ? `${escapeHtml(v.id)}:-` : '';
+        const titleDisplay = hasTitle ? bubbleText(v.title.substring(0, 50)) : '';
 
+        // ✅ EXACT same format as list.js
         html += `
-            <div class="related-video-card" data-video-id="${v.id}">
+            <a href="video.html?v=${v.id}" class="related-video-link" data-video-id="${v.id}">
                 <div class="thumb-container">
                     <img class="thumb-img" src="${thumbUrl}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
                     ${previewHtml}
                     ${durationHtml}
                 </div>
-                <div class="latest-info">
-                    <div class="latest-id">${v.id}</div>
-                    ${titleDisplay ? `<div class="latest-title">${titleDisplay}</div>` : ''}
-                    ${catHtml}
+                <div class="video-title ${alignClass}">
+                    <span class="vid-id">${idDisplay}</span> ${titleDisplay}
                 </div>
-            </div>
+                ${catHtml}
+            </a>
         `;
     });
     html += `</div>`;
@@ -126,10 +130,12 @@ function renderRelatedVideos() {
 
     container.innerHTML = html;
 
-    document.querySelectorAll('#relatedVideos .related-video-card').forEach(card => {
-        const vid = card.getAttribute('data-video-id');
+    // ✅ Attach click events (prevent default link, use our handler)
+    document.querySelectorAll('#relatedVideos .related-video-link').forEach(link => {
+        const vid = link.getAttribute('data-video-id');
         if (vid) {
-            card.addEventListener('click', (e) => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 goToVideo(vid);
             });
@@ -196,7 +202,7 @@ function loadRelatedVideos(currentVideoId) {
     renderRelatedVideos();
 }
 
-// ========== PREVIEW HANDLERS ==========
+// ========== PREVIEW HANDLERS (Updated for .related-video-link) ==========
 let relatedActivePreview = null;
 
 function stopRelatedPreview() {
@@ -248,23 +254,23 @@ function setupRelatedPreview() {
 let relatedTouchTimer = null;
 
 function handleRelatedMouseOver(e) {
-    const card = e.target.closest('.related-video-card');
+    const card = e.target.closest('.related-video-link');
     if (card) startRelatedPreview(card);
 }
 
 function handleRelatedMouseOut(e) {
-    const card = e.target.closest('.related-video-card');
+    const card = e.target.closest('.related-video-link');
     if (card && relatedActivePreview === card) stopRelatedPreview();
 }
 
 function handleRelatedTouchStart(e) {
-    const card = e.target.closest('.related-video-card');
+    const card = e.target.closest('.related-video-link');
     if (card) relatedTouchTimer = setTimeout(() => startRelatedPreview(card), 100);
 }
 
 function handleRelatedTouchEnd(e) {
     if (relatedTouchTimer) { clearTimeout(relatedTouchTimer); relatedTouchTimer = null; }
-    const card = e.target.closest('.related-video-card');
+    const card = e.target.closest('.related-video-link');
     if (card && relatedActivePreview === card) {
         setTimeout(() => {
             if (relatedActivePreview === card) stopRelatedPreview();
@@ -273,7 +279,6 @@ function handleRelatedTouchEnd(e) {
 }
 
 // ========== GO BACK TO PREVIOUS PAGE - FIXED ==========
-// ✅ FIXED: index.js se saved returnUrl use karo for exact state restore
 function goBackToPrevious() {
     const returnUrl = sessionStorage.getItem('returnUrl');
     if (returnUrl) {
@@ -406,4 +411,4 @@ function goToCategory(id) {
 
 // ========== START ==========
 document.addEventListener('DOMContentLoaded', loadVideo);
-console.log('✅ video.js loaded successfully - Native ad HTML only, Back button fixed');
+console.log('✅ video.js loaded - Related videos use list page style');
