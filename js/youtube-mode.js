@@ -1,7 +1,7 @@
 // ============================================================
-// YOUTUBE-MODE.JS - Fixed & Complete System
+// YOUTUBE-MODE.JS - Mobile Optimized & Complete System
 // YouTube Mode: Toggle + Menu + Float Button + Controls Row
-// Float: Smooth Draggable Miniplayer with Close Button
+// Float: Smooth Draggable Miniplayer (Touch/Mobile Fixed) + Close
 // ============================================================
 
 (function() {
@@ -14,7 +14,7 @@
     let videoBox = null;
     let controlsRow = null;
     let toggleSwitch = null;
-    let closeFloatBtn = null; // New floating close button
+    let closeFloatBtn = null; 
     let isDragging = false;
     let dragStartX, dragStartY, startLeft, startTop;
     
@@ -151,31 +151,36 @@
         body.yt-mode #menuToggleBtn { display: none !important; }
         body.yt-mode .container { padding-top: 0 !important; }
         
-        /* Float Window CSS (Fixed for Dragging) */
+        /* Float Window CSS (MOBILE & DESKTOP OPTIMIZED) */
         .video-box.float-window {
             position: fixed !important;
-            /* Remove !important from positioning to allow JS to drag */
             bottom: 80px; 
             right: 16px;
             top: auto;
             left: auto;
             width: 280px !important;
-            height: 158px !important;
+            aspect-ratio: 16 / 9;
+            height: auto !important;
             padding-top: 0 !important;
             margin: 0 !important;
             border-radius: 12px !important;
             z-index: 10000 !important;
             box-shadow: 0 8px 30px rgba(0,0,0,0.8) !important;
             cursor: grab;
+            touch-action: none !important; /* PREVENTS MOBILE SCROLL WHILE DRAGGING */
             border: 2px solid rgba(255,102,0,0.5) !important;
         }
-        .video-box.float-window iframe { border-radius: 10px !important; }
+        .video-box.float-window iframe,
+        .video-box.float-window video { 
+            border-radius: 10px !important; 
+            width: 100% !important; 
+            height: 100% !important; 
+        }
         .video-box.float-window:active { cursor: grabbing; }
         
         @media (max-width: 600px) {
             .video-box.float-window {
-                width: 200px !important;
-                height: 112px !important;
+                width: 45vw !important; /* Perfect for mobile screens */
                 bottom: 60px;
                 right: 8px;
             }
@@ -188,7 +193,6 @@
         videoBox = document.querySelector('.video-box');
         if (!videoBox) return;
         
-        // Ensure videoBox is relative/fixed so close button anchors correctly
         if (window.getComputedStyle(videoBox).position === 'static') {
             videoBox.style.position = 'relative';
         }
@@ -198,7 +202,8 @@
         closeFloatBtn.id = 'ytFloatCloseBtn';
         closeFloatBtn.innerHTML = '✕';
         closeFloatBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Prevents click from triggering video
+            e.stopPropagation(); 
+            e.preventDefault();
             exitFloatMode();
         });
         videoBox.appendChild(closeFloatBtn);
@@ -263,7 +268,7 @@
         function startDrag(clientX, clientY) {
             if (!isFloating) return;
             isDragging = true;
-            videoBox.classList.add('is-dragging'); // Stops iframe from eating events
+            videoBox.classList.add('is-dragging'); 
             
             dragStartX = clientX;
             dragStartY = clientY;
@@ -272,10 +277,14 @@
             startTop = rect.top;
         }
         
-        function moveDrag(clientX, clientY) {
+        function moveDrag(e, clientX, clientY) {
             if (!isDragging) return;
             
-            // Set position dynamically & override CSS bottom/right
+            // SUPER IMPORTANT FOR MOBILE: Stops scrolling while dragging
+            if (e && e.cancelable) {
+                e.preventDefault(); 
+            }
+            
             videoBox.style.setProperty('left', (startLeft + clientX - dragStartX) + 'px', 'important');
             videoBox.style.setProperty('top', (startTop + clientY - dragStartY) + 'px', 'important');
             videoBox.style.setProperty('bottom', 'auto', 'important');
@@ -289,21 +298,26 @@
             }
         }
         
-        // Mouse Events
+        // Mouse Events (Desktop)
         videoBox.addEventListener('mousedown', function(e) {
-            // Don't drag if clicking the close button
             if (e.target.id === 'ytFloatCloseBtn') return; 
             startDrag(e.clientX, e.clientY);
         });
-        document.addEventListener('mousemove', function(e) { moveDrag(e.clientX, e.clientY); });
+        document.addEventListener('mousemove', function(e) { 
+            if(isDragging) moveDrag(e, e.clientX, e.clientY); 
+        });
         document.addEventListener('mouseup', endDrag);
         
-        // Touch Events
+        // Touch Events (Mobile) - Added passive: false to allow e.preventDefault()
         videoBox.addEventListener('touchstart', function(e) {
             if (e.target.id === 'ytFloatCloseBtn') return;
             startDrag(e.touches[0].clientX, e.touches[0].clientY);
-        }, { passive: true });
-        document.addEventListener('touchmove', function(e) { moveDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+        }, { passive: false });
+        
+        document.addEventListener('touchmove', function(e) { 
+            if(isDragging) moveDrag(e, e.touches[0].clientX, e.touches[0].clientY); 
+        }, { passive: false });
+        
         document.addEventListener('touchend', endDrag);
     }
     
@@ -320,7 +334,7 @@
         videoBox.classList.remove('float-window');
         videoBox.classList.remove('is-dragging');
         
-        // Reset all JS injected styles so it returns to normal mode
+        // Reset all JS injected styles
         videoBox.style.removeProperty('left');
         videoBox.style.removeProperty('top');
         videoBox.style.removeProperty('bottom');
@@ -337,3 +351,4 @@
     }
     
 })();
+                                       
