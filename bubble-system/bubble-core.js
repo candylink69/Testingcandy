@@ -12,10 +12,10 @@
   
   // Updated to 45px for all bubbles
   const BUBBLE_SIZES = { 
-    'shape-1.svg': 45, 
-    'shape-2.svg': 45, 
-    'shape-3.svg': 45, 
-    'shape-4.svg': 45 
+    'shape-1.svg': 30, 
+    'shape-2.svg': 30, 
+    'shape-3.svg': 30, 
+    'shape-4.svg': 30 
   };
   
   // Smart Links
@@ -384,7 +384,7 @@
     // ✅ ADD CLICK TEXT (Bubble ke upar chipka hua)
     const clickText = document.createElement('span');
     clickText.className = 'bubble-click-text';
-    clickText.textContent = '🫦Click Me🧚🏻‍♀️';
+    clickText.textContent = '🎧Catch me and get something🧚🏻‍♀️';
     bubble.appendChild(clickText);
     
     bubble.addEventListener('click', handleBubblePop(bubble, config, index));
