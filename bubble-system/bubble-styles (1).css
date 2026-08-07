@@ -1,0 +1,385 @@
+/* ============================================
+   BUBBLE SYSTEM STYLES - v2.1 (90% Transparent)
+   ============================================ */
+
+/* ---------- 3D LIQUID BUBBLE (90% TRANSPARENT) ---------- */
+.bubble-system-bubble {
+  position: fixed;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 9998;
+  will-change: left, top, transform;
+  transition: none;
+}
+
+/* 3D Liquid Glass Bubble Container - 90% TRANSPARENT */
+.bubble-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 50%;
+  background: radial-gradient(circle at 28% 25%, 
+    rgba(255, 255, 255, 0.25) 0%,
+    rgba(180, 220, 255, 0.08) 35%,
+    rgba(130, 190, 255, 0.04) 65%,
+    rgba(255, 255, 255, 0.02) 100%);
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.08),
+    inset -5px -5px 10px rgba(0, 0, 0, 0.04),
+    inset 5px 5px 12px rgba(255, 255, 255, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.15),
+    0 0 0 1px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(2px);
+  border: none;
+  animation: bubbleRotate 10s linear infinite;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+/* Shape inside bubble - WITH GLOW */
+.bubble-container img {
+  width: 65%;
+  height: 65%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px currentColor) brightness(1.1);
+  z-index: 2;
+  animation: shapeFloat 4s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+/* Main highlight reflection */
+.bubble-container::before {
+  content: '';
+  position: absolute;
+  top: 8%;
+  left: 12%;
+  width: 30%;
+  height: 25%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.05) 80%);
+  border-radius: 50%;
+  z-index: 3;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+/* Secondary small highlight */
+.bubble-container::after {
+  content: '';
+  position: absolute;
+  bottom: 18%;
+  right: 15%;
+  width: 12%;
+  height: 10%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 80%);
+  border-radius: 50%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Shadow under bubble (external) */
+.bubble-system-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 5%;
+  width: 90%;
+  height: 12px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0) 80%);
+  border-radius: 50%;
+  z-index: 1;
+  filter: blur(4px);
+  pointer-events: none;
+}
+
+/* Edge rim light for 3D sphere effect */
+.bubble-container {
+  box-shadow: 
+    0 8px 20px rgba(0, 0, 0, 0.06),
+    inset -4px -4px 8px rgba(0, 0, 0, 0.03),
+    inset 4px 4px 10px rgba(255, 255, 255, 0.35),
+    inset 0 0 25px rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Hover effect - slightly more visible */
+.bubble-system-bubble:hover .bubble-container {
+  transform: scale(1.03);
+  box-shadow: 
+    0 12px 25px rgba(0, 0, 0, 0.1),
+    inset -5px -5px 10px rgba(0, 0, 0, 0.04),
+    inset 5px 5px 14px rgba(255, 255, 255, 0.45),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.3);
+}
+
+.bubble-system-bubble:hover .bubble-container img {
+  opacity: 1;
+  filter: drop-shadow(0 0 10px currentColor) brightness(1.2);
+}
+
+.bubble-system-bubble:active .bubble-container {
+  transform: scale(0.97);
+}
+
+/* Click Text - Chipka hua bubble ke upar */
+.bubble-click-text {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 9px;
+  color: #ff1a1a;
+  font-weight: bold;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.8), 0 1px 2px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 15;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 2px 6px;
+  border-radius: 20px;
+  backdrop-filter: blur(2px);
+  letter-spacing: 0.3px;
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Rotation Animation */
+@keyframes bubbleRotate {
+  0% { transform: rotateY(0deg) rotateX(0deg); }
+  25% { transform: rotateY(12deg) rotateX(4deg); }
+  50% { transform: rotateY(0deg) rotateX(8deg); }
+  75% { transform: rotateY(-12deg) rotateX(4deg); }
+  100% { transform: rotateY(0deg) rotateX(0deg); }
+}
+
+@keyframes shapeFloat {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-2px) scale(1.03); }
+}
+
+/* Entrance Animation */
+.bubble-entrance {
+  animation: bubbleEntrance 1.2s ease-out forwards !important;
+}
+
+@keyframes bubbleEntrance {
+  0% {
+    opacity: 0;
+    transform: translate(calc(100vw - 70px), calc(100vh - 70px)) scale(0);
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
+    transform: translate(var(--target-x), var(--target-y)) scale(1);
+  }
+}
+
+/* Pop Animation */
+.bubble-system-pop {
+  animation: bubblePop 0.35s ease-out forwards !important;
+  pointer-events: none;
+}
+
+@keyframes bubblePop {
+  0% { transform: scale(1); opacity: 0.8; }
+  30% { 
+    transform: scale(1.4); 
+    opacity: 0.6;
+    filter: brightness(1.3);
+  }
+  100% { transform: scale(0); opacity: 0; }
+}
+
+/* ---------- CLICK TEXT on BUBBLE (Additional positioning) ---------- */
+.bubble-system-bubble:hover .bubble-click-text {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ff0000;
+  text-shadow: 0 0 6px rgba(255, 200, 200, 0.9);
+}
+
+/* ---------- HEART PROGRESS ---------- */
+.bubble-heart-wrapper {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2));
+}
+
+.bubble-heart-container {
+  position: relative;
+  width: 65px;
+  height: 60px;
+  cursor: default;
+}
+
+.bubble-heart-outline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 65px;
+  line-height: 1;
+  text-align: center;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
+  z-index: 2;
+}
+
+.bubble-heart-fill {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(135deg, #ff3366 0%, #ff6b9d 50%, #ff9a9e 100%);
+  transition: height 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 1;
+  clip-path: path('M32.5,55 C14,42 0,28 0,17 C0,7 7,0 16,0 C23,0 28,5 32.5,11 C37,5 42,0 49,0 C58,0 65,7 65,17 C65,28 51,42 32.5,55 Z');
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.4);
+}
+
+.bubble-heart-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 7px;
+  font-weight: bold;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  white-space: nowrap;
+  z-index: 3;
+  width: 100%;
+  padding: 0 5px;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+/* ---------- TOAST MESSAGES ---------- */
+.bubble-toast {
+  position: fixed;
+  z-index: 10001;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+  font-family: 'Segoe UI', 'Arial', sans-serif;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  white-space: nowrap;
+  animation: toastFloat 1.2s ease-out forwards;
+  pointer-events: none;
+}
+
+.bubble-toast.lucky {
+  background: linear-gradient(135deg, #00b09bcc, #96c93dcc);
+}
+
+.bubble-toast.horny {
+  background: linear-gradient(135deg, #ff416ccc, #ff4b2bcc);
+}
+
+.bubble-toast.naughty {
+  background: linear-gradient(135deg, #8e2de2cc, #4a00e0cc);
+}
+
+.bubble-toast.badluck {
+  background: linear-gradient(135deg, #485563cc, #29323ccc);
+}
+
+@keyframes toastFloat {
+  0% { opacity: 0; transform: translateY(0px) scale(0.5); }
+  20% { opacity: 1; transform: translateY(-20px) scale(1); }
+  80% { opacity: 1; transform: translateY(-30px) scale(1); }
+  100% { opacity: 0; transform: translateY(-45px) scale(0.8); }
+}
+
+/* ---------- KISS OVERLAY ---------- */
+.bubble-kiss-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 180px;
+  z-index: 10000;
+  pointer-events: none;
+  text-shadow: 0 0 60px rgba(255, 105, 180, 0.7);
+  animation: kissPop 2s ease-out forwards;
+}
+
+@keyframes kissPop {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  75% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.2); }
+}
+
+/* ---------- UI GLOW ---------- */
+body.bubble-ui-glow {
+  transition: box-shadow 0.8s ease, filter 0.8s ease;
+  box-shadow: inset 0 0 150px rgba(255, 105, 180, 0.15) !important;
+  filter: brightness(1.03) saturate(1.05) !important;
+}
+
+/* ---------- MOBILE ---------- */
+@media (max-width: 768px) {
+  .bubble-heart-wrapper {
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .bubble-heart-container {
+    width: 50px;
+    height: 45px;
+  }
+  
+  .bubble-heart-outline {
+    font-size: 50px;
+  }
+  
+  .bubble-heart-fill {
+    clip-path: path('M25,45 C11,35 0,23 0,14 C0,6 5,0 12,0 C18,0 21,4 25,9 C29,4 32,0 38,0 C45,0 50,6 50,14 C50,23 39,35 25,45 Z');
+  }
+  
+  .bubble-heart-text {
+    font-size: 6px;
+  }
+  
+  .bubble-toast {
+    font-size: 11px;
+    padding: 4px 8px;
+  }
+  
+  .bubble-kiss-overlay {
+    font-size: 130px;
+  }
+  
+  .bubble-click-text {
+    font-size: 7px;
+    top: -14px;
+    padding: 1px 4px;
+  }
+}
+
+/* Print */
+@media print {
+  .bubble-system-bubble,
+  .bubble-heart-wrapper,
+  .bubble-toast,
+  .bubble-kiss-overlay {
+    display: none !important;
+  }
+}
