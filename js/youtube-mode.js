@@ -1,6 +1,6 @@
 // ============================================================
-// YOUTUBE-MODE.JS
-// YouTube Mode + Manual Floating Window
+// YOUTUBE-MODE.JS - YouTube Mode + Manual Floating Window
+// Based on original version
 // ============================================================
 
 (function() {
@@ -10,19 +10,19 @@
 
     let isYouTubeMode = false;
     let isFloating = false;
-
     let videoBox = null;
     let controlsRow = null;
     let floatingBar = null;
 
-    let dragStartX = 0;
-    let dragStartY = 0;
-    let floatStartX = 0;
-    let floatStartY = 0;
+    // Floating position
+    let floatX = 10;
+    let floatY = 10;
     let isDragging = false;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
 
     // ============================================================
-    // STYLES
+    // STYLES - ORIGINAL + FLOATING WINDOW
     // ============================================================
 
     const styleTag = document.createElement('style');
@@ -30,7 +30,7 @@
     styleTag.textContent = `
 
         /* ========================================================
-           CONTROLS ROW
+           Controls Row - ORIGINAL
            ======================================================== */
 
         #ytControlsRow {
@@ -47,17 +47,41 @@
 
 
         /* ========================================================
-           YOUTUBE MODE LABEL
+           Menu Button - ORIGINAL
            ======================================================== */
 
-        #ytModeLabel {
-            font-size: 11px;
-            color: #999;
+        #ytMenuBtn {
+            display: none;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.08);
+            color: #ff9900;
+            border: 1px solid #444;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
+            transition: 0.15s;
+        }
+
+        body.yt-mode #ytMenuBtn {
+            display: inline-flex;
+        }
+
+        #ytMenuBtn:hover {
+            background: rgba(255,51,0,0.2);
+            border-color: #ff6600;
+        }
+
+        #ytMenuBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 0px 0 rgba(0,0,0,0.3);
         }
 
 
         /* ========================================================
-           YOUTUBE MODE TOGGLE
+           Toggle Switch - ORIGINAL
            ======================================================== */
 
         #ytToggleSwitch {
@@ -94,43 +118,8 @@
 
 
         /* ========================================================
-           MENU BUTTON
-           Only visible in YouTube Mode
-           ======================================================== */
-
-        #ytMenuBtn {
-            display: none;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            background: rgba(255,255,255,0.08);
-            color: #ff9900;
-            border: 1px solid #444;
-            border-radius: 20px;
-            font-size: 12px;
-            cursor: pointer;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.3);
-            transition: 0.15s;
-        }
-
-        body.yt-mode #ytMenuBtn {
-            display: inline-flex;
-        }
-
-        #ytMenuBtn:hover {
-            background: rgba(255,51,0,0.2);
-            border-color: #ff6600;
-        }
-
-        #ytMenuBtn:active {
-            transform: translateY(2px);
-            box-shadow: 0 0 0 rgba(0,0,0,0.3);
-        }
-
-
-        /* ========================================================
-           FLOATING WINDOW BUTTON
-           Only visible in YouTube Mode
+           FLOATING BUTTON
+           Only visible when YouTube Mode is ON
            ======================================================== */
 
         #ytFloatingBtn {
@@ -163,7 +152,7 @@
 
 
         /* ========================================================
-           YOUTUBE MODE
+           YouTube Mode - ORIGINAL
            ======================================================== */
 
         body.yt-mode .title,
@@ -179,7 +168,7 @@
 
 
         /* ========================================================
-           YOUTUBE MODE VIDEO
+           YouTube Mode - Video fixed top - ORIGINAL
            ======================================================== */
 
         body.yt-mode .video-box {
@@ -194,7 +183,7 @@
 
 
         /* ========================================================
-           YOUTUBE MODE CONTROLS
+           YouTube Mode - Controls - ORIGINAL
            ======================================================== */
 
         body.yt-mode #ytControlsRow {
@@ -205,7 +194,7 @@
 
 
         /* ========================================================
-           YOUTUBE MODE BODY SPACE
+           YouTube Mode body spacing - ORIGINAL
            ======================================================== */
 
         body.yt-mode {
@@ -214,7 +203,7 @@
 
 
         /* ========================================================
-           ORIGINAL MENU HIDDEN IN YOUTUBE MODE
+           Hide original menu - ORIGINAL
            ======================================================== */
 
         body.yt-mode #menuToggleBtn {
@@ -223,12 +212,17 @@
 
 
         /* ========================================================
-           VIDEO NORMAL SPACING
+           Video bottom margin - ORIGINAL
            ======================================================== */
 
         .video-box {
             margin-bottom: 0 !important;
         }
+
+
+        /* ========================================================
+           Container padding - ORIGINAL
+           ======================================================== */
 
         body.yt-mode .container {
             padding-top: 0 !important;
@@ -238,8 +232,8 @@
         /* ========================================================
            FLOATING VIDEO
            
-           50% of full-screen width.
-           Aspect ratio remains 16:9.
+           Approximately half of the original YouTube Mode width.
+           16:9 ratio maintained.
            ======================================================== */
 
         .video-box.yt-floating {
@@ -250,19 +244,19 @@
 
             top: auto !important;
             left: auto !important;
+            right: auto !important;
+            bottom: auto !important;
 
             margin: 0 !important;
-            padding: 0 !important;
+            padding-top: 0 !important;
 
             border-radius: 10px !important;
 
             z-index: 9997 !important;
 
-            box-shadow: 0 8px 30px rgba(0,0,0,0.75) !important;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.8) !important;
 
             cursor: grab !important;
-
-            transition: none !important;
         }
 
         .video-box.yt-floating:active {
@@ -271,10 +265,11 @@
 
 
         /* ========================================================
-           FLOATING HEADER
+           FLOATING CONTROL BAR
            
-           This is OUTSIDE the video itself.
-           It sits directly ABOVE the floating video.
+           IMPORTANT:
+           This is OUTSIDE the video.
+           It sits above the video.
            ======================================================== */
 
         #ytFloatingBar {
@@ -286,21 +281,23 @@
 
             background: #111;
 
-            border-radius: 8px 8px 0 0;
+            border: 1px solid #333;
+
+            border-bottom: none;
+
+            border-radius: 9px 9px 0 0;
 
             z-index: 9998;
+
+            box-sizing: border-box;
 
             align-items: center;
 
             justify-content: flex-end;
 
-            padding: 0 5px;
-
-            box-sizing: border-box;
+            padding-right: 4px;
 
             cursor: grab;
-
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.45);
         }
 
         #ytFloatingBar.dragging {
@@ -310,32 +307,33 @@
 
         /* ========================================================
            FLOATING OFF BUTTON
+           
+           Outside the video, attached above it.
            ======================================================== */
 
         #ytFloatingOffBtn {
             width: 24px;
             height: 22px;
 
-            border: 1px solid #555;
+            padding: 0;
 
+            border: 1px solid #555;
             border-radius: 5px;
 
             background: #e74c3c;
 
             color: #fff;
 
-            font-size: 14px;
+            font-size: 15px;
             line-height: 20px;
-
-            padding: 0;
-
-            cursor: pointer;
 
             display: flex;
             align-items: center;
             justify-content: center;
 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            cursor: pointer;
+
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
         }
 
         #ytFloatingOffBtn:hover {
@@ -348,7 +346,7 @@
 
 
         /* ========================================================
-           FLOATING MOBILE SIZE
+           MOBILE
            ======================================================== */
 
         @media (max-width: 600px) {
@@ -356,18 +354,17 @@
             .video-box.yt-floating {
                 width: 50vw !important;
                 height: 28.125vw !important;
-                border-radius: 8px !important;
+                border-radius: 9px !important;
             }
 
             #ytFloatingBar {
                 height: 26px;
-                border-radius: 7px 7px 0 0;
             }
 
             #ytFloatingOffBtn {
                 width: 23px;
                 height: 20px;
-                font-size: 13px;
+                font-size: 14px;
             }
         }
 
@@ -377,7 +374,7 @@
 
 
     // ============================================================
-    // INITIALIZE
+    // INIT
     // ============================================================
 
     function init() {
@@ -388,7 +385,7 @@
 
 
         // ========================================================
-        // CONTROLS ROW
+        // CONTROLS ROW - ORIGINAL
         // ========================================================
 
         controlsRow = document.createElement('div');
@@ -398,24 +395,26 @@
         // YouTube Mode label
         const label = document.createElement('span');
 
-        label.id = 'ytModeLabel';
         label.textContent = 'YouTube Mode';
+
+        label.style.cssText =
+            'font-size:11px;color:#999;';
 
         controlsRow.appendChild(label);
 
 
         // ========================================================
-        // YOUTUBE MODE TOGGLE
+        // YOUTUBE MODE TOGGLE - ORIGINAL
         // ========================================================
 
         const toggle = document.createElement('div');
 
         toggle.id = 'ytToggleSwitch';
 
-        toggle.innerHTML = '<div id="ytToggleKnob"></div>';
+        toggle.innerHTML =
+            '<div id="ytToggleKnob"></div>';
 
-
-        toggle.addEventListener('click', function(e) {
+        toggle.onclick = function(e) {
 
             e.stopPropagation();
 
@@ -423,39 +422,32 @@
 
             if (isYouTubeMode) {
 
-                // ----------------------------------------------
-                // YOUTUBE MODE ON
-                // ----------------------------------------------
-
+                // ON
                 toggle.classList.add('active');
 
                 document.body.classList.add('yt-mode');
 
             } else {
 
-                // ----------------------------------------------
-                // YOUTUBE MODE OFF
-                // ----------------------------------------------
-
+                // OFF
                 toggle.classList.remove('active');
 
-                // Floating must ALWAYS turn off
-                // when YouTube Mode turns off.
-
+                // If floating is active, turn it off first.
                 if (isFloating) {
                     turnFloatingOff();
                 }
 
                 document.body.classList.remove('yt-mode');
+
             }
 
-        });
+        };
 
         controlsRow.appendChild(toggle);
 
 
         // ========================================================
-        // MENU BUTTON
+        // MENU BUTTON - ORIGINAL
         // ========================================================
 
         const menuBtn = document.createElement('button');
@@ -464,7 +456,7 @@
 
         menuBtn.innerHTML = '☰ Menu';
 
-        menuBtn.addEventListener('click', function(e) {
+        menuBtn.onclick = function(e) {
 
             e.stopPropagation();
 
@@ -472,13 +464,14 @@
                 openMenu();
             }
 
-        });
+        };
 
         controlsRow.appendChild(menuBtn);
 
 
         // ========================================================
-        // FLOATING WINDOW BUTTON
+        // NEW FLOATING BUTTON
+        // Only appears in YouTube Mode
         // ========================================================
 
         const floatingBtn = document.createElement('button');
@@ -487,7 +480,7 @@
 
         floatingBtn.innerHTML = '▣ Floating';
 
-        floatingBtn.addEventListener('click', function(e) {
+        floatingBtn.onclick = function(e) {
 
             e.stopPropagation();
 
@@ -499,13 +492,13 @@
                 turnFloatingOn();
             }
 
-        });
+        };
 
         controlsRow.appendChild(floatingBtn);
 
 
         // ========================================================
-        // INSERT CONTROLS AFTER VIDEO
+        // INSERT CONTROLS AFTER VIDEO - ORIGINAL
         // ========================================================
 
         videoBox.parentNode.insertBefore(
@@ -515,50 +508,91 @@
 
 
         // ========================================================
-        // FLOATING BAR
+        // FLOATING CONTROL BAR
         //
-        // IMPORTANT:
-        // This is NOT inside the video-box.
-        // It is a separate element attached above it.
+        // Separate element.
+        // NOT inside videoBox.
         // ========================================================
 
         floatingBar = document.createElement('div');
 
         floatingBar.id = 'ytFloatingBar';
 
-        const floatingOffBtn = document.createElement('button');
 
-        floatingOffBtn.id = 'ytFloatingOffBtn';
+        // Floating OFF button
+        const floatingOffBtn =
+            document.createElement('button');
+
+        floatingOffBtn.id =
+            'ytFloatingOffBtn';
 
         floatingOffBtn.innerHTML = '×';
 
-        floatingOffBtn.title = 'Turn Floating Off';
+        floatingOffBtn.title =
+            'Turn Floating Off';
 
-        floatingOffBtn.addEventListener('click', function(e) {
+
+        floatingOffBtn.onclick = function(e) {
 
             e.preventDefault();
             e.stopPropagation();
 
             turnFloatingOff();
 
-        });
+        };
 
-        floatingBar.appendChild(floatingOffBtn);
 
-        document.body.appendChild(floatingBar);
+        floatingBar.appendChild(
+            floatingOffBtn
+        );
+
+
+        // Add floating bar directly to body
+        document.body.appendChild(
+            floatingBar
+        );
 
 
         // ========================================================
-        // FLOATING BUTTON TEXT UPDATE
+        // FLOATING BUTTON TEXT
         // ========================================================
 
         function updateFloatingButton() {
 
             if (isFloating) {
-                floatingBtn.innerHTML = '▣ Floating ON';
+
+                floatingBtn.innerHTML =
+                    '▣ Floating ON';
+
             } else {
-                floatingBtn.innerHTML = '▣ Floating';
+
+                floatingBtn.innerHTML =
+                    '▣ Floating';
+
             }
+
+        }
+
+
+        // ========================================================
+        // UPDATE FLOATING BAR POSITION
+        // ========================================================
+
+        function updateFloatingBarPosition() {
+
+            if (!isFloating) return;
+
+            const rect =
+                videoBox.getBoundingClientRect();
+
+            floatingBar.style.left =
+                rect.left + 'px';
+
+            floatingBar.style.top =
+                Math.max(0, rect.top - 28) + 'px';
+
+            floatingBar.style.width =
+                rect.width + 'px';
 
         }
 
@@ -575,36 +609,55 @@
 
             isFloating = true;
 
-            videoBox.classList.add('yt-floating');
 
-            /*
-             * Start position:
-             * Bottom area, slightly right.
-             */
-
-            const startLeft =
-                Math.max(
-                    10,
-                    window.innerWidth - (window.innerWidth * 0.5) - 10
-                );
-
-            const startTop =
-                Math.max(
-                    50,
-                    window.innerHeight -
-                    (window.innerWidth * 0.28125) -
-                    70
-                );
+            // Add floating class
+            videoBox.classList.add(
+                'yt-floating'
+            );
 
 
-            videoBox.style.left = startLeft + 'px';
-            videoBox.style.top = startTop + 'px';
+            // ====================================================
+            // START POSITION
+            // Bottom-right area
+            // ====================================================
 
-            videoBox.style.right = 'auto';
-            videoBox.style.bottom = 'auto';
+            const floatingWidth =
+                window.innerWidth * 0.50;
+
+            const floatingHeight =
+                window.innerWidth * 0.28125;
 
 
-            floatingBar.style.display = 'flex';
+            floatX =
+                window.innerWidth -
+                floatingWidth -
+                10;
+
+            floatY =
+                window.innerHeight -
+                floatingHeight -
+                70;
+
+
+            // Keep inside screen
+            floatX =
+                Math.max(0, floatX);
+
+            floatY =
+                Math.max(30, floatY);
+
+
+            videoBox.style.left =
+                floatX + 'px';
+
+            videoBox.style.top =
+                floatY + 'px';
+
+
+            // Make floating bar visible
+            floatingBar.style.display =
+                'flex';
+
 
             updateFloatingBarPosition();
 
@@ -623,164 +676,178 @@
 
             isFloating = false;
 
-            videoBox.classList.remove('yt-floating');
+
+            // Remove floating class
+            videoBox.classList.remove(
+                'yt-floating'
+            );
 
 
-            /*
-             * Remove all floating positioning.
-             * YouTube Mode CSS will automatically put the
-             * video back at the TOP in its normal YouTube Mode size.
-             */
-
+            // Remove floating positioning
             videoBox.style.left = '';
             videoBox.style.top = '';
             videoBox.style.right = '';
             videoBox.style.bottom = '';
 
 
-            floatingBar.style.display = 'none';
+            // Hide floating bar
+            floatingBar.style.display =
+                'none';
+
 
             updateFloatingButton();
 
 
-            /*
-             * Make absolutely sure YouTube Mode stays ON.
-             */
+            // IMPORTANT:
+            // YouTube Mode stays ON.
+            // Video therefore returns to the
+            // original YouTube Mode position/size.
 
             if (isYouTubeMode) {
-                document.body.classList.add('yt-mode');
+                document.body.classList.add(
+                    'yt-mode'
+                );
             }
 
         };
 
 
         // ========================================================
-        // FLOATING BAR POSITION
-        // ========================================================
-
-        function updateFloatingBarPosition() {
-
-            if (!isFloating) return;
-
-            const rect = videoBox.getBoundingClientRect();
-
-            floatingBar.style.left = rect.left + 'px';
-
-            floatingBar.style.top =
-                Math.max(0, rect.top - 28) + 'px';
-
-            floatingBar.style.width =
-                rect.width + 'px';
-
-        }
-
-
-        // ========================================================
         // DESKTOP DRAG
         //
-        // Drag the floating header to move the whole window.
+        // Drag from the bar above the video.
         // ========================================================
 
-        floatingBar.addEventListener('mousedown', function(e) {
+        floatingBar.addEventListener(
+            'mousedown',
+            function(e) {
 
-            if (!isFloating) return;
+                if (!isFloating) return;
 
-            // Don't start dragging when clicking OFF button
-            if (e.target.closest('#ytFloatingOffBtn')) return;
+                // Don't drag when clicking OFF
+                if (
+                    e.target.closest(
+                        '#ytFloatingOffBtn'
+                    )
+                ) {
+                    return;
+                }
 
-            e.preventDefault();
+                e.preventDefault();
 
-            isDragging = true;
+                isDragging = true;
 
-            floatingBar.classList.add('dragging');
-
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-
-            const rect = videoBox.getBoundingClientRect();
-
-            floatStartX = rect.left;
-            floatStartY = rect.top;
-
-
-            function onMouseMove(ev) {
-
-                if (!isDragging) return;
-
-                const moveX = ev.clientX - dragStartX;
-                const moveY = ev.clientY - dragStartY;
-
-                let newLeft = floatStartX + moveX;
-                let newTop = floatStartY + moveY;
-
-
-                // Keep floating window inside screen
-
-                const width = videoBox.offsetWidth;
-                const height = videoBox.offsetHeight;
-
-                const maxLeft =
-                    window.innerWidth - width;
-
-                const maxTop =
-                    window.innerHeight - height;
-
-
-                newLeft = Math.max(
-                    0,
-                    Math.min(newLeft, maxLeft)
-                );
-
-                newTop = Math.max(
-                    28,
-                    Math.min(newTop, maxTop)
+                floatingBar.classList.add(
+                    'dragging'
                 );
 
 
-                videoBox.style.left = newLeft + 'px';
-                videoBox.style.top = newTop + 'px';
-
-                updateFloatingBarPosition();
-
-            }
+                const rect =
+                    videoBox.getBoundingClientRect();
 
 
-            function onMouseUp() {
+                dragOffsetX =
+                    e.clientX - rect.left;
 
-                isDragging = false;
+                dragOffsetY =
+                    e.clientY - rect.top;
 
-                floatingBar.classList.remove('dragging');
 
-                document.removeEventListener(
+                function onMove(ev) {
+
+                    if (!isDragging) return;
+
+
+                    let newX =
+                        ev.clientX -
+                        dragOffsetX;
+
+                    let newY =
+                        ev.clientY -
+                        dragOffsetY;
+
+
+                    const width =
+                        videoBox.offsetWidth;
+
+                    const height =
+                        videoBox.offsetHeight;
+
+
+                    // Keep video inside screen
+
+                    newX =
+                        Math.max(
+                            0,
+                            Math.min(
+                                newX,
+                                window.innerWidth - width
+                            )
+                        );
+
+
+                    newY =
+                        Math.max(
+                            28,
+                            Math.min(
+                                newY,
+                                window.innerHeight - height
+                            )
+                        );
+
+
+                    videoBox.style.left =
+                        newX + 'px';
+
+                    videoBox.style.top =
+                        newY + 'px';
+
+
+                    updateFloatingBarPosition();
+
+                }
+
+
+                function onEnd() {
+
+                    isDragging = false;
+
+                    floatingBar.classList.remove(
+                        'dragging'
+                    );
+
+
+                    document.removeEventListener(
+                        'mousemove',
+                        onMove
+                    );
+
+                    document.removeEventListener(
+                        'mouseup',
+                        onEnd
+                    );
+
+                }
+
+
+                document.addEventListener(
                     'mousemove',
-                    onMouseMove
+                    onMove
                 );
 
-                document.removeEventListener(
+                document.addEventListener(
                     'mouseup',
-                    onMouseUp
+                    onEnd
                 );
 
             }
+        );
 
 
-            document.addEventListener(
-                'mousemove',
-                onMouseMove
-            );
-
-            document.addEventListener(
-                'mouseup',
-                onMouseUp
-            );
-
-        });
-
-
-        ========================================================
-        // MOBILE TOUCH DRAG
+        // ========================================================
+        // MOBILE DRAG
         //
-        // Drag using the floating header.
+        // Drag from the bar above the video.
         // ========================================================
 
         floatingBar.addEventListener(
@@ -789,24 +856,37 @@
 
                 if (!isFloating) return;
 
-                // Don't drag when touching OFF button
-                if (e.target.closest('#ytFloatingOffBtn')) return;
+                if (
+                    e.target.closest(
+                        '#ytFloatingOffBtn'
+                    )
+                ) {
+                    return;
+                }
 
-                const touch = e.touches[0];
 
-                isDragging = true;
-
-                dragStartX = touch.clientX;
-                dragStartY = touch.clientY;
+                const touch =
+                    e.touches[0];
 
                 const rect =
                     videoBox.getBoundingClientRect();
 
-                floatStartX = rect.left;
-                floatStartY = rect.top;
+
+                dragOffsetX =
+                    touch.clientX -
+                    rect.left;
+
+                dragOffsetY =
+                    touch.clientY -
+                    rect.top;
+
+
+                isDragging = true;
 
             },
-            { passive: true }
+            {
+                passive: true
+            }
         );
 
 
@@ -814,21 +894,25 @@
             'touchmove',
             function(e) {
 
-                if (!isDragging || !isFloating) return;
+                if (
+                    !isDragging ||
+                    !isFloating
+                ) {
+                    return;
+                }
 
-                const touch = e.touches[0];
 
-                const moveX =
-                    touch.clientX - dragStartX;
+                const touch =
+                    e.touches[0];
 
-                const moveY =
-                    touch.clientY - dragStartY;
 
-                let newLeft =
-                    floatStartX + moveX;
+                let newX =
+                    touch.clientX -
+                    dragOffsetX;
 
-                let newTop =
-                    floatStartY + moveY;
+                let newY =
+                    touch.clientY -
+                    dragOffsetY;
 
 
                 const width =
@@ -838,34 +922,39 @@
                     videoBox.offsetHeight;
 
 
-                const maxLeft =
-                    window.innerWidth - width;
+                newX =
+                    Math.max(
+                        0,
+                        Math.min(
+                            newX,
+                            window.innerWidth - width
+                        )
+                    );
 
-                const maxTop =
-                    window.innerHeight - height;
 
-
-                newLeft = Math.max(
-                    0,
-                    Math.min(newLeft, maxLeft)
-                );
-
-                newTop = Math.max(
-                    28,
-                    Math.min(newTop, maxTop)
-                );
+                newY =
+                    Math.max(
+                        28,
+                        Math.min(
+                            newY,
+                            window.innerHeight - height
+                        )
+                    );
 
 
                 videoBox.style.left =
-                    newLeft + 'px';
+                    newX + 'px';
 
                 videoBox.style.top =
-                    newTop + 'px';
+                    newY + 'px';
+
 
                 updateFloatingBarPosition();
 
             },
-            { passive: true }
+            {
+                passive: true
+            }
         );
 
 
@@ -878,8 +967,9 @@
             }
         );
 
+
         // ========================================================
-        // KEEP FLOATING BAR ATTACHED ON RESIZE
+        // WINDOW RESIZE
         // ========================================================
 
         window.addEventListener(
@@ -890,33 +980,6 @@
 
                 updateFloatingBarPosition();
 
-            }
-        );
-
-
-        // ========================================================
-        // SAFETY:
-        // IF YOUTUBE MODE IS OFF, FLOATING MUST NOT REMAIN.
-        // ========================================================
-
-        const observer =
-            new MutationObserver(function() {
-
-                if (
-                    !document.body.classList.contains('yt-mode') &&
-                    isFloating
-                ) {
-                    turnFloatingOff();
-                }
-
-            });
-
-
-        observer.observe(
-            document.body,
-            {
-                attributes: true,
-                attributeFilter: ['class']
             }
         );
 
