@@ -1,7 +1,6 @@
 // ============================================================
-// YOUTUBE-MODE.JS - Mobile Optimized & Complete System
-// YouTube Mode: Toggle + Menu + Float Button + Controls Row
-// Float: Smooth Draggable Miniplayer (Touch/Mobile Fixed) + Close
+// YOUTUBE-MODE.JS - Cleaned System (No Float)
+// YouTube Mode: Toggle + Menu + Controls Row ONLY
 // ============================================================
 
 (function() {
@@ -10,13 +9,9 @@
     if (!window.location.pathname.includes('video.html')) return;
     
     let isYouTubeMode = false;
-    let isFloating = false;
     let videoBox = null;
     let controlsRow = null;
     let toggleSwitch = null;
-    let closeFloatBtn = null; 
-    let isDragging = false;
-    let dragStartX, dragStartY, startLeft, startTop;
     
     // ========== STYLES ==========
     const styleTag = document.createElement('style');
@@ -40,7 +35,7 @@
         }
         
         /* Buttons */
-        #ytMenuBtn, #ytFloatBtn {
+        #ytMenuBtn {
             display: none;
             align-items: center;
             gap: 4px;
@@ -54,18 +49,12 @@
             box-shadow: 0 2px 0 rgba(0,0,0,0.3);
             transition: 0.15s;
         }
-        body.yt-mode #ytMenuBtn,
-        body.yt-mode #ytFloatBtn {
+        body.yt-mode #ytMenuBtn {
             display: inline-flex;
         }
-        #ytMenuBtn:hover, #ytFloatBtn:hover {
+        #ytMenuBtn:hover {
             background: rgba(255,51,0,0.2);
             border-color: #ff6600;
-        }
-        #ytFloatBtn.active {
-            background: rgba(46,204,113,0.2);
-            border-color: #2ecc71;
-            color: #2ecc71;
         }
         
         /* Toggle Switch */
@@ -94,38 +83,6 @@
         }
         #ytToggleSwitch.active #ytToggleKnob { left: 24px; }
         
-        /* Floating Close Button (Directly on Video) */
-        #ytFloatCloseBtn {
-            display: none;
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            width: 26px;
-            height: 26px;
-            background: rgba(0, 0, 0, 0.8);
-            color: #fff;
-            border: 1.5px solid #fff;
-            border-radius: 50%;
-            text-align: center;
-            line-height: 22px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 10001;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-            transition: 0.2s;
-        }
-        #ytFloatCloseBtn:hover { background: #e74c3c; }
-        .video-box.float-window #ytFloatCloseBtn {
-            display: block; /* Show only when floating */
-        }
-        
-        /* Prevent iframe from eating drag events */
-        .video-box.is-dragging iframe, 
-        .video-box.is-dragging video {
-            pointer-events: none !important;
-        }
-        
         /* YouTube Mode Constraints */
         body.yt-mode .title,
         body.yt-mode .subtitle-badge,
@@ -150,41 +107,6 @@
         body.yt-mode { padding-top: 56.25vw !important; }
         body.yt-mode #menuToggleBtn { display: none !important; }
         body.yt-mode .container { padding-top: 0 !important; }
-        
-        /* Float Window CSS (MOBILE & DESKTOP OPTIMIZED) */
-        .video-box.float-window {
-            position: fixed !important;
-            bottom: 80px; 
-            right: 16px;
-            top: auto;
-            left: auto;
-            width: 280px !important;
-            aspect-ratio: 16 / 9;
-            height: auto !important;
-            padding-top: 0 !important;
-            margin: 0 !important;
-            border-radius: 12px !important;
-            z-index: 10000 !important;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.8) !important;
-            cursor: grab;
-            touch-action: none !important; /* PREVENTS MOBILE SCROLL WHILE DRAGGING */
-            border: 2px solid rgba(255,102,0,0.5) !important;
-        }
-        .video-box.float-window iframe,
-        .video-box.float-window video { 
-            border-radius: 10px !important; 
-            width: 100% !important; 
-            height: 100% !important; 
-        }
-        .video-box.float-window:active { cursor: grabbing; }
-        
-        @media (max-width: 600px) {
-            .video-box.float-window {
-                width: 45vw !important; /* Perfect for mobile screens */
-                bottom: 60px;
-                right: 8px;
-            }
-        }
     `;
     document.head.appendChild(styleTag);
     
@@ -192,21 +114,6 @@
     function init() {
         videoBox = document.querySelector('.video-box');
         if (!videoBox) return;
-        
-        if (window.getComputedStyle(videoBox).position === 'static') {
-            videoBox.style.position = 'relative';
-        }
-        
-        // Create On-Window Close Button
-        closeFloatBtn = document.createElement('div');
-        closeFloatBtn.id = 'ytFloatCloseBtn';
-        closeFloatBtn.innerHTML = '✕';
-        closeFloatBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); 
-            e.preventDefault();
-            exitFloatMode();
-        });
-        videoBox.appendChild(closeFloatBtn);
         
         // Controls row
         controlsRow = document.createElement('div');
@@ -228,11 +135,9 @@
             if (isYouTubeMode) {
                 toggleSwitch.classList.add('active');
                 document.body.classList.add('yt-mode');
-                if (isFloating) exitFloatMode();
             } else {
                 toggleSwitch.classList.remove('active');
                 document.body.classList.remove('yt-mode');
-                if (isFloating) exitFloatMode();
             }
         });
         controlsRow.appendChild(toggleSwitch);
@@ -247,100 +152,8 @@
         });
         controlsRow.appendChild(menuBtn);
         
-        // Float Button
-        const floatBtn = document.createElement('button');
-        floatBtn.id = 'ytFloatBtn';
-        floatBtn.innerHTML = '🪟 Float';
-        floatBtn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            if (!isFloating) {
-                enterFloatMode();
-            } else {
-                exitFloatMode();
-            }
-        });
-        controlsRow.appendChild(floatBtn);
-        
         // Insert controls row after video
         videoBox.parentNode.insertBefore(controlsRow, videoBox.nextSibling);
-        
-        // ===== DRAG FLOAT WINDOW LOGIC =====
-        function startDrag(clientX, clientY) {
-            if (!isFloating) return;
-            isDragging = true;
-            videoBox.classList.add('is-dragging'); 
-            
-            dragStartX = clientX;
-            dragStartY = clientY;
-            const rect = videoBox.getBoundingClientRect();
-            startLeft = rect.left;
-            startTop = rect.top;
-        }
-        
-        function moveDrag(e, clientX, clientY) {
-            if (!isDragging) return;
-            
-            // SUPER IMPORTANT FOR MOBILE: Stops scrolling while dragging
-            if (e && e.cancelable) {
-                e.preventDefault(); 
-            }
-            
-            videoBox.style.setProperty('left', (startLeft + clientX - dragStartX) + 'px', 'important');
-            videoBox.style.setProperty('top', (startTop + clientY - dragStartY) + 'px', 'important');
-            videoBox.style.setProperty('bottom', 'auto', 'important');
-            videoBox.style.setProperty('right', 'auto', 'important');
-        }
-        
-        function endDrag() {
-            if (isDragging) {
-                isDragging = false;
-                videoBox.classList.remove('is-dragging');
-            }
-        }
-        
-        // Mouse Events (Desktop)
-        videoBox.addEventListener('mousedown', function(e) {
-            if (e.target.id === 'ytFloatCloseBtn') return; 
-            startDrag(e.clientX, e.clientY);
-        });
-        document.addEventListener('mousemove', function(e) { 
-            if(isDragging) moveDrag(e, e.clientX, e.clientY); 
-        });
-        document.addEventListener('mouseup', endDrag);
-        
-        // Touch Events (Mobile) - Added passive: false to allow e.preventDefault()
-        videoBox.addEventListener('touchstart', function(e) {
-            if (e.target.id === 'ytFloatCloseBtn') return;
-            startDrag(e.touches[0].clientX, e.touches[0].clientY);
-        }, { passive: false });
-        
-        document.addEventListener('touchmove', function(e) { 
-            if(isDragging) moveDrag(e, e.touches[0].clientX, e.touches[0].clientY); 
-        }, { passive: false });
-        
-        document.addEventListener('touchend', endDrag);
-    }
-    
-    // ========== FLOAT ACTIONS ==========
-    function enterFloatMode() {
-        if (!isYouTubeMode) return;
-        isFloating = true;
-        videoBox.classList.add('float-window');
-        document.getElementById('ytFloatBtn').classList.add('active');
-    }
-    
-    function exitFloatMode() {
-        isFloating = false;
-        videoBox.classList.remove('float-window');
-        videoBox.classList.remove('is-dragging');
-        
-        // Reset all JS injected styles
-        videoBox.style.removeProperty('left');
-        videoBox.style.removeProperty('top');
-        videoBox.style.removeProperty('bottom');
-        videoBox.style.removeProperty('right');
-        
-        document.getElementById('ytFloatBtn').classList.remove('active');
     }
     
     // ========== START ==========
@@ -351,4 +164,3 @@
     }
     
 })();
-                                       
