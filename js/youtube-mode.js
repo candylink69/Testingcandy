@@ -1,6 +1,5 @@
 // ============================================================
-// YOUTUBE-MODE.JS - Cleaned System (No Float)
-// YouTube Mode: Toggle + Menu + Controls Row ONLY
+// YOUTUBE-MODE.JS - Simple: Toggle + Menu Only
 // ============================================================
 
 (function() {
@@ -11,12 +10,9 @@
     let isYouTubeMode = false;
     let videoBox = null;
     let controlsRow = null;
-    let toggleSwitch = null;
     
-    // ========== STYLES ==========
     const styleTag = document.createElement('style');
     styleTag.textContent = `
-        /* Controls Row */
         #ytControlsRow {
             display: flex;
             align-items: center;
@@ -33,8 +29,6 @@
             top: 56.25vw;
             z-index: 9998;
         }
-        
-        /* Buttons */
         #ytMenuBtn {
             display: none;
             align-items: center;
@@ -47,17 +41,12 @@
             font-size: 12px;
             cursor: pointer;
             box-shadow: 0 2px 0 rgba(0,0,0,0.3);
-            transition: 0.15s;
         }
-        body.yt-mode #ytMenuBtn {
-            display: inline-flex;
-        }
+        body.yt-mode #ytMenuBtn { display: inline-flex; }
         #ytMenuBtn:hover {
             background: rgba(255,51,0,0.2);
             border-color: #ff6600;
         }
-        
-        /* Toggle Switch */
         #ytToggleSwitch {
             width: 48px;
             height: 26px;
@@ -83,7 +72,6 @@
         }
         #ytToggleSwitch.active #ytToggleKnob { left: 24px; }
         
-        /* YouTube Mode Constraints */
         body.yt-mode .title,
         body.yt-mode .subtitle-badge,
         body.yt-mode .social-text,
@@ -110,53 +98,46 @@
     `;
     document.head.appendChild(styleTag);
     
-    // ========== INIT ==========
     function init() {
         videoBox = document.querySelector('.video-box');
         if (!videoBox) return;
         
-        // Controls row
         controlsRow = document.createElement('div');
         controlsRow.id = 'ytControlsRow';
         
-        // Label
         const label = document.createElement('span');
         label.textContent = 'YouTube Mode';
         label.style.cssText = 'font-size:11px;color:#999;';
         controlsRow.appendChild(label);
         
-        // Toggle Switch
-        toggleSwitch = document.createElement('div');
-        toggleSwitch.id = 'ytToggleSwitch';
-        toggleSwitch.innerHTML = '<div id="ytToggleKnob"></div>';
-        toggleSwitch.addEventListener('click', function(e) {
+        const toggle = document.createElement('div');
+        toggle.id = 'ytToggleSwitch';
+        toggle.innerHTML = '<div id="ytToggleKnob"></div>';
+        toggle.onclick = function(e) {
             e.stopPropagation();
             isYouTubeMode = !isYouTubeMode;
             if (isYouTubeMode) {
-                toggleSwitch.classList.add('active');
+                toggle.classList.add('active');
                 document.body.classList.add('yt-mode');
             } else {
-                toggleSwitch.classList.remove('active');
+                toggle.classList.remove('active');
                 document.body.classList.remove('yt-mode');
             }
-        });
-        controlsRow.appendChild(toggleSwitch);
+        };
+        controlsRow.appendChild(toggle);
         
-        // Menu Button
         const menuBtn = document.createElement('button');
         menuBtn.id = 'ytMenuBtn';
         menuBtn.innerHTML = '☰ Menu';
-        menuBtn.addEventListener('click', function(e) {
+        menuBtn.onclick = function(e) {
             e.stopPropagation();
             if (typeof openMenu === 'function') openMenu();
-        });
+        };
         controlsRow.appendChild(menuBtn);
         
-        // Insert controls row after video
         videoBox.parentNode.insertBefore(controlsRow, videoBox.nextSibling);
     }
     
-    // ========== START ==========
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
