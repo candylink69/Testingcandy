@@ -1,5 +1,5 @@
 // ============================================================
-// YOUTUBE-MODE.JS - Fixed: Only hide above player, keep below
+// YOUTUBE-MODE.JS - Fixed: Menu only in YouTube mode, sticky controls
 // ============================================================
 
 (function() {
@@ -14,12 +14,11 @@
     let controlsRow = null;
     let toggleSwitch = null;
     let miniToggle = null;
-    let hiddenAboveElements = [];
     let dragStartY = 0;
     
     // ========== STYLES ==========
     const styles = `
-        /* Controls Row - hidden by default, sticky when YouTube mode */
+        /* Controls Row - HIDDEN by default, VISIBLE only in YouTube mode, STICKY */
         #ytControlsRow {
             display: none;
             align-items: center;
@@ -29,16 +28,16 @@
             padding: 8px 10px;
             background: #0b0b0b;
             border-bottom: 1px solid #333;
+            z-index: 9998;
             margin: 0;
         }
         body.yt-mode #ytControlsRow {
             display: flex;
             position: sticky;
             top: 56.25vw;
-            z-index: 9998;
         }
         
-        /* Toggle Switch */
+        /* Toggle Switch - Red OFF, Green ON */
         #ytToggleSwitch {
             width: 52px;
             height: 28px;
@@ -93,18 +92,18 @@
             box-shadow: 0 1px 0 rgba(0,0,0,0.3);
         }
         
-        /* YouTube Mode - hide ONLY elements ABOVE video player */
-        body.yt-mode .container > .title,
-        body.yt-mode .container > .ad-spot:not(#ad-bottom),
-        body.yt-mode .container > .warning-box,
-        body.yt-mode .container > .double-tap-indicator,
-        body.yt-mode .container > #ad-top,
-        body.yt-mode #sideMenu,
-        body.yt-mode #menuToggleBtn {
+        /* YouTube Mode - hide ONLY above player, keep below */
+        body.yt-mode .title,
+        body.yt-mode .subtitle-badge,
+        body.yt-mode .social-text,
+        body.yt-mode .social-row,
+        body.yt-mode #ad-top,
+        body.yt-mode .warning-box,
+        body.yt-mode .double-tap-indicator {
             display: none !important;
         }
         
-        /* YouTube Mode - video fixed at top */
+        /* YouTube Mode - video sticky top */
         body.yt-mode .video-box {
             position: fixed !important;
             top: 0 !important;
@@ -114,9 +113,13 @@
             border-radius: 0 !important;
             z-index: 9997 !important;
         }
-        
         body.yt-mode {
             padding-top: 56.25vw !important;
+        }
+        
+        /* Hide original menu in YouTube mode */
+        body.yt-mode #menuToggleBtn {
+            display: none !important;
         }
         
         /* Mini player */
@@ -132,10 +135,9 @@
             z-index: 9999 !important;
             border-radius: 12px !important;
             box-shadow: 0 8px 30px rgba(0,0,0,0.8) !important;
-            cursor: pointer;
         }
         
-        /* Mini toggle on player */
+        /* Mini toggle */
         #ytMiniToggle {
             display: none;
             position: absolute;
@@ -170,12 +172,6 @@
         }
         
         @media (max-width: 600px) {
-            body.yt-mode {
-                padding-top: 56.25vw !important;
-            }
-            body.yt-mode #ytControlsRow {
-                top: 56.25vw;
-            }
             .video-box.mini-player {
                 width: 200px !important;
                 height: 112px !important;
@@ -211,12 +207,13 @@
         });
         controlsRow.appendChild(menuBtn);
         
-        // Toggle switch
-        const toggleLabel = document.createElement('span');
-        toggleLabel.style.cssText = 'font-size:12px;color:#ccc;';
-        toggleLabel.textContent = 'YouTube Mode';
-        controlsRow.appendChild(toggleLabel);
+        // Label
+        const label = document.createElement('span');
+        label.style.cssText = 'font-size:12px;color:#ccc;';
+        label.textContent = 'YouTube Mode';
+        controlsRow.appendChild(label);
         
+        // Toggle switch
         toggleSwitch = document.createElement('div');
         toggleSwitch.id = 'ytToggleSwitch';
         toggleSwitch.innerHTML = '<div id="ytToggleKnob"></div>';
@@ -226,10 +223,10 @@
         });
         controlsRow.appendChild(toggleSwitch);
         
-        // Insert controls row AFTER video box
+        // Insert after video
         videoBox.parentNode.insertBefore(controlsRow, videoBox.nextSibling);
         
-        // Mini toggle on video player
+        // Mini toggle
         miniToggle = document.createElement('div');
         miniToggle.id = 'ytMiniToggle';
         miniToggle.className = 'off';
@@ -240,46 +237,38 @@
         });
         videoBox.appendChild(miniToggle);
         
-        // Drag down to mini player
+        // Drag to mini
         videoBox.addEventListener('mousedown', onDragStart);
         videoBox.addEventListener('touchstart', onDragStart, { passive: true });
         
-        // Click mini player to restore
+        // Mini click to restore
         videoBox.addEventListener('click', function(e) {
             if (isMiniPlayer && !e.target.closest('#ytMiniToggle')) {
                 restoreFromMini();
             }
         });
         
-        // Page exit → mini player
+        // Page exit → mini
         window.addEventListener('beforeunload', function() {
-            if (isYouTubeMode && !isMiniPlayer) {
-                makeMiniPlayer();
-            }
+            if (isYouTubeMode && !isMiniPlayer) makeMiniPlayer();
         });
     }
     
-    // ========== TOGGLE YOUTUBE MODE ==========
+    // ========== TOGGLE ==========
     function toggleYouTubeMode() {
         isYouTubeMode = !isYouTubeMode;
         
         if (isYouTubeMode) {
-            // ON
             toggleSwitch.classList.add('active');
             document.body.classList.add('yt-mode');
             videoBox.classList.remove('mini-player');
             isMiniPlayer = false;
             miniToggle.style.display = 'none';
-            
-            // Hide original menu button
-            const menuToggle = document.getElementById('menuToggleBtn');
-            if (menuToggle) menuToggle.style.display = 'none';
-            
-            // Show controls row
             controlsRow.style.display = 'flex';
             
+            const menuToggle = document.getElementById('menuToggleBtn');
+            if (menuToggle) menuToggle.style.display = 'none';
         } else {
-            // OFF
             toggleSwitch.classList.remove('active');
             document.body.classList.remove('yt-mode');
             videoBox.classList.remove('mini-player');
@@ -287,27 +276,24 @@
             miniToggle.style.display = 'none';
             controlsRow.style.display = 'none';
             
-            // Show original menu button
             const menuToggle = document.getElementById('menuToggleBtn');
             if (menuToggle) menuToggle.style.display = '';
         }
     }
     
-    // ========== DRAG TO MINI PLAYER ==========
+    // ========== DRAG ==========
     function onDragStart(e) {
         if (!isYouTubeMode || isMiniPlayer) return;
         dragStartY = e.touches ? e.touches[0].clientY : e.clientY;
         
         const onMove = function(ev) {
-            const clientY = ev.touches ? ev.touches[0].clientY : ev.clientY;
-            if (clientY - dragStartY > 60) {
+            const y = ev.touches ? ev.touches[0].clientY : ev.clientY;
+            if (y - dragStartY > 60) {
                 makeMiniPlayer();
                 cleanup();
             }
         };
-        
         const onEnd = function() { cleanup(); };
-        
         function cleanup() {
             document.removeEventListener('mousemove', onMove);
             document.removeEventListener('mouseup', onEnd);
@@ -325,10 +311,8 @@
         videoBox.classList.add('mini-player');
         isMiniPlayer = true;
         document.body.classList.remove('yt-mode');
-        
         miniToggle.style.display = 'block';
         miniToggle.classList.remove('off');
-        
         controlsRow.style.display = 'none';
         
         const menuToggle = document.getElementById('menuToggleBtn');
@@ -339,7 +323,6 @@
         videoBox.classList.remove('mini-player');
         isMiniPlayer = false;
         isYouTubeMode = true;
-        
         miniToggle.style.display = 'none';
         document.body.classList.add('yt-mode');
         controlsRow.style.display = 'flex';
@@ -355,6 +338,6 @@
         init();
     }
     
-    console.log('✅ YouTube Mode ready - Only hides above player');
+    console.log('✅ YouTube Mode ready - Menu only shows when ON');
     
 })();
