@@ -1,5 +1,7 @@
 // ============================================================
-// YOUTUBE-MODE.JS - Perfect YouTube-Style Float
+// YOUTUBE-MODE.JS - Complete System
+// YouTube Mode: Toggle + Menu + Float Button + Controls Row
+// Float: player-lock.js style simple draggable window
 // ============================================================
 
 (function() {
@@ -11,13 +13,14 @@
     let isFloating = false;
     let videoBox = null;
     let controlsRow = null;
-    let floatOffBtn = null;
+    let toggleSwitch = null;
     let isDragging = false;
     let dragStartX, dragStartY, startLeft, startTop;
     
-    // Styles
+    // ========== STYLES ==========
     const styleTag = document.createElement('style');
     styleTag.textContent = `
+        /* Controls Row */
         #ytControlsRow {
             display: flex;
             align-items: center;
@@ -34,6 +37,8 @@
             top: 56.25vw;
             z-index: 9998;
         }
+        
+        /* Buttons */
         #ytMenuBtn, #ytFloatBtn {
             display: none;
             align-items: center;
@@ -56,6 +61,13 @@
             background: rgba(255,51,0,0.2);
             border-color: #ff6600;
         }
+        #ytFloatBtn.active {
+            background: rgba(46,204,113,0.2);
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+        
+        /* Toggle Switch */
         #ytToggleSwitch {
             width: 48px;
             height: 26px;
@@ -104,63 +116,40 @@
         }
         body.yt-mode { padding-top: 56.25vw !important; }
         body.yt-mode #menuToggleBtn { display: none !important; }
-        .video-box { margin-bottom: 0 !important; }
         body.yt-mode .container { padding-top: 0 !important; }
         
-        /* Float Window - YouTube style corner */
+        /* Float Window - player-lock.js style */
         .video-box.float-window {
             position: fixed !important;
             bottom: 80px !important;
             right: 16px !important;
             top: auto !important;
             left: auto !important;
-            width: 360px !important;
-            height: 203px !important;
+            width: 280px !important;
+            height: 158px !important;
             padding-top: 0 !important;
             margin: 0 !important;
             border-radius: 12px !important;
             z-index: 10000 !important;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.9) !important;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.8) !important;
             cursor: grab;
-            border: 2px solid rgba(255,102,0,0.6) !important;
-            transition: none !important;
-            transform: none !important;
+            border: 2px solid rgba(255,102,0,0.5) !important;
         }
+        .video-box.float-window iframe { border-radius: 10px !important; }
         .video-box.float-window:active { cursor: grabbing; }
-        .video-box.float-window iframe {
-            border-radius: 10px !important;
-        }
-        
-        /* Float OFF Button */
-        #floatOffBtn {
-            display: none;
-            position: fixed;
-            padding: 4px 10px;
-            background: #e74c3c;
-            color: #fff;
-            border: none;
-            border-radius: 0 0 6px 6px;
-            font-size: 11px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 10001;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-            pointer-events: auto;
-        }
-        #floatOffBtn.show { display: block; }
-        #floatOffBtn:hover { background: #c0392b; }
         
         @media (max-width: 600px) {
             .video-box.float-window {
-                width: 240px !important;
-                height: 135px !important;
-                bottom: 70px !important;
+                width: 200px !important;
+                height: 112px !important;
+                bottom: 60px !important;
                 right: 8px !important;
             }
         }
     `;
     document.head.appendChild(styleTag);
     
+    // ========== INIT ==========
     function init() {
         videoBox = document.querySelector('.video-box');
         if (!videoBox) return;
@@ -169,65 +158,61 @@
         controlsRow = document.createElement('div');
         controlsRow.id = 'ytControlsRow';
         
+        // Label
         const label = document.createElement('span');
         label.textContent = 'YouTube Mode';
         label.style.cssText = 'font-size:11px;color:#999;';
         controlsRow.appendChild(label);
         
-        // Toggle
-        const toggle = document.createElement('div');
-        toggle.id = 'ytToggleSwitch';
-        toggle.innerHTML = '<div id="ytToggleKnob"></div>';
-        toggle.onclick = function(e) {
+        // Toggle Switch
+        toggleSwitch = document.createElement('div');
+        toggleSwitch.id = 'ytToggleSwitch';
+        toggleSwitch.innerHTML = '<div id="ytToggleKnob"></div>';
+        toggleSwitch.addEventListener('click', function(e) {
             e.stopPropagation();
             isYouTubeMode = !isYouTubeMode;
             if (isYouTubeMode) {
-                toggle.classList.add('active');
+                toggleSwitch.classList.add('active');
                 document.body.classList.add('yt-mode');
-                if (isFloating) exitFloatMode(false);
+                if (isFloating) exitFloatMode();
             } else {
-                toggle.classList.remove('active');
+                toggleSwitch.classList.remove('active');
                 document.body.classList.remove('yt-mode');
-                if (isFloating) exitFloatMode(false);
+                if (isFloating) exitFloatMode();
             }
-        };
-        controlsRow.appendChild(toggle);
+        });
+        controlsRow.appendChild(toggleSwitch);
         
-        // Menu
+        // Menu Button
         const menuBtn = document.createElement('button');
         menuBtn.id = 'ytMenuBtn';
         menuBtn.innerHTML = '☰ Menu';
-        menuBtn.onclick = function(e) {
+        menuBtn.addEventListener('click', function(e) {
             e.stopPropagation();
             if (typeof openMenu === 'function') openMenu();
-        };
+        });
         controlsRow.appendChild(menuBtn);
         
-        // Float
+        // Float Button
         const floatBtn = document.createElement('button');
         floatBtn.id = 'ytFloatBtn';
         floatBtn.innerHTML = '🪟 Float';
-        floatBtn.onclick = function(e) {
+        floatBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            enterFloatMode();
-        };
+            if (!isFloating) {
+                enterFloatMode();
+            } else {
+                exitFloatMode();
+            }
+        });
         controlsRow.appendChild(floatBtn);
         
+        // Insert controls row after video
         videoBox.parentNode.insertBefore(controlsRow, videoBox.nextSibling);
         
-        // Float OFF button
-        floatOffBtn = document.createElement('button');
-        floatOffBtn.id = 'floatOffBtn';
-        floatOffBtn.textContent = '✕ Close';
-        floatOffBtn.onclick = function(e) {
-            e.stopPropagation();
-            exitFloatMode(true);
-        };
-        document.body.appendChild(floatOffBtn);
-        
-        // DRAG - Mouse
+        // ===== DRAG FLOAT WINDOW =====
         videoBox.addEventListener('mousedown', function(e) {
-            if (!isFloating || e.target.closest('#floatOffBtn')) return;
+            if (!isFloating) return;
             e.preventDefault();
             isDragging = true;
             dragStartX = e.clientX;
@@ -239,22 +224,17 @@
         
         document.addEventListener('mousemove', function(e) {
             if (!isDragging) return;
-            const dx = e.clientX - dragStartX;
-            const dy = e.clientY - dragStartY;
-            videoBox.style.left = (startLeft + dx) + 'px';
-            videoBox.style.top = (startTop + dy) + 'px';
+            videoBox.style.left = (startLeft + e.clientX - dragStartX) + 'px';
+            videoBox.style.top = (startTop + e.clientY - dragStartY) + 'px';
             videoBox.style.bottom = 'auto';
             videoBox.style.right = 'auto';
-            updateFloatOffBtn();
         });
         
-        document.addEventListener('mouseup', function() {
-            isDragging = false;
-        });
+        document.addEventListener('mouseup', function() { isDragging = false; });
         
-        // DRAG - Touch
+        // Touch drag
         videoBox.addEventListener('touchstart', function(e) {
-            if (!isFloating || e.target.closest('#floatOffBtn')) return;
+            if (!isFloating) return;
             isDragging = true;
             dragStartX = e.touches[0].clientX;
             dragStartY = e.touches[0].clientY;
@@ -265,47 +245,39 @@
         
         document.addEventListener('touchmove', function(e) {
             if (!isDragging) return;
-            const dx = e.touches[0].clientX - dragStartX;
-            const dy = e.touches[0].clientY - dragStartY;
-            videoBox.style.left = (startLeft + dx) + 'px';
-            videoBox.style.top = (startTop + dy) + 'px';
+            videoBox.style.left = (startLeft + e.touches[0].clientX - dragStartX) + 'px';
+            videoBox.style.top = (startTop + e.touches[0].clientY - dragStartY) + 'px';
             videoBox.style.bottom = 'auto';
             videoBox.style.right = 'auto';
-            updateFloatOffBtn();
         }, { passive: true });
         
-        document.addEventListener('touchend', function() {
-            isDragging = false;
-        });
+        document.addEventListener('touchend', function() { isDragging = false; });
     }
     
+    // ========== FLOAT ==========
     function enterFloatMode() {
         if (!isYouTubeMode) return;
         isFloating = true;
         videoBox.classList.add('float-window');
-        // Don't remove yt-mode - keep background as YouTube mode
-        floatOffBtn.classList.add('show');
-        updateFloatOffBtn();
+        document.getElementById('ytFloatBtn').classList.add('active');
+        document.getElementById('ytFloatBtn').innerHTML = '✕ Close Float';
     }
     
-    function exitFloatMode(keepYouTubeMode) {
+    function exitFloatMode() {
         isFloating = false;
         videoBox.classList.remove('float-window');
         videoBox.style.left = '';
         videoBox.style.top = '';
         videoBox.style.bottom = '';
         videoBox.style.right = '';
-        floatOffBtn.classList.remove('show');
-        // Keep YouTube mode ON
-        document.body.classList.add('yt-mode');
+        document.getElementById('ytFloatBtn').classList.remove('active');
+        document.getElementById('ytFloatBtn').innerHTML = '🪟 Float';
+        if (isYouTubeMode) {
+            document.body.classList.add('yt-mode');
+        }
     }
     
-    function updateFloatOffBtn() {
-        const rect = videoBox.getBoundingClientRect();
-        floatOffBtn.style.top = (rect.top - 30) + 'px';
-        floatOffBtn.style.left = rect.left + 'px';
-    }
-    
+    // ========== START ==========
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
