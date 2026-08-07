@@ -57,6 +57,10 @@
             <span class="tap-icon">⏩</span>
         </div>
 
+        <!-- ===== LOCK BUTTON (Video Player ke andar) ===== -->
+<button id="playerLockBtn" class="player-lock-btn" title="Lock player while scrolling" onclick="togglePlayerLock()">🔓</button>
+<div id="playerUnlockOverlay" class="player-unlock-overlay" onclick="unlockPlayer()"></div>
+
         <!-- ===== VIDEO PLAYER ===== -->
         <div class="video-box" style="margin:4px auto;">
             <iframe id="videoPlayer" src="" allowfullscreen></iframe>
