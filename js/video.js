@@ -120,7 +120,7 @@ function renderRelatedVideos() {
     if (hasMore && end < RELATED_MAX) {
         const remaining = Math.min(RELATED_MAX - end, RELATED_PER_PAGE);
         html += `<div class="more-videos-container">
-            <button class="more-videos-btn" onclick="loadMoreRelated()">More Videos ↓ (${remaining} more)</button>
+            <button class="more-videos-btn" onclick="loadMoreRelated()">More Videos ↓ </button>
         </div>`;
     } else if (end >= RELATED_MAX || !hasMore) {
         html += `<div class="more-videos-container">
