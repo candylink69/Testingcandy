@@ -1,6 +1,5 @@
 // ============================================================
-// YOUTUBE-MODE.JS - Advanced YouTube-Style Player/ Add in video.html: <script src="js/youtube-mode.js"></script>
-// Remove to disable completely
+// YOUTUBE-MODE.JS - Fixed: Only hide above player, keep below
 // ============================================================
 
 (function() {
@@ -12,22 +11,34 @@
     let isYouTubeMode = false;
     let isMiniPlayer = false;
     let videoBox = null;
-    let toggleBtn = null;
-    let menuBtn = null;
-    let hiddenElements = [];
+    let controlsRow = null;
+    let toggleSwitch = null;
+    let miniToggle = null;
+    let hiddenAboveElements = [];
     let dragStartY = 0;
-    let playerOriginalRect = null;
     
     // ========== STYLES ==========
     const styles = `
-        #ytToggleContainer {
-            display: inline-flex;
+        /* Controls Row - hidden by default, sticky when YouTube mode */
+        #ytControlsRow {
+            display: none;
             align-items: center;
-            gap: 8px;
-            margin: 8px 12px;
-            font-size: 12px;
-            color: #ccc;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 8px 10px;
+            background: #0b0b0b;
+            border-bottom: 1px solid #333;
+            margin: 0;
         }
+        body.yt-mode #ytControlsRow {
+            display: flex;
+            position: sticky;
+            top: 56.25vw;
+            z-index: 9998;
+        }
+        
+        /* Toggle Switch */
         #ytToggleSwitch {
             width: 52px;
             height: 28px;
@@ -56,6 +67,8 @@
         #ytToggleSwitch.active #ytToggleKnob {
             left: 26px;
         }
+        
+        /* Menu Button */
         #ytMenuBtn {
             display: inline-flex;
             align-items: center;
@@ -69,38 +82,43 @@
             cursor: pointer;
             transition: 0.2s;
             box-shadow: 0 3px 0 rgba(0,0,0,0.3);
-            margin: 0 6px;
         }
         #ytMenuBtn:hover {
             background: rgba(255,51,0,0.2);
             border-color: #ff6600;
+            transform: translateY(-1px);
         }
-        #ytControlsRow {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 8px 0;
+        #ytMenuBtn:active {
+            transform: translateY(2px);
+            box-shadow: 0 1px 0 rgba(0,0,0,0.3);
         }
-        /* YouTube mode - hide everything above video */
-        body.yt-mode .container > *:not(.video-box):not(#ytControlsRow):not(#relatedVideos):not(#sticky):not(#sideMenu) {
+        
+        /* YouTube Mode - hide ONLY elements ABOVE video player */
+        body.yt-mode .container > .title,
+        body.yt-mode .container > .ad-spot:not(#ad-bottom),
+        body.yt-mode .container > .warning-box,
+        body.yt-mode .container > .double-tap-indicator,
+        body.yt-mode .container > #ad-top,
+        body.yt-mode #sideMenu,
+        body.yt-mode #menuToggleBtn {
             display: none !important;
         }
-        body.yt-mode #sideMenu { display: none !important; }
-        body.yt-mode #menuToggleBtn { display: none !important; }
+        
+        /* YouTube Mode - video fixed at top */
         body.yt-mode .video-box {
-            margin-top: 0 !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            margin: 0 !important;
             border-radius: 0 !important;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 9997;
+            z-index: 9997 !important;
         }
+        
         body.yt-mode {
             padding-top: 56.25vw !important;
         }
+        
         /* Mini player */
         .video-box.mini-player {
             position: fixed !important;
@@ -116,9 +134,8 @@
             box-shadow: 0 8px 30px rgba(0,0,0,0.8) !important;
             cursor: pointer;
         }
-        .video-box.mini-player #ytMiniToggle {
-            display: flex !important;
-        }
+        
+        /* Mini toggle on player */
         #ytMiniToggle {
             display: none;
             position: absolute;
@@ -131,6 +148,9 @@
             cursor: pointer;
             z-index: 10000;
             box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        .video-box.mini-player #ytMiniToggle {
+            display: block;
         }
         #ytMiniToggle .mini-knob {
             width: 16px;
@@ -148,7 +168,14 @@
         #ytMiniToggle.off .mini-knob {
             left: 18px;
         }
+        
         @media (max-width: 600px) {
+            body.yt-mode {
+                padding-top: 56.25vw !important;
+            }
+            body.yt-mode #ytControlsRow {
+                top: 56.25vw;
+            }
             .video-box.mini-player {
                 width: 200px !important;
                 height: 112px !important;
@@ -168,137 +195,130 @@
         document.head.appendChild(styleTag);
         
         // Create controls row
-        const controlsRow = document.createElement('div');
+        controlsRow = document.createElement('div');
         controlsRow.id = 'ytControlsRow';
         
         // Menu button
-        menuBtn = document.createElement('button');
+        const menuBtn = document.createElement('button');
         menuBtn.id = 'ytMenuBtn';
         menuBtn.innerHTML = '☰ Menu';
-        menuBtn.onclick = (e) => {
+        menuBtn.addEventListener('click', function(e) {
             e.stopPropagation();
-            if (typeof openMenu === 'function') openMenu();
-        };
+            e.preventDefault();
+            if (typeof openMenu === 'function') {
+                openMenu();
+            }
+        });
         controlsRow.appendChild(menuBtn);
         
-        // Toggle container
-        const toggleContainer = document.createElement('div');
-        toggleContainer.id = 'ytToggleContainer';
-        toggleContainer.innerHTML = `
-            <span>YouTube Mode</span>
-            <div id="ytToggleSwitch" onclick="void(0)">
-                <div id="ytToggleKnob"></div>
-            </div>
-        `;
-        toggleContainer.querySelector('#ytToggleSwitch').addEventListener('click', toggleYouTubeMode);
-        controlsRow.appendChild(toggleContainer);
+        // Toggle switch
+        const toggleLabel = document.createElement('span');
+        toggleLabel.style.cssText = 'font-size:12px;color:#ccc;';
+        toggleLabel.textContent = 'YouTube Mode';
+        controlsRow.appendChild(toggleLabel);
         
-        // Insert after video box
+        toggleSwitch = document.createElement('div');
+        toggleSwitch.id = 'ytToggleSwitch';
+        toggleSwitch.innerHTML = '<div id="ytToggleKnob"></div>';
+        toggleSwitch.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleYouTubeMode();
+        });
+        controlsRow.appendChild(toggleSwitch);
+        
+        // Insert controls row AFTER video box
         videoBox.parentNode.insertBefore(controlsRow, videoBox.nextSibling);
         
-        // Mini toggle for mini player
-        const miniToggle = document.createElement('div');
+        // Mini toggle on video player
+        miniToggle = document.createElement('div');
         miniToggle.id = 'ytMiniToggle';
         miniToggle.className = 'off';
         miniToggle.innerHTML = '<div class="mini-knob"></div>';
-        miniToggle.addEventListener('click', (e) => {
+        miniToggle.addEventListener('click', function(e) {
             e.stopPropagation();
             toggleYouTubeMode();
         });
         videoBox.appendChild(miniToggle);
         
-        // Drag to minimize
+        // Drag down to mini player
         videoBox.addEventListener('mousedown', onDragStart);
         videoBox.addEventListener('touchstart', onDragStart, { passive: true });
         
-        // Handle back/forward navigation
-        window.addEventListener('beforeunload', handlePageExit);
-        window.addEventListener('popstate', handlePageExit);
+        // Click mini player to restore
+        videoBox.addEventListener('click', function(e) {
+            if (isMiniPlayer && !e.target.closest('#ytMiniToggle')) {
+                restoreFromMini();
+            }
+        });
+        
+        // Page exit → mini player
+        window.addEventListener('beforeunload', function() {
+            if (isYouTubeMode && !isMiniPlayer) {
+                makeMiniPlayer();
+            }
+        });
     }
     
     // ========== TOGGLE YOUTUBE MODE ==========
     function toggleYouTubeMode() {
         isYouTubeMode = !isYouTubeMode;
-        const toggleSwitch = document.getElementById('ytToggleSwitch');
-        const miniToggle = document.getElementById('ytMiniToggle');
         
         if (isYouTubeMode) {
-            // ON: YouTube mode
+            // ON
             toggleSwitch.classList.add('active');
             document.body.classList.add('yt-mode');
             videoBox.classList.remove('mini-player');
             isMiniPlayer = false;
             miniToggle.style.display = 'none';
             
-            // Hide menu toggle button (show our custom one)
+            // Hide original menu button
             const menuToggle = document.getElementById('menuToggleBtn');
             if (menuToggle) menuToggle.style.display = 'none';
             
-            // Store elements to hide
-            const container = document.querySelector('.container');
-            hiddenElements = [];
-            if (container) {
-                Array.from(container.children).forEach(child => {
-                    if (child !== videoBox && child.id !== 'ytControlsRow' && 
-                        child.id !== 'relatedVideos' && child.id !== 'sideMenu') {
-                        hiddenElements.push({ el: child, display: child.style.display });
-                        child.style.display = 'none';
-                    }
-                });
-            }
+            // Show controls row
+            controlsRow.style.display = 'flex';
+            
         } else {
-            // OFF: Normal mode
+            // OFF
             toggleSwitch.classList.remove('active');
             document.body.classList.remove('yt-mode');
             videoBox.classList.remove('mini-player');
             isMiniPlayer = false;
             miniToggle.style.display = 'none';
+            controlsRow.style.display = 'none';
             
-            // Restore menu button
+            // Show original menu button
             const menuToggle = document.getElementById('menuToggleBtn');
             if (menuToggle) menuToggle.style.display = '';
-            
-            // Restore hidden elements
-            hiddenElements.forEach(item => {
-                item.el.style.display = item.display;
-            });
-            hiddenElements = [];
         }
     }
     
     // ========== DRAG TO MINI PLAYER ==========
     function onDragStart(e) {
         if (!isYouTubeMode || isMiniPlayer) return;
+        dragStartY = e.touches ? e.touches[0].clientY : e.clientY;
         
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        dragStartY = clientY;
-        playerOriginalRect = videoBox.getBoundingClientRect();
+        const onMove = function(ev) {
+            const clientY = ev.touches ? ev.touches[0].clientY : ev.clientY;
+            if (clientY - dragStartY > 60) {
+                makeMiniPlayer();
+                cleanup();
+            }
+        };
         
-        document.addEventListener('mousemove', onDragMove);
-        document.addEventListener('mouseup', onDragEnd);
-        document.addEventListener('touchmove', onDragMove, { passive: true });
-        document.addEventListener('touchend', onDragEnd);
-    }
-    
-    function onDragMove(e) {
-        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-        const deltaY = clientY - dragStartY;
+        const onEnd = function() { cleanup(); };
         
-        if (deltaY > 60) {
-            // Dragged down enough - switch to mini player
-            makeMiniPlayer();
-            document.removeEventListener('mousemove', onDragMove);
-            document.removeEventListener('mouseup', onDragEnd);
-            document.removeEventListener('touchmove', onDragMove);
-            document.removeEventListener('touchend', onDragEnd);
+        function cleanup() {
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('touchend', onEnd);
         }
-    }
-    
-    function onDragEnd() {
-        document.removeEventListener('mousemove', onDragMove);
-        document.removeEventListener('mouseup', onDragEnd);
-        document.removeEventListener('touchmove', onDragMove);
-        document.removeEventListener('touchend', onDragEnd);
+        
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('touchmove', onMove, { passive: true });
+        document.addEventListener('touchend', onEnd);
     }
     
     function makeMiniPlayer() {
@@ -306,66 +326,26 @@
         isMiniPlayer = true;
         document.body.classList.remove('yt-mode');
         
-        // Restore hidden elements
-        hiddenElements.forEach(item => {
-            item.el.style.display = item.display;
-        });
-        
-        // Show mini toggle
-        const miniToggle = document.getElementById('ytMiniToggle');
         miniToggle.style.display = 'block';
         miniToggle.classList.remove('off');
         
-        // Hide controls row
-        const controlsRow = document.getElementById('ytControlsRow');
-        if (controlsRow) controlsRow.style.display = 'none';
+        controlsRow.style.display = 'none';
         
         const menuToggle = document.getElementById('menuToggleBtn');
         if (menuToggle) menuToggle.style.display = '';
     }
-    
-    // ========== HANDLE PAGE EXIT ==========
-    function handlePageExit() {
-        if (isYouTubeMode && !isMiniPlayer) {
-            makeMiniPlayer();
-        }
-    }
-    
-    // Click mini player to restore
-    document.addEventListener('click', (e) => {
-        if (isMiniPlayer && e.target.closest('.video-box') && !e.target.closest('#ytMiniToggle')) {
-            restoreFromMini();
-        }
-    });
     
     function restoreFromMini() {
         videoBox.classList.remove('mini-player');
         isMiniPlayer = false;
         isYouTubeMode = true;
         
-        const miniToggle = document.getElementById('ytMiniToggle');
         miniToggle.style.display = 'none';
-        
         document.body.classList.add('yt-mode');
-        
-        const controlsRow = document.getElementById('ytControlsRow');
-        if (controlsRow) controlsRow.style.display = '';
+        controlsRow.style.display = 'flex';
         
         const menuToggle = document.getElementById('menuToggleBtn');
         if (menuToggle) menuToggle.style.display = 'none';
-        
-        // Re-hide elements
-        const container = document.querySelector('.container');
-        hiddenElements = [];
-        if (container) {
-            Array.from(container.children).forEach(child => {
-                if (child !== videoBox && child.id !== 'ytControlsRow' && 
-                    child.id !== 'relatedVideos' && child.id !== 'sideMenu') {
-                    hiddenElements.push({ el: child, display: child.style.display });
-                    child.style.display = 'none';
-                }
-            });
-        }
     }
     
     // ========== START ==========
@@ -375,6 +355,6 @@
         init();
     }
     
-    console.log('✅ YouTube Mode ready');
+    console.log('✅ YouTube Mode ready - Only hides above player');
     
 })();
