@@ -1,7 +1,7 @@
 // ============================================================
-// YOUTUBE-MODE.JS - Complete System
+// YOUTUBE-MODE.JS - Fixed & Complete System
 // YouTube Mode: Toggle + Menu + Float Button + Controls Row
-// Float: player-lock.js style simple draggable window
+// Float: Smooth Draggable Miniplayer with Close Button
 // ============================================================
 
 (function() {
@@ -14,6 +14,7 @@
     let videoBox = null;
     let controlsRow = null;
     let toggleSwitch = null;
+    let closeFloatBtn = null; // New floating close button
     let isDragging = false;
     let dragStartX, dragStartY, startLeft, startTop;
     
@@ -93,7 +94,39 @@
         }
         #ytToggleSwitch.active #ytToggleKnob { left: 24px; }
         
-        /* YouTube Mode */
+        /* Floating Close Button (Directly on Video) */
+        #ytFloatCloseBtn {
+            display: none;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 26px;
+            height: 26px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            border: 1.5px solid #fff;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 22px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10001;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            transition: 0.2s;
+        }
+        #ytFloatCloseBtn:hover { background: #e74c3c; }
+        .video-box.float-window #ytFloatCloseBtn {
+            display: block; /* Show only when floating */
+        }
+        
+        /* Prevent iframe from eating drag events */
+        .video-box.is-dragging iframe, 
+        .video-box.is-dragging video {
+            pointer-events: none !important;
+        }
+        
+        /* YouTube Mode Constraints */
         body.yt-mode .title,
         body.yt-mode .subtitle-badge,
         body.yt-mode .social-text,
@@ -118,13 +151,14 @@
         body.yt-mode #menuToggleBtn { display: none !important; }
         body.yt-mode .container { padding-top: 0 !important; }
         
-        /* Float Window - player-lock.js style */
+        /* Float Window CSS (Fixed for Dragging) */
         .video-box.float-window {
             position: fixed !important;
-            bottom: 80px !important;
-            right: 16px !important;
-            top: auto !important;
-            left: auto !important;
+            /* Remove !important from positioning to allow JS to drag */
+            bottom: 80px; 
+            right: 16px;
+            top: auto;
+            left: auto;
             width: 280px !important;
             height: 158px !important;
             padding-top: 0 !important;
@@ -142,8 +176,8 @@
             .video-box.float-window {
                 width: 200px !important;
                 height: 112px !important;
-                bottom: 60px !important;
-                right: 8px !important;
+                bottom: 60px;
+                right: 8px;
             }
         }
     `;
@@ -153,6 +187,21 @@
     function init() {
         videoBox = document.querySelector('.video-box');
         if (!videoBox) return;
+        
+        // Ensure videoBox is relative/fixed so close button anchors correctly
+        if (window.getComputedStyle(videoBox).position === 'static') {
+            videoBox.style.position = 'relative';
+        }
+        
+        // Create On-Window Close Button
+        closeFloatBtn = document.createElement('div');
+        closeFloatBtn.id = 'ytFloatCloseBtn';
+        closeFloatBtn.innerHTML = '✕';
+        closeFloatBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevents click from triggering video
+            exitFloatMode();
+        });
+        videoBox.appendChild(closeFloatBtn);
         
         // Controls row
         controlsRow = document.createElement('div');
@@ -210,71 +259,74 @@
         // Insert controls row after video
         videoBox.parentNode.insertBefore(controlsRow, videoBox.nextSibling);
         
-        // ===== DRAG FLOAT WINDOW =====
+        // ===== DRAG FLOAT WINDOW LOGIC =====
+        function startDrag(clientX, clientY) {
+            if (!isFloating) return;
+            isDragging = true;
+            videoBox.classList.add('is-dragging'); // Stops iframe from eating events
+            
+            dragStartX = clientX;
+            dragStartY = clientY;
+            const rect = videoBox.getBoundingClientRect();
+            startLeft = rect.left;
+            startTop = rect.top;
+        }
+        
+        function moveDrag(clientX, clientY) {
+            if (!isDragging) return;
+            
+            // Set position dynamically & override CSS bottom/right
+            videoBox.style.setProperty('left', (startLeft + clientX - dragStartX) + 'px', 'important');
+            videoBox.style.setProperty('top', (startTop + clientY - dragStartY) + 'px', 'important');
+            videoBox.style.setProperty('bottom', 'auto', 'important');
+            videoBox.style.setProperty('right', 'auto', 'important');
+        }
+        
+        function endDrag() {
+            if (isDragging) {
+                isDragging = false;
+                videoBox.classList.remove('is-dragging');
+            }
+        }
+        
+        // Mouse Events
         videoBox.addEventListener('mousedown', function(e) {
-            if (!isFloating) return;
-            e.preventDefault();
-            isDragging = true;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
-            const rect = videoBox.getBoundingClientRect();
-            startLeft = rect.left;
-            startTop = rect.top;
+            // Don't drag if clicking the close button
+            if (e.target.id === 'ytFloatCloseBtn') return; 
+            startDrag(e.clientX, e.clientY);
         });
+        document.addEventListener('mousemove', function(e) { moveDrag(e.clientX, e.clientY); });
+        document.addEventListener('mouseup', endDrag);
         
-        document.addEventListener('mousemove', function(e) {
-            if (!isDragging) return;
-            videoBox.style.left = (startLeft + e.clientX - dragStartX) + 'px';
-            videoBox.style.top = (startTop + e.clientY - dragStartY) + 'px';
-            videoBox.style.bottom = 'auto';
-            videoBox.style.right = 'auto';
-        });
-        
-        document.addEventListener('mouseup', function() { isDragging = false; });
-        
-        // Touch drag
+        // Touch Events
         videoBox.addEventListener('touchstart', function(e) {
-            if (!isFloating) return;
-            isDragging = true;
-            dragStartX = e.touches[0].clientX;
-            dragStartY = e.touches[0].clientY;
-            const rect = videoBox.getBoundingClientRect();
-            startLeft = rect.left;
-            startTop = rect.top;
+            if (e.target.id === 'ytFloatCloseBtn') return;
+            startDrag(e.touches[0].clientX, e.touches[0].clientY);
         }, { passive: true });
-        
-        document.addEventListener('touchmove', function(e) {
-            if (!isDragging) return;
-            videoBox.style.left = (startLeft + e.touches[0].clientX - dragStartX) + 'px';
-            videoBox.style.top = (startTop + e.touches[0].clientY - dragStartY) + 'px';
-            videoBox.style.bottom = 'auto';
-            videoBox.style.right = 'auto';
-        }, { passive: true });
-        
-        document.addEventListener('touchend', function() { isDragging = false; });
+        document.addEventListener('touchmove', function(e) { moveDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+        document.addEventListener('touchend', endDrag);
     }
     
-    // ========== FLOAT ==========
+    // ========== FLOAT ACTIONS ==========
     function enterFloatMode() {
         if (!isYouTubeMode) return;
         isFloating = true;
         videoBox.classList.add('float-window');
         document.getElementById('ytFloatBtn').classList.add('active');
-        document.getElementById('ytFloatBtn').innerHTML = '✕ Close Float';
     }
     
     function exitFloatMode() {
         isFloating = false;
         videoBox.classList.remove('float-window');
-        videoBox.style.left = '';
-        videoBox.style.top = '';
-        videoBox.style.bottom = '';
-        videoBox.style.right = '';
+        videoBox.classList.remove('is-dragging');
+        
+        // Reset all JS injected styles so it returns to normal mode
+        videoBox.style.removeProperty('left');
+        videoBox.style.removeProperty('top');
+        videoBox.style.removeProperty('bottom');
+        videoBox.style.removeProperty('right');
+        
         document.getElementById('ytFloatBtn').classList.remove('active');
-        document.getElementById('ytFloatBtn').innerHTML = '🪟 Float';
-        if (isYouTubeMode) {
-            document.body.classList.add('yt-mode');
-        }
     }
     
     // ========== START ==========
