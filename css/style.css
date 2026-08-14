@@ -558,7 +558,7 @@ img,
 
 .pagination-btn,
 .page-num {
-    background: #ff3300;
+    background: #cc2200;
     border: none;
     color: white;
     padding: 6px 14px;
@@ -578,7 +578,7 @@ img,
 }
 
 .page-num.active-page {
-    background: #ff6600;
+    background: #cc4400;
     box-shadow: 0 0 8px rgba(255, 102, 0, 0.5);
 }
 
@@ -1101,7 +1101,7 @@ img,
     padding: 4px 12px;
     font-size: 12px;
     font-weight: bold;
-    background: #ff3300;
+    background: #cc2200;
     color: #fff;
     border-radius: 30px;
     text-decoration: none;
@@ -1258,17 +1258,17 @@ img,
 
 /* --- Swipe Indicator --- */
 .swipe-indicator {
-    color: #666;
+    color: #cccccc;
     font-size: 12px;
     letter-spacing: 3px;
     margin: 4px 0 0px 0;
-    opacity: 0.6;
+    opacity: 1;
     animation: pulseSwipe 2s ease-in-out infinite;
 }
 
 @keyframes pulseSwipe {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.9; }
+    0%, 100% { opacity: 0.75; }
+    50% { opacity: 1; }
 }
 
 /* ============================================================
