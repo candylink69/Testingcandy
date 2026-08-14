@@ -42,5 +42,9 @@
         const overlay = document.getElementById('age-gate-overlay');
         if(overlay) overlay.remove();
     }
+    /* Age Gate 18+ Button Contrast Fix */
+#accept-age {
+    background: #c4003f !important;
+}
 })();
 
