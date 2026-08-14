@@ -15,7 +15,7 @@
                 <h1 style="color:#ff0055; font-size:40px; margin:0 0 10px 0;">18+</h1>
                 <h2 style="margin-bottom:20px;">ADULT CONTENT</h2>
                 <p style="font-size:16px; color:#ccc; margin-bottom:30px;">You must be 18+ to enter this site. Content may be explicit.</p>
-                <button id="accept-age" style="background:#ff0055; color:white; border:none; padding:15px 40px; border-radius:30px; font-weight:bold; font-size:18px; cursor:pointer; width:100%; margin-bottom:15px;">I AM 18+</button>
+                <button id="accept-age" style="background:#c4003f; color:white; border:none; padding:15px 40px; border-radius:30px; font-weight:bold; font-size:18px; cursor:pointer; width:100%; margin-bottom:15px;">I AM 18+</button>
                 <button id="exit-age" style="background:transparent; color:#888; border:none; text-decoration:underline; cursor:pointer; font-size:14px;">EXIT</button>
             </div>
         `;
@@ -42,9 +42,5 @@
         const overlay = document.getElementById('age-gate-overlay');
         if(overlay) overlay.remove();
     }
-    /* Age Gate 18+ Button Contrast Fix */
-#accept-age {
-    background: #c4003f !important;
-}
 })();
 
