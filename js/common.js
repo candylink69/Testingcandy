@@ -73,20 +73,20 @@ function loadSideMenu() {
                 <!-- ✅ Home -> Index pe jaaye -->
                 <li><a href="index.html" class="menu-link active-link" data-page="index">🏠 Home</a></li>
                 <!-- ✅ Latest -> Tab switch kare (all pages) -->
-                <li><a href="javascript:void(0)" onclick="goToTab('latest');" class="menu-link" data-page="latest">🔥 Latest</a></li>
-                <!-- ✅ Categories -> Tab switch kare (all pages) -->
-                <li><a href="javascript:void(0)" onclick="goToTab('categories');" class="menu-link" data-page="categories">📂 Categories</a></li>
-                <!-- ✅ Trending -> Tab switch kare (all pages) -->
-                <li><a href="javascript:void(0)" onclick="goToTab('trending');" class="menu-link" data-page="trending">⚡ Trending</a></li>
+                <li><a href="index.html?tab=latest" onclick="goToTab('latest'); return false;" class="menu-link" data-page="latest">🔥 Latest</a></li>
+<!-- ✅ Categories -> Tab switch kare (all pages) -->
+<li><a href="index.html?tab=categories" onclick="goToTab('categories'); return false;" class="menu-link" data-page="categories">📂 Categories</a></li>
+<!-- ✅ Trending -> Tab switch kare (all pages) -->
+<li><a href="index.html?tab=trending" onclick="goToTab('trending'); return false;" class="menu-link" data-page="trending">⚡ Trending</a></li>
                 <!-- ✅ All Videos -> List page pe jaaye -->
                 <li><a href="list.html" class="menu-link" data-page="list">📋 All Videos</a></li>
             </ul>
             <div id="menuCategoryHeading">📁 ALL CATEGORIES</div>
             <ul id="menuCategoryList"></ul>
             <div id="menuSocial">
-                <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram"><i class="fab fa-telegram-plane"></i></a>
-                <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram" aria-label="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
+                <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" aria-label="Join our Telegram channel"><i class="fab fa-telegram-plane"></i></a>
+                <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook" aria-label="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
             </div>
         </div>
     `;
@@ -161,9 +161,9 @@ function loadFooter() {
     const footerHTML = `
         <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
         <div class="social-row">
-            <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram"><i class="fab fa-telegram-plane"></i></a>
-            <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram" aria-label="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" aria-label="Join our Telegram channel"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook" aria-label="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
         </div>
     `;
     container.innerHTML = footerHTML;
