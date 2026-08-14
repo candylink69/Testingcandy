@@ -55,7 +55,7 @@ function generateVideoCard(video) {
     return `
     <div class="latest-card" data-video-id="${video.id}">
         <div class="thumb-container">
-            <img class="thumb-img" src="${getThumbnailUrlSafe(video.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+            <img class="thumb-img" src="${getThumbnailUrlSafe(video.id)}" alt="${video.title ? escapeHtml(video.title) : escapeHtml(video.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
             ${video.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${video.preview}"></video>` : ''}
             ${video.duration ? `<div class="duration">${video.duration}</div>` : ''}
         </div>
@@ -283,7 +283,7 @@ function displayCategories(cats) {
     sortedCats.forEach(cat => {
         const cnt = videos?.filter(v => v.categories?.includes(cat.id)).length || 0;
         cont.innerHTML += `<div class="category-card" onclick="goToCategory('${cat.id}')">
-            <img src="${cat.thumbnail}" class="category-thumb" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Image'">
+            <img src="${cat.thumbnail}" class="category-thumb" alt="${escapeHtml(cat.name)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Image'">
             <div class="video-count">${cnt} videos</div>
             <div class="category-name">${cat.name}</div>
         </div>`;
@@ -337,7 +337,7 @@ function loadTrendingVideos() {
         const titleDisplay = v.title ? bubbleText(escapeHtml(v.title)) : '';
         cont.innerHTML += `
             <div class="trending-item" onclick="goToVideo('${v.id}')">
-                <img src="${thumb}" class="trending-thumb" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
+                <img src="${thumb}" class="trending-thumb" alt="${v.title ? escapeHtml(v.title) : escapeHtml(v.id)}" onerror="this.src='https://via.placeholder.com/200x120?text=No+Thumb'">
                 <div class="latest-info">
                     <div class="latest-id">${idDisplay} ${titleDisplay}</div>
                     ${catHtml}
