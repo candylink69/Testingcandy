@@ -309,7 +309,7 @@ function initializePage() {
                 const videoHTML = `
                     <a href="video.html?v=${v.id}">
                         <div class="thumb-container">
-                            <img class="thumb-img" src="${getThumbnailUrlSafe(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+                            <img class="thumb-img" src="${getThumbnailUrlSafe(v.id)}" alt="${hasTitle ? escapeHtml(v.title) : escapeHtml(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
                             ${v.preview ? `<video class="preview-video" muted loop playsinline preload="none" data-src="${v.preview}"></video>` : ''}
                             ${v.duration ? `<div class="duration">${v.duration}</div>` : ''}
                         </div>
