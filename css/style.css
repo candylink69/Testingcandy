@@ -1521,4 +1521,8 @@ img,
         display: none;
     }
 }
+/* Age Gate 18+ Button Contrast Fix */
+#accept-age {
+    background: #c4003f !important;
+}
 
