@@ -146,9 +146,9 @@ function loadHeader() {
         <div class="title">🔥 CandyLink69 🔥</div>
         <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
         <div class="social-row">
-            <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram"><i class="fab fa-instagram"></i></a>
-            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram"><i class="fab fa-telegram-plane"></i></a>
-            <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram" aria-label="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" aria-label="Join our Telegram channel"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook" aria-label="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
         </div>
     `;
     container.innerHTML = headerHTML;
