@@ -104,7 +104,7 @@ function renderRelatedVideos() {
         html += `
             <a href="video.html?v=${v.id}" class="related-video-link" data-video-id="${v.id}">
                 <div class="thumb-container">
-                    <img class="thumb-img" src="${thumbUrl}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
+                    <img class="thumb-img" src="${thumbUrl}" alt="${hasTitle ? escapeHtml(v.title.substring(0, 50)) : escapeHtml(v.id)}" loading="lazy" onerror="this.src='https://via.placeholder.com/320x180?text=No+Thumb'">
                     ${previewHtml}
                     ${durationHtml}
                 </div>
