@@ -1,0 +1,14 @@
+{
+  "captioned": [
+    { "id": "c-funny", "name": "😂 Funny" },
+    { "id": "c-memes", "name": "💬 Memes" },
+    { "id": "c-dark", "name": "🌑 Dark" },
+    { "id": "c-text", "name": "📝 Text" }
+  ],
+  "normal": [
+    { "id": "n-cute", "name": "🥰 Cute" },
+    { "id": "n-dance", "name": "💃 Dance" },
+    { "id": "n-reaction", "name": "😲 Reaction" },
+    { "id": "n-aesthetic", "name": "✨ Aesthetic" }
+  ]
+}
