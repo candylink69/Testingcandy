@@ -80,6 +80,7 @@ function loadSideMenu() {
 <li><a href="index.html?tab=trending" onclick="goToTab('trending'); return false;" class="menu-link" data-page="trending">⚡ Trending</a></li>
                 <!-- ✅ All Videos -> List page pe jaaye -->
                 <li><a href="list.html" class="menu-link" data-page="list">📋 All Videos</a></li>
+                <li><a href="gifs/" class="menu-link" data-page="gifs">🎞️ GIFs</a></li>
             </ul>
             <div id="menuCategoryHeading">📁 ALL CATEGORIES</div>
             <ul id="menuCategoryList"></ul>
@@ -122,6 +123,12 @@ function loadSideMenu() {
 
 // ========== ACTIVE LINK HIGHLIGHT ==========
 function highlightActiveMenu() {
+    if (window.location.pathname.includes('/gifs')) {
+    document.querySelectorAll('#menuNav .menu-link').forEach(l => l.classList.remove('active-link'));
+    const gifsLink = document.querySelector('#menuNav [data-page="gifs"]');
+    if (gifsLink) gifsLink.classList.add('active-link');
+    return;
+    }
     const currentPath = window.location.pathname;
     const currentPage = currentPath.split('/').pop() || 'index.html';
 
@@ -187,6 +194,7 @@ function loadSearchBar() {
 
 // ========== SEARCH LOGIC ==========
 function setupSearchLogic() {
+    if (window.location.pathname.includes('/gifs')) return;
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     if (!searchInput) return;
