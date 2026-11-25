@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GIF - CandyLink69</title>
+    <meta name="description" content="View GIF on CandyLink69.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="gifs.css">
+    <link rel="canonical" id="dynamicCanonical" href="https://candylink69.com/gifs/view.html">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+    <link rel="manifest" href="/icons/site.webmanifest">
+</head>
+<body>
+
+    <div id="sideMenu"></div>
+
+    <div class="container">
+        <div id="headerContainer"></div>
+
+        <div class="view-top-bar">
+            <a href="/gifs/" onclick="goBackToGifs(event)" class="back-btn">← Back to GIFs</a>
+            <a href="/" class="back-btn home-btn">🏠 Main Site</a>
+        </div>
+
+        <!-- Sticky GIF -->
+        <div class="view-gif-sticky" id="viewGifSticky">
+            <!-- injected -->
+        </div>
+
+        <!-- Size + Download -->
+        <div class="view-size-row">
+            <span class="view-size-text" id="viewSize">...</span>
+            <button class="view-download-btn" id="downloadBtn" onclick="downloadCurrentGif()">⬇ Download</button>
+        </div>
+
+        <!-- Title -->
+        <div class="view-title" id="viewTitle"></div>
+
+        <!-- Categories -->
+        <div class="video-categories" id="viewCategories" style="justify-content:center; margin-bottom:16px;"></div>
+
+        <!-- Related -->
+        <div class="view-related-heading">🔥 Related GIFs</div>
+        <div class="masonry-grid" id="viewRelatedGrid"></div>
+
+        <div id="footerContainer"></div>
+    </div>
+
+    <script src="../age-gate.js" async></script>
+    <script src="data.js"></script>
+    <script src="../js/common.js"></script>
+    <script src="view.js"></script>
+
+</body>
+</html>
