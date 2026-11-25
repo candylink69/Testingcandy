@@ -142,7 +142,7 @@ async function downloadCurrentGif() {
 
 function goBackToGifs(e) {
     if (e) e.preventDefault();
-    const url = sessionStorage.getItem('gifsReturnUrl') || '/gifs/';
+    const url = sessionStorage.getItem('gifsReturnUrl') || 'index.html'; // Fallback to gifs index
     sessionStorage.removeItem('gifsReturnUrl');
     window.location.href = url;
 }
