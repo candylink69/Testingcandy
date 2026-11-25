@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GIFs - CandyLink69</title>
-    <meta name="description" content="Free GIFs collection - funny, animals, dance and more.">
+    <meta name="description" content="Free GIFs collection on CandyLink69.">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="gifs.css">
@@ -15,40 +15,77 @@
     <link rel="manifest" href="/icons/site.webmanifest">
 </head>
 <body>
+
     <div id="sideMenu"></div>
 
-    <div class="wrapper">
+    <div class="container">
+
         <div id="headerContainer"></div>
 
-        <div class="category-info" id="categoryInfo">
-            <span class="category-name" id="currentCategory">All GIFs</span>
-            <a href="../index.html?tab=latest" class="back-btn">← Back to Home</a>
+        <!-- ============ HOME VIEW ============ -->
+        <div id="gifsHomeView">
+            <h2 class="gifs-main-heading">🎞️ CandyLink69 GIFs 🎞️</h2>
+
+            <div class="gif-type-buttons">
+                <a href="?type=captioned" class="gif-type-btn captioned">
+                    <span class="gif-type-icon">💬</span>
+                    <span class="gif-type-label">Caption GIFs</span>
+                </a>
+                <a href="?type=normal" class="gif-type-btn normal">
+                    <span class="gif-type-icon">🖼️</span>
+                    <span class="gif-type-label">Normal GIFs</span>
+                </a>
+            </div>
+
+            <div class="gifs-mixed-heading">🔥 Latest Mix</div>
+            <div id="homeMixedGrid" class="masonry-grid"></div>
+            <div class="more-videos-container">
+                <button id="homeLoadMoreBtn" class="more-videos-btn" onclick="loadMoreHome()">Load More GIFs ↓</button>
+            </div>
         </div>
 
-        <h2 id="pageTitle" class="category-heading">🎞️ CandyLink69 GIFs 🎞️</h2>
+        <!-- ============ SECTION VIEW (captioned / normal) ============ -->
+        <div id="gifsSectionView" style="display:none;">
 
-        <div id="searchContainer"></div>
+            <div class="section-top-bar">
+                <a href="/gifs/" class="back-btn">← Back to GIFs</a>
+            </div>
 
-        <div id="gifCategoryPills" class="gif-category-pills"></div>
+            <h2 id="sectionHeading" class="gifs-main-heading">GIFs</h2>
 
-        <div class="grid" id="gifGrid"></div>
+            <div id="searchContainer"></div>
 
-        <div class="pagination" id="paginationContainer"></div>
+            <div class="swipe-indicator">← swipe →</div>
+
+            <div class="tabs-wrapper">
+                <div class="tabs-container">
+                    <button class="tab-btn active" data-tab="latest">🔥 LATEST</button>
+                    <button class="tab-btn" data-tab="categories">🎯 CATEGORIES</button>
+                </div>
+                <div class="tabs-underline"></div>
+            </div>
+
+            <div id="sectionLatestPanel" class="panel active-panel">
+                <div id="sectionLatestGrid" class="masonry-grid"></div>
+                <div id="sectionPagination" class="pagination-wrapper"></div>
+            </div>
+
+            <div id="sectionCategoriesPanel" class="panel">
+                <div id="sectionCategoriesGrid" class="categories-grid"></div>
+            </div>
+
+        </div>
 
         <div id="footerContainer"></div>
     </div>
 
-    <!-- Lightbox -->
-    <div id="gifLightbox" class="gif-lightbox">
-        <div class="gif-lightbox-inner">
-            <button class="gif-lightbox-close" onclick="closeGifLightbox()">✕</button>
-            <div id="gifLightboxContent" class="gif-lightbox-content"></div>
-            <div id="gifLightboxInfo" class="gif-lightbox-info"></div>
-        </div>
-    </div>
+    <!-- Age Gate -->
+    <script src="../age-gate.js" async></script>
 
+    <!-- Scripts -->
     <script src="data.js"></script>
     <script src="../js/common.js"></script>
     <script src="gifs.js"></script>
+
 </body>
 </html>
