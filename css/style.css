@@ -1525,4 +1525,29 @@ img,
 #accept-age {
     background: #c4003f !important;
 }
+/* ============ GIFs submenu ============ */
+#gifSubmenu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: rgba(0,0,0,0.3);
+}
+#gifSubmenu .menu-link {
+    padding-left: 32px !important;
+    font-size: 14px !important;
+    color: #bbb !important;
+}
+#gifSubmenu .menu-link:hover {
+    color: #fff !important;
+    background: rgba(255,51,0,0.08) !important;
+}
+#gifSubmenu .submenu-heading {
+    color: #ff6600;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 8px 20px 4px 26px;
+    letter-spacing: 1px;
+    opacity: 0.8;
+}
+
 
