@@ -20,24 +20,25 @@
 
 // ========== GLOBAL FUNCTIONS ==========
 function goToVideo(videoId) {
-    window.location.href = 'video.html?v=' + videoId;
+    window.location.href = '/video.html?v=' + videoId;
 }
 function goToCategory(categoryId) {
-    window.location.href = 'list.html?category=' + categoryId;
+    window.location.href = '/list.html?category=' + categoryId;
 }
 function goToPage(url) {
     window.location.href = url;
 }
 
-// ✅ NEW: Smart tab navigation - works on all pages
+// Smart tab navigation - works on all pages
+// On /gifs/ pages, switchTab exists (from gifs.js) but we DON'T want to use it
+// because menu tabs point to main site. So always navigate when on gifs.
 function goToTab(tabName) {
     closeMenu();
-    // Agar index page pe hain to direct switch karo
-    if (typeof switchTab === 'function') {
+    const isGifsPage = window.location.pathname.indexOf('/gifs') === 0;
+    if (!isGifsPage && typeof switchTab === 'function') {
         switchTab(tabName);
     } else {
-        // Dusre page pe hain to index pe jaake tab open karo
-        window.location.href = 'index.html?tab=' + tabName;
+        window.location.href = '/index.html?tab=' + tabName;
     }
 }
 
@@ -60,6 +61,17 @@ document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeMenu();
 });
 
+// ========== GIFs SUBMENU TOGGLE ==========
+function toggleGifSubmenu(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    const sub = document.getElementById('gifSubmenu');
+    const arrow = document.getElementById('gifSubmenuArrow');
+    if (!sub) return;
+    const isOpen = sub.style.display !== 'none';
+    sub.style.display = isOpen ? 'none' : 'block';
+    if (arrow) arrow.textContent = isOpen ? '▾' : '▴';
+}
+
 // ========== LOAD SIDE MENU ==========
 function loadSideMenu() {
     const menuHTML = `
@@ -70,17 +82,29 @@ function loadSideMenu() {
                 <span class="menu-close" onclick="closeMenu()">✕</span>
             </div>
             <ul id="menuNav">
-                <!-- ✅ Home -> Index pe jaaye -->
-                <li><a href="index.html" class="menu-link active-link" data-page="index">🏠 Home</a></li>
-                <!-- ✅ Latest -> Tab switch kare (all pages) -->
-                <li><a href="index.html?tab=latest" onclick="goToTab('latest'); return false;" class="menu-link" data-page="latest">🔥 Latest</a></li>
-<!-- ✅ Categories -> Tab switch kare (all pages) -->
-<li><a href="index.html?tab=categories" onclick="goToTab('categories'); return false;" class="menu-link" data-page="categories">📂 Categories</a></li>
-<!-- ✅ Trending -> Tab switch kare (all pages) -->
-<li><a href="index.html?tab=trending" onclick="goToTab('trending'); return false;" class="menu-link" data-page="trending">⚡ Trending</a></li>
-                <!-- ✅ All Videos -> List page pe jaaye -->
-                <li><a href="list.html" class="menu-link" data-page="list">📋 All Videos</a></li>
-                <li><a href="gifs/" class="menu-link" data-page="gifs">🎞️ GIFs</a></li>
+                <li><a href="/index.html" class="menu-link" data-page="index">🏠 Home</a></li>
+                <li><a href="/index.html?tab=latest" onclick="goToTab('latest'); return false;" class="menu-link" data-page="latest">🔥 Latest</a></li>
+                <li><a href="/index.html?tab=categories" onclick="goToTab('categories'); return false;" class="menu-link" data-page="categories">📂 Categories</a></li>
+                <li><a href="/index.html?tab=trending" onclick="goToTab('trending'); return false;" class="menu-link" data-page="trending">⚡ Trending</a></li>
+                <li><a href="/list.html" class="menu-link" data-page="list">📋 All Videos</a></li>
+
+                <li class="menu-has-submenu">
+                    <a href="/gifs/" class="menu-link" data-page="gifs"
+                       onclick="toggleGifSubmenu(event); return false;"
+                       style="display:flex;justify-content:space-between;align-items:center;">
+                        <span>🎞️ GIFs</span>
+                        <span id="gifSubmenuArrow">▾</span>
+                    </a>
+                    <ul id="gifSubmenu" class="menu-submenu" style="display:none;">
+                        <li><a href="/gifs/" class="menu-link">🏠 GIFs Home</a></li>
+                        <li><a href="/gifs/?type=captioned" class="menu-link">💬 Caption GIFs</a></li>
+                        <li><a href="/gifs/?type=normal" class="menu-link">🖼️ Normal GIFs</a></li>
+                        <li class="submenu-heading">📁 Caption Categories</li>
+                        <li id="gifCaptionedCats"><span class="submenu-loading">Loading...</span></li>
+                        <li class="submenu-heading">📁 Normal Categories</li>
+                        <li id="gifNormalCats"><span class="submenu-loading">Loading...</span></li>
+                    </ul>
+                </li>
             </ul>
             <div id="menuCategoryHeading">📁 ALL CATEGORIES</div>
             <ul id="menuCategoryList"></ul>
@@ -97,8 +121,8 @@ function loadSideMenu() {
         menuContainer.innerHTML = menuHTML;
     }
 
-    // Categories load
-    fetch('data/categories.json')
+    // Video categories (absolute path — /gifs/ pages pe bhi kaam kare)
+    fetch('/data/categories.json')
         .then(response => response.json())
         .then(categories => {
             const list = document.getElementById('menuCategoryList');
@@ -106,7 +130,7 @@ function loadSideMenu() {
             list.innerHTML = '';
             categories.forEach(cat => {
                 const li = document.createElement('li');
-                li.innerHTML = `<a href="list.html?category=${cat.id}" class="menu-link">▶ ${cat.name}</a>`;
+                li.innerHTML = `<a href="/list.html?category=${cat.id}" class="menu-link">▶ ${cat.name}</a>`;
                 list.appendChild(li);
             });
         })
@@ -118,24 +142,57 @@ function loadSideMenu() {
             }
         });
 
+    // GIFs categories load (submenu ke liye)
+    fetch('/gifs/categories.json')
+        .then(r => r.ok ? r.json() : { captioned: [], normal: [] })
+        .then(cats => {
+            const cEl = document.getElementById('gifCaptionedCats');
+            const nEl = document.getElementById('gifNormalCats');
+            if (cEl) {
+                cEl.innerHTML = (cats.captioned || []).map(c =>
+                    `<a href="/gifs/?type=captioned&category=${encodeURIComponent(c.id)}" class="menu-link">▶ ${c.name}</a>`
+                ).join('') || '<span class="submenu-loading">—</span>';
+            }
+            if (nEl) {
+                nEl.innerHTML = (cats.normal || []).map(c =>
+                    `<a href="/gifs/?type=normal&category=${encodeURIComponent(c.id)}" class="menu-link">▶ ${c.name}</a>`
+                ).join('') || '<span class="submenu-loading">—</span>';
+            }
+        })
+        .catch(() => {
+            const cEl = document.getElementById('gifCaptionedCats');
+            const nEl = document.getElementById('gifNormalCats');
+            if (cEl) cEl.innerHTML = '<span class="submenu-loading">—</span>';
+            if (nEl) nEl.innerHTML = '<span class="submenu-loading">—</span>';
+        });
+
     highlightActiveMenu();
 }
 
 // ========== ACTIVE LINK HIGHLIGHT ==========
 function highlightActiveMenu() {
-    if (window.location.pathname.includes('/gifs')) {
-    document.querySelectorAll('#menuNav .menu-link').forEach(l => l.classList.remove('active-link'));
-    const gifsLink = document.querySelector('#menuNav [data-page="gifs"]');
-    if (gifsLink) gifsLink.classList.add('active-link');
-    return;
-    }
-    const currentPath = window.location.pathname;
-    const currentPage = currentPath.split('/').pop() || 'index.html';
+    const path = window.location.pathname;
+    const isGifsPage = path.indexOf('/gifs') === 0;
 
     document.querySelectorAll('#menuNav .menu-link').forEach(link => {
         link.classList.remove('active-link');
-        const href = link.getAttribute('href');
-        if (href === currentPage || (currentPage === '' && href === 'index.html')) {
+    });
+
+    if (isGifsPage) {
+        const gifsLink = document.querySelector('#menuNav [data-page="gifs"]');
+        if (gifsLink) gifsLink.classList.add('active-link');
+        // Auto-expand submenu on gifs pages
+        const sub = document.getElementById('gifSubmenu');
+        const arrow = document.getElementById('gifSubmenuArrow');
+        if (sub) sub.style.display = 'block';
+        if (arrow) arrow.textContent = '▴';
+        return;
+    }
+
+    const currentPage = path.split('/').pop() || 'index.html';
+    document.querySelectorAll('#menuNav .menu-link').forEach(link => {
+        const href = link.getAttribute('href') || '';
+        if (href === currentPage || (currentPage === '' && href.includes('index.html'))) {
             link.classList.add('active-link');
         }
     });
@@ -180,10 +237,14 @@ function loadFooter() {
 function loadSearchBar() {
     const container = document.getElementById('searchContainer');
     if (!container) return;
+    const isGifsPage = window.location.pathname.indexOf('/gifs') === 0;
+    const placeholder = isGifsPage
+        ? '🔍 Search GIFs by ID, title or category...'
+        : '🔍 Search videos by ID, title or category...';
     const searchHTML = `
         <div class="sticky-search">
             <div class="search-container">
-                <input type="text" class="search-box" id="searchInput" placeholder="🔍 Search videos by ID, title or category..." autocomplete="off">
+                <input type="text" class="search-box" id="searchInput" placeholder="${placeholder}" autocomplete="off">
                 <div id="searchResults"></div>
             </div>
         </div>
@@ -194,7 +255,9 @@ function loadSearchBar() {
 
 // ========== SEARCH LOGIC ==========
 function setupSearchLogic() {
-    if (window.location.pathname.includes('/gifs')) return;
+    // On /gifs/ pages, gifs.js handles its own search — skip here
+    if (window.location.pathname.indexOf('/gifs') === 0) return;
+
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     if (!searchInput) return;
@@ -264,7 +327,7 @@ function injectMenuButton() {
         user-select: none;
         line-height: 1.3;
     `;
-    
+
     btn.onclick = function(e) {
         e.stopPropagation();
         const drawer = document.getElementById('menuDrawer');
@@ -274,7 +337,7 @@ function injectMenuButton() {
             openMenu();
         }
     };
-    
+
     document.body.prepend(btn);
 }
 
