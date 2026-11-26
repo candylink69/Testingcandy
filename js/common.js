@@ -173,51 +173,43 @@ function highlightActiveMenu() {
     });
 }
 
-// ========== LOAD HEADER ==========
+// ========== LOAD HEADER (Inline Text + Icon) ==========
 function loadHeader() {
     const container = document.getElementById('headerContainer');
     if (!container) return;
 
     let titleHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
-    if (window.location.pathname.includes('video.html')) {
-        container.innerHTML = titleHTML;
-        return;
-    }
-
-    // Only Telegram globally
-    let socialRow = '';
-    if (isGifsPage) {
-        // GIFs pages: Back + Telegram
-        socialRow = `
-            <div class="social-row" id="gifsHeaderSocialRow" style="justify-content:center; gap:12px; margin-top: 4px;">
-                <a href="index.html" class="back-btn" id="gifsBackBtn" style="padding: 4px 14px; font-size: 12px; border-radius: 20px; box-shadow: none;">← Back</a>
-                <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 28px; height: 28px; font-size: 14px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-telegram-plane"></i></a>
-            </div>
-        `;
-    } else {
-        // Video pages: Only Telegram
-        socialRow = `
-            <div class="social-row" style="justify-content:center; margin-top: 4px;">
-                <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 28px; height: 28px; font-size: 14px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-telegram-plane"></i></a>
-            </div>
-        `;
-    }
-
-    container.innerHTML = `
-        ${titleHTML}
-        <div class="social-text" style="margin: 4px 0 2px;">✨ For the latest updates, you can join with us on these platforms. ✨</div>
-        ${socialRow}
+    
+    // Inline text and telegram icon globally
+    const socialRowHTML = `
+        <div class="social-inline-row" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 0;">
+            <span style="font-size: 11px; color: #ffcc88;">✨ For the latest updates, you can join with us on Telegram. ✨</span>
+            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fab fa-telegram-plane"></i></a>
+        </div>
     `;
+
+    let html = titleHTML + socialRowHTML;
+
+    // Add Back Controls for GIFs pages
+    if (isGifsPage) {
+        html += `
+            <div id="gifsHeaderControls" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
+                <a href="index.html" class="back-btn" style="padding: 4px 14px; font-size: 12px;">← Back</a>
+            </div>
+        `;
+    }
+
+    container.innerHTML = html;
 }
 
-// ========== LOAD FOOTER ==========
+// ========== LOAD FOOTER (Inline Text + Icon) ==========
 function loadFooter() {
     const container = document.getElementById('footerContainer');
     if (!container) return;
     const footerHTML = `
-        <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
-        <div class="social-row" style="justify-content:center;">
-            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" aria-label="Join our Telegram channel"><i class="fab fa-telegram-plane"></i></a>
+        <div class="social-inline-row" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 20px;">
+            <span style="font-size: 11px; color: #ffcc88;">✨ For the latest updates, you can join with us on Telegram. ✨</span>
+            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;"><i class="fab fa-telegram-plane"></i></a>
         </div>
     `;
     container.innerHTML = footerHTML;
@@ -241,7 +233,7 @@ function loadSearchBar() {
 
 // ========== SEARCH LOGIC ==========
 function setupSearchLogic() {
-    if (isGifsPage) return; // gifs.js handles it
+    if (isGifsPage) return;
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     if (!searchInput) return;
@@ -288,7 +280,7 @@ function injectMenuButton() {
     const btn = document.createElement('div');
     btn.id = 'menuToggleBtn';
     btn.innerHTML = '☰';
-    btn.style.cssText = `position: fixed; top: 8px; left: 12px; z-index: 10000; font-size: 20px; color: #ff9900; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0px 10px; border-radius: 6px; border: 1px solid #ff6600; user-select: none; line-height: 1.5;`;
+    btn.style.cssText = `position: fixed; top: 6px; left: 12px; z-index: 10000; font-size: 20px; color: #ff9900; cursor: pointer; background: rgba(0,0,0,0.5); padding: 2px 10px; border-radius: 6px; border: 1px solid #ff6600; user-select: none; line-height: 1.5;`;
     btn.onclick = function(e) {
         e.stopPropagation();
         const drawer = document.getElementById('menuDrawer');
