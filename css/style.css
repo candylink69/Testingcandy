@@ -1588,5 +1588,16 @@ img,
     opacity: 0.7;
     padding-right: 4px;
 }
-
+/* Fix Title Height & Menu Button Alignment */
+.title {
+    font-size: 18px !important;
+    padding: 6px 10px !important; /* Height chhoti ki */
+    margin: 2px 0 6px 0 !important;
+    border-radius: 8px !important;
+}
+#menuToggleBtn {
+    top: 6px !important;
+    font-size: 20px !important;
+    padding: 2px 10px !important;
+}
 
