@@ -42,14 +42,13 @@ function adjustMasonryItem(item) {
             img.style.height = `${imgH}px`;
             img.style.aspectRatio = 'auto';
         } else {
-            imgH = cardWidth; // Default square if no dimensions
+            imgH = cardWidth;
             img.style.height = `${imgH}px`;
         }
         
         const infoH = item.querySelector('.gif-info')?.offsetHeight || 0;
         const totalH = imgH + infoH;
         
-        // CSS Grid gap is 6px, row height is 10px (so 16px total per span)
         const span = Math.max(1, Math.ceil((totalH + 6) / 16)); 
         item.style.gridRowEnd = `span ${span}`;
     };
@@ -124,7 +123,7 @@ function renderSection() {
     const heading = document.getElementById('sectionHeading');
     const tabsWrapper = document.getElementById('tabsWrapper');
     const swipeInd = document.getElementById('swipeIndicator');
-    const socialRow = document.getElementById('gifsHeaderSocialRow');
+    const controls = document.getElementById('gifsHeaderControls');
 
     // 🔥 CATEGORY SELECT HUI HAI (Naya Page View)
     if (currentCategory) {
@@ -132,15 +131,15 @@ function renderSection() {
         heading.textContent = `📁 ${catName}`;
         document.title = `${catName} - CandyLink69`;
         
-        // Add "Back to Categories" button in the top row
-        if (socialRow && !document.getElementById('backToCategoryBtn')) {
+        // Add "Back to Categories" button with 3D push effect
+        if (controls && !document.getElementById('backToCategoryBtn')) {
             const btn = document.createElement('a');
             btn.id = 'backToCategoryBtn';
             btn.href = `?type=${currentType}`;
             btn.className = 'back-btn';
-            btn.style.cssText = 'padding: 4px 14px; font-size: 12px; border-radius: 20px; margin-left: 4px; box-shadow: none;';
+            btn.style.cssText = 'padding: 4px 14px; font-size: 12px;';
             btn.innerHTML = '← Categories';
-            socialRow.appendChild(btn);
+            controls.appendChild(btn);
         }
 
         tabsWrapper.style.display = 'none';
@@ -158,7 +157,6 @@ function renderSection() {
         heading.textContent = currentType === 'captioned' ? '💬 Caption GIFs' : '🖼️ Normal GIFs';
         document.title = (currentType === 'captioned' ? 'Caption GIFs' : 'Normal GIFs') + ' - CandyLink69';
         
-        // Remove the extra button if it exists
         const catBtn = document.getElementById('backToCategoryBtn');
         if (catBtn) catBtn.remove();
 
