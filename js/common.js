@@ -187,9 +187,9 @@ function loadSocial() {
 
     // Sirf text aur icon, koi back button nahi
     container.innerHTML = `
-        <div class="social-inline-row" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 0;">
-            <span style="font-size: 11px; color: #ffcc88;">For the latest updates, you can join with us on Telegram👉🏻</span>
-            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fab fa-telegram-plane"></i></a>
+        <div class="social-inline-row" style="display: flex; align-items: center; justify-content: center; gap: 4px; margin: 2px 0;">
+            <span style="font-size: 11px; color: #ffcc88;">✨For the latest updates, you can join with us on Telegram👉🏻</span>
+            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 22px; height: 22px; font-size: 18px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fab fa-telegram-plane"></i></a>
         </div>
     `;
 }
