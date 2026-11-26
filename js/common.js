@@ -1,5 +1,5 @@
 // ============================================================
-// COMMON.JS - Environment Agnostic (Works on Root & /gifs/)
+// COMMON.JS - Menu, Social, Search, In-App Redirect
 // ============================================================
 
 // ========== IN-APP REDIRECT ==========
@@ -19,7 +19,6 @@
 })();
 
 // ========== SMART PATH DETECTOR ==========
-// Agar URL me /gifs/ hai, toh basePath ../ ho jayega, warna kuch nahi hoga.
 const isGifsPage = window.location.pathname.match(/\/gifs(\/|$)/);
 const basePath = isGifsPage ? '../' : '';
 
@@ -109,10 +108,8 @@ function loadSideMenu() {
             </ul>
             <div id="menuCategoryHeading">📁 ALL CATEGORIES</div>
             <ul id="menuCategoryList"></ul>
-            <div id="menuSocial">
-                <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram" aria-label="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
+            <div id="menuSocial" style="justify-content: center;">
                 <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" aria-label="Join our Telegram channel"><i class="fab fa-telegram-plane"></i></a>
-                <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook" aria-label="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
             </div>
         </div>
     `;
@@ -122,7 +119,6 @@ function loadSideMenu() {
         menuContainer.innerHTML = menuHTML;
     }
 
-    // Video categories
     fetch(basePath + 'data/categories.json')
         .then(response => response.json())
         .then(categories => {
@@ -136,36 +132,19 @@ function loadSideMenu() {
             });
         })
         .catch(err => {
-            console.log('Categories load nahi hui:', err);
             const list = document.getElementById('menuCategoryList');
-            if (list) {
-                list.innerHTML = '<li style="color:#888; padding:10px;">⚠️ Categories load nahi hui</li>';
-            }
+            if (list) list.innerHTML = '<li style="color:#888; padding:10px;">⚠️ Categories load nahi hui</li>';
         });
 
-    // GIFs categories load (submenu ke liye)
     fetch(basePath + 'gifs/categories.json')
         .then(r => r.ok ? r.json() : { captioned: [], normal: [] })
         .then(cats => {
             const cEl = document.getElementById('gifCaptionedCats');
             const nEl = document.getElementById('gifNormalCats');
-            if (cEl) {
-                cEl.innerHTML = (cats.captioned || []).map(c =>
-                    `<a href="${basePath}gifs/?type=captioned&category=${encodeURIComponent(c.id)}" class="menu-link">▶ ${c.name}</a>`
-                ).join('') || '<span class="submenu-loading">—</span>';
-            }
-            if (nEl) {
-                nEl.innerHTML = (cats.normal || []).map(c =>
-                    `<a href="${basePath}gifs/?type=normal&category=${encodeURIComponent(c.id)}" class="menu-link">▶ ${c.name}</a>`
-                ).join('') || '<span class="submenu-loading">—</span>';
-            }
+            if (cEl) cEl.innerHTML = (cats.captioned || []).map(c => `<a href="${basePath}gifs/?type=captioned&category=${encodeURIComponent(c.id)}" class="menu-link">▶ ${c.name}</a>`).join('') || '<span class="submenu-loading">—</span>';
+            if (nEl) nEl.innerHTML = (cats.normal || []).map(c => `<a href="${basePath}gifs/?type=normal&category=${encodeURIComponent(c.id)}" class="menu-link">▶ ${c.name}</a>`).join('') || '<span class="submenu-loading">—</span>';
         })
-        .catch(() => {
-            const cEl = document.getElementById('gifCaptionedCats');
-            const nEl = document.getElementById('gifNormalCats');
-            if (cEl) cEl.innerHTML = '<span class="submenu-loading">—</span>';
-            if (nEl) nEl.innerHTML = '<span class="submenu-loading">—</span>';
-        });
+        .catch(() => {});
 
     highlightActiveMenu();
 }
@@ -173,10 +152,7 @@ function loadSideMenu() {
 // ========== ACTIVE LINK HIGHLIGHT ==========
 function highlightActiveMenu() {
     const path = window.location.pathname;
-
-    document.querySelectorAll('#menuNav .menu-link').forEach(link => {
-        link.classList.remove('active-link');
-    });
+    document.querySelectorAll('#menuNav .menu-link').forEach(link => link.classList.remove('active-link'));
 
     if (isGifsPage) {
         const gifsLink = document.querySelector('#menuNav [data-page="gifs"]');
@@ -201,25 +177,37 @@ function highlightActiveMenu() {
 function loadHeader() {
     const container = document.getElementById('headerContainer');
     if (!container) return;
-     // ✅ Yahan add karo: GIFs page par default header mat dikhao
-    if (window.location.pathname.includes('/gifs')) {
-        container.style.display = 'none';
-        return;
-    }
+
+    let titleHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
     if (window.location.pathname.includes('video.html')) {
-        container.innerHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
+        container.innerHTML = titleHTML;
         return;
     }
-    const headerHTML = `
-        <div class="title">🔥 CandyLink69 🔥</div>
-        <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
-        <div class="social-row">
-            <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram" aria-label="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
-            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" aria-label="Join our Telegram channel"><i class="fab fa-telegram-plane"></i></a>
-            <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook" aria-label="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
-        </div>
+
+    // Only Telegram globally
+    let socialRow = '';
+    if (isGifsPage) {
+        // GIFs pages: Back + Telegram
+        socialRow = `
+            <div class="social-row" id="gifsHeaderSocialRow" style="justify-content:center; gap:12px; margin-top: 4px;">
+                <a href="index.html" class="back-btn" id="gifsBackBtn" style="padding: 4px 14px; font-size: 12px; border-radius: 20px; box-shadow: none;">← Back</a>
+                <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 28px; height: 28px; font-size: 14px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-telegram-plane"></i></a>
+            </div>
+        `;
+    } else {
+        // Video pages: Only Telegram
+        socialRow = `
+            <div class="social-row" style="justify-content:center; margin-top: 4px;">
+                <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 28px; height: 28px; font-size: 14px; display: flex; align-items: center; justify-content: center;"><i class="fab fa-telegram-plane"></i></a>
+            </div>
+        `;
+    }
+
+    container.innerHTML = `
+        ${titleHTML}
+        <div class="social-text" style="margin: 4px 0 2px;">✨ For the latest updates, you can join with us on these platforms. ✨</div>
+        ${socialRow}
     `;
-    container.innerHTML = headerHTML;
 }
 
 // ========== LOAD FOOTER ==========
@@ -228,10 +216,8 @@ function loadFooter() {
     if (!container) return;
     const footerHTML = `
         <div class="social-text">✨ For the latest updates, you can join with us on these platforms. ✨</div>
-        <div class="social-row">
-            <a href="https://www.instagram.com/candylink_official" target="_blank" class="social-icon instagram" aria-label="Visit our Instagram page"><i class="fab fa-instagram"></i></a>
+        <div class="social-row" style="justify-content:center;">
             <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" aria-label="Join our Telegram channel"><i class="fab fa-telegram-plane"></i></a>
-            <a href="https://www.facebook.com/Candylinkhub" target="_blank" class="social-icon facebook" aria-label="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
         </div>
     `;
     container.innerHTML = footerHTML;
@@ -241,48 +227,38 @@ function loadFooter() {
 function loadSearchBar() {
     const container = document.getElementById('searchContainer');
     if (!container) return;
-    const placeholder = isGifsPage
-        ? '🔍 Search GIFs by ID, title or category...'
-        : '🔍 Search videos by ID, title or category...';
-    const searchHTML = `
-        <div class="sticky-search">
+    const placeholder = isGifsPage ? '🔍 Search GIFs...' : '🔍 Search videos...';
+    container.innerHTML = `
+        <div class="sticky-search" style="margin: 0 -12px 2px -12px; padding: 0 12px 2px;">
             <div class="search-container">
                 <input type="text" class="search-box" id="searchInput" placeholder="${placeholder}" autocomplete="off">
                 <div id="searchResults"></div>
             </div>
         </div>
     `;
-    container.innerHTML = searchHTML;
     setupSearchLogic();
 }
 
 // ========== SEARCH LOGIC ==========
 function setupSearchLogic() {
-    if (isGifsPage) return; // gifs.js handles its own search
-
+    if (isGifsPage) return; // gifs.js handles it
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     if (!searchInput) return;
+    
     searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
-        if (query.length < 2) {
-            searchResults.style.display = 'none';
-            return;
-        }
+        if (query.length < 2) { searchResults.style.display = 'none'; return; }
         if (typeof videos === 'undefined' || !videos.length) {
-            searchResults.innerHTML = '<div style="padding:15px;color:#888;">Loading videos...</div>';
+            searchResults.innerHTML = '<div style="padding:15px;color:#888;">Loading...</div>';
             searchResults.style.display = 'block';
             return;
         }
-        const filtered = videos.filter(v => {
-            const idMatch = v.id.toLowerCase().includes(query);
-            const titleMatch = v.title && v.title.toLowerCase().includes(query);
-            let catMatch = false;
-            if (v.categories && Array.isArray(v.categories)) {
-                catMatch = v.categories.some(c => c.toLowerCase().includes(query));
-            }
-            return idMatch || titleMatch || catMatch;
-        });
+        const filtered = videos.filter(v => 
+            v.id.toLowerCase().includes(query) || 
+            (v.title && v.title.toLowerCase().includes(query)) || 
+            (v.categories && v.categories.some(c => c.toLowerCase().includes(query)))
+        );
         if (filtered.length === 0) {
             searchResults.innerHTML = '<div style="padding:15px;color:#888;">No videos found</div>';
             searchResults.style.display = 'block';
@@ -290,12 +266,10 @@ function setupSearchLogic() {
         }
         let html = '';
         filtered.slice(0, 10).forEach(v => {
-            html += `
-                <div class="search-result-item" onclick="goToVideo('${v.id}')">
-                    <div class="search-video-id">${v.id}</div>
-                    ${v.title ? `<div class="search-video-title" style="color:#ccc;font-size:12px;">${v.title.substring(0, 50)}</div>` : ''}
-                </div>
-            `;
+            html += `<div class="search-result-item" onclick="goToVideo('${v.id}')">
+                <div class="search-video-id">${v.id}</div>
+                ${v.title ? `<div class="search-video-title" style="color:#ccc;font-size:12px;">${v.title.substring(0, 50)}</div>` : ''}
+            </div>`;
         });
         searchResults.innerHTML = html;
         searchResults.style.display = 'block';
@@ -314,18 +288,11 @@ function injectMenuButton() {
     const btn = document.createElement('div');
     btn.id = 'menuToggleBtn';
     btn.innerHTML = '☰';
-    btn.style.cssText = `
-        position: fixed; top: 12px; left: 12px; z-index: 10000;
-        font-size: 24px; color: #ff9900; cursor: pointer;
-        background: rgba(0,0,0,0.5); padding: 2px 12px;
-        border-radius: 6px; border: 1px solid #ff6600;
-        user-select: none; line-height: 1.3;
-    `;
+    btn.style.cssText = `position: fixed; top: 8px; left: 12px; z-index: 10000; font-size: 20px; color: #ff9900; cursor: pointer; background: rgba(0,0,0,0.5); padding: 0px 10px; border-radius: 6px; border: 1px solid #ff6600; user-select: none; line-height: 1.5;`;
     btn.onclick = function(e) {
         e.stopPropagation();
         const drawer = document.getElementById('menuDrawer');
-        if (drawer && drawer.classList.contains('open')) closeMenu();
-        else openMenu();
+        if (drawer && drawer.classList.contains('open')) closeMenu(); else openMenu();
     };
     document.body.prepend(btn);
 }
@@ -341,6 +308,5 @@ function initCommon() {
     loadSearchBar();
     loadSideMenu();
     injectMenuButton();
-    console.log('✅ Common.js loaded successfully!');
 }
 initCommon();
