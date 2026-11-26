@@ -201,6 +201,11 @@ function highlightActiveMenu() {
 function loadHeader() {
     const container = document.getElementById('headerContainer');
     if (!container) return;
+     // ✅ Yahan add karo: GIFs page par default header mat dikhao
+    if (window.location.pathname.includes('/gifs')) {
+        container.style.display = 'none';
+        return;
+    }
     if (window.location.pathname.includes('video.html')) {
         container.innerHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
         return;
