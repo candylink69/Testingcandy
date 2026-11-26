@@ -27,7 +27,7 @@ function getCategoryName(type, catId) {
     return cat ? cat.name : catId;
 }
 
-// ========== MASONRY FIX (Perfect Fit) ==========
+// ========== MASONRY PERFECT FIT ==========
 function adjustMasonryItem(item) {
     const img = item.querySelector('.gif-thumb');
     if (!img) return;
@@ -42,15 +42,15 @@ function adjustMasonryItem(item) {
             img.style.height = `${imgH}px`;
             img.style.aspectRatio = 'auto';
         } else {
-            imgH = cardWidth; // Default 1:1 agar dimensions na mile
+            imgH = cardWidth; // Default square if no dimensions
             img.style.height = `${imgH}px`;
         }
         
         const infoH = item.querySelector('.gif-info')?.offsetHeight || 0;
         const totalH = imgH + infoH;
         
-        // Grid-auto-rows: 10px, gap: 8px (approx 18px per row)
-        const span = Math.max(1, Math.ceil((totalH + 10) / 18)); 
+        // CSS Grid gap is 6px, row height is 10px (so 16px total per span)
+        const span = Math.max(1, Math.ceil((totalH + 6) / 16)); 
         item.style.gridRowEnd = `span ${span}`;
     };
 
@@ -122,17 +122,27 @@ function renderSection() {
     if (!currentType) return;
 
     const heading = document.getElementById('sectionHeading');
-    const topBar = document.getElementById('sectionTopBar');
     const tabsWrapper = document.getElementById('tabsWrapper');
     const swipeInd = document.getElementById('swipeIndicator');
+    const socialRow = document.getElementById('gifsHeaderSocialRow');
 
-    // 🔥 AGAR CATEGORY SELECT HUI HAI (Naya Page View)
+    // 🔥 CATEGORY SELECT HUI HAI (Naya Page View)
     if (currentCategory) {
         const catName = getCategoryName(currentType, currentCategory);
         heading.textContent = `📁 ${catName}`;
         document.title = `${catName} - CandyLink69`;
         
-        topBar.innerHTML = `<a href="?type=${currentType}" class="back-btn">← Back to Categories</a>`;
+        // Add "Back to Categories" button in the top row
+        if (socialRow && !document.getElementById('backToCategoryBtn')) {
+            const btn = document.createElement('a');
+            btn.id = 'backToCategoryBtn';
+            btn.href = `?type=${currentType}`;
+            btn.className = 'back-btn';
+            btn.style.cssText = 'padding: 4px 14px; font-size: 12px; border-radius: 20px; margin-left: 4px; box-shadow: none;';
+            btn.innerHTML = '← Categories';
+            socialRow.appendChild(btn);
+        }
+
         tabsWrapper.style.display = 'none';
         swipeInd.style.display = 'none';
 
@@ -148,7 +158,10 @@ function renderSection() {
         heading.textContent = currentType === 'captioned' ? '💬 Caption GIFs' : '🖼️ Normal GIFs';
         document.title = (currentType === 'captioned' ? 'Caption GIFs' : 'Normal GIFs') + ' - CandyLink69';
         
-        topBar.innerHTML = '';
+        // Remove the extra button if it exists
+        const catBtn = document.getElementById('backToCategoryBtn');
+        if (catBtn) catBtn.remove();
+
         tabsWrapper.style.display = 'block';
         swipeInd.style.display = 'block';
 
@@ -226,7 +239,6 @@ function renderSectionCategories() {
     }).join('');
 }
 
-// 🔥 CATEGORY CLICK: Redirect to new page view
 function selectSectionCategory(catId) {
     const url = new URL(window.location);
     url.searchParams.set('category', catId);
