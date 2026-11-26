@@ -609,7 +609,7 @@ img,
     font-size: 13px;
     font-weight: bold;
     display: inline-block;
-    margin: 4px 0 10px 0;
+    margin: 2px 0 2px 0;
     box-shadow: 0 0 20px rgba(255, 51, 0, 0.3);
     animation: pulseLight 1.5s infinite alternate;
 }
