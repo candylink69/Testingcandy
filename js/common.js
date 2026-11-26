@@ -133,7 +133,7 @@ function loadSideMenu() {
         })
         .catch(err => {
             const list = document.getElementById('menuCategoryList');
-            if (list) list.innerHTML = '<li style="color:#888; padding:10px;">⚠️ Categories load nahi hui</li>';
+            if (list) list.innerHTML = '<li style="color:#888; padding:10px;">⚠️Categories are not loading</li>';
         });
 
     fetch(basePath + 'gifs/categories.json')
@@ -173,46 +173,25 @@ function highlightActiveMenu() {
     });
 }
 
-// ========== LOAD HEADER (Inline Text + Icon) ==========
+// ========== LOAD HEADER (Sirf Title) ==========
 function loadHeader() {
     const container = document.getElementById('headerContainer');
     if (!container) return;
+    container.innerHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
+}
 
-    let titleHTML = `<div class="title">🔥 CandyLink69 🔥</div>`;
-    
-    // Inline text and telegram icon globally
-    const socialRowHTML = `
+// ========== LOAD SOCIAL (Sirf Telegram Line) ==========
+function loadSocial() {
+    const container = document.getElementById('socialContainer');
+    if (!container) return;
+
+    // Sirf text aur icon, koi back button nahi
+    container.innerHTML = `
         <div class="social-inline-row" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 4px 0;">
-            <span style="font-size: 11px; color: #ffcc88;">✨ For the latest updates, you can join with us on Telegram. ✨</span>
+            <span style="font-size: 11px; color: #ffcc88;">For the latest updates, you can join with us on Telegram👉🏻</span>
             <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fab fa-telegram-plane"></i></a>
         </div>
     `;
-
-    let html = titleHTML + socialRowHTML;
-
-    // Add Back Controls for GIFs pages
-    if (isGifsPage) {
-        html += `
-            <div id="gifsHeaderControls" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px;">
-                <a href="index.html" class="back-btn" style="padding: 4px 14px; font-size: 12px;">← Back</a>
-            </div>
-        `;
-    }
-
-    container.innerHTML = html;
-}
-
-// ========== LOAD FOOTER (Inline Text + Icon) ==========
-function loadFooter() {
-    const container = document.getElementById('footerContainer');
-    if (!container) return;
-    const footerHTML = `
-        <div class="social-inline-row" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 20px;">
-            <span style="font-size: 11px; color: #ffcc88;">✨For the latest updates, you can join with us on Telegram👉🏻</span>
-            <a href="https://t.me/candylink6" target="_blank" class="social-icon telegram" style="width: 24px; height: 24px; font-size: 12px; display: inline-flex; align-items: center; justify-content: center;"><i class="fab fa-telegram-plane"></i></a>
-        </div>
-    `;
-    container.innerHTML = footerHTML;
 }
 
 // ========== LOAD SEARCH ==========
@@ -296,7 +275,7 @@ function initCommon() {
         return;
     }
     loadHeader();
-    loadFooter();
+    loadSocial();
     loadSearchBar();
     loadSideMenu();
     injectMenuButton();
